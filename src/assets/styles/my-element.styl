@@ -1,0 +1,380 @@
+/* elementUI样式自定义部分 */
+$theaderBgColor = #f2f2f2
+$commonBtnBg = #00438A
+$commonBtnHoverBg = #2b7cce
+$commonDisBtnBg = #6699CC
+
+// 头部表单 -------------------------------------
+.setup-box
+	.el-form
+		.el-form-item
+			margin-bottom 4px
+
+	.form-box
+		.el-form
+			zoom 1
+
+			.el-input, .el-textarea
+				width 170px
+
+				&:first-child
+					.el-form-item__label
+						padding 0
+
+				.el-form-item__label
+					padding 0 0 0 20px
+
+	.btn-box
+		padding-right 3px
+		height 40px
+		line-height 40px
+
+	.moreSearch
+		border-top 1px solid #ccc
+
+// 中部表格 -------------------------------------
+.el-table
+	font-size 12px
+
+	th, .tree-wrap .tree-header
+		background-color $theaderBgColor
+		color #666
+		font-weight normal
+
+	th
+		padding 0
+		height 34px
+
+	td
+		height 32px
+		padding 0
+		color #333
+
+/* 弹出框单列 */
+/* 由于拖拽必须将margin-bottom 改为0 否则出现滚动条 */
+.el-dialog
+	width 410px !important
+	margin 0 auto
+	margin-top 10vh !important
+	border-radius 2px
+
+	.el-textarea
+		textarea
+			min-height 78px !important
+
+	.el-dialog__header
+		padding 2px 20px 10px
+		border-bottom 1px solid #eee
+		background-color #F5F5F5
+
+		.el-dialog__title
+			font-size 20px
+
+			&:before
+				content ''
+				position relative
+				top 6px
+				left -20px
+				display inline-block
+				width 4px
+				height 30px
+				// background-color #1E56A0
+
+	.el-dialog__body
+		padding 10px 30px 10px 0
+		max-height 65vh
+		overflow auto
+
+		.el-form-item__label
+			padding 0 12px
+
+	.el-dialog__footer
+		padding 7px 15px 7px
+		background-color #F5F5F5
+
+		.el-button
+			height 35px
+			padding 10px 20px
+
+/* 弹出框双列 */
+.two-col-dialog
+	width 790px !important
+
+	.el-form
+		zoom 1
+		width 760px
+
+		&:after
+			content ''
+			display block
+			clear both
+			visibility hidden
+			height 0
+			font-size 0
+
+		.dialog-left, .dialog-right
+			float left
+			width 50%
+
+		.dialog-bottom
+			float left
+			width 100%
+
+		.el-input, .el-textarea
+			width 100%
+
+/* 弹出框三列 */
+.three-col-dialog
+	width 990px !important
+
+	.el-form
+		zoom 1
+		width 960px
+
+		&:after
+			content ''
+			display block
+			clear both
+			visibility hidden
+			height 0
+			font-size 0
+
+		.three-dialog-left, .three-dialog-middle, .three-dialog-right
+			float left
+			width 33%
+
+		.dialog-bottom
+			float left
+			width 100%
+
+			.el-input, .el-textarea
+				width 100%
+
+		.el-input, .el-textarea
+			width 190px
+
+/* 最大弹出框 */
+.big-dialog
+	width 90% !important
+
+	.el-dialog__body
+		padding 10px 30px 30px
+
+		.footer
+			padding 10px 65px 0
+
+.el-tree-node__content
+	position relative
+	height 30px
+
+.dialog-bottom
+	width 500px
+
+	.el-form-item__content
+		width auto
+
+/* 域名相关样式 */
+.domain
+	padding-right 20px
+	display flex
+
+	.item
+		height 100%
+		padding 0 10px
+		background-color #ccc
+		color #fff
+
+	.right
+		width 200px
+
+// 滚动条 --------------------------------------
+.el-scrollbar__bar
+	border-radius 8px
+
+.el-scrollbar__bar.is-vertical
+	width 12px
+
+// 清除tree组件中elscrollbar的横向滚动条
+.el-scrollbar__wrap
+	overflow-x hidden
+
+// 避免影响下拉菜单的横向滚动条
+.el-select-dropdown__wrap
+	overflow scroll
+
+// 自定义按钮样式  ------------------------------
+.el-button--common
+	background-color $commonBtnBg
+	border-color $commonBtnBg
+	color #fff
+
+	&:focus, &:hover
+		background $commonDisBtnBg
+		border-color $commonDisBtnBg
+		color #fff
+
+.el-button--common.is-disabled, .el-button--common.is-disabled
+	background $commonDisBtnBg
+	border-color $commonDisBtnBg
+	color #fff
+
+	&:active, &:focus, &:hover
+		background $commonDisBtnBg
+		border-color $commonDisBtnBg
+		color #fff
+
+/* 调整带图标按钮和无图标按钮高度差异 */
+.el-button span
+	display inline-block
+	height 14px
+
+.el-button--mini .iconfont, .el-button--small .iconfont
+	padding-right 4px
+	font-size 13px
+
+// popover 相关样式修改 -----------------------------
+// 头部菜单popover
+.header-menu
+	padding 0 !important
+	margin-top 0 !important
+	border-radius 0 5px 5px 0 !important
+	box-shadow 1px 1px 7px 0 #ccc !important
+	border none !important
+
+	&.menu
+		left calc(263px + 10px) !important
+
+		.popper__arrow
+			left 75px !important
+
+// 主要标题栏样式 -------------------------------
+.main-title
+	position relative
+	margin-bottom 10px
+	line-height 30px
+	border-bottom 1px solid #ccc
+	font-size 16px
+	font-weight bolder
+	color #666
+
+	a
+		position absolute
+		top 5px
+		right 15px
+
+	.el-form .el-form-item
+		margin-bottom 0
+
+		.el-form-item__label, .el-form-item__content
+			line-height 26px
+
+// messagebox 中确认按钮在左 取消在右 -------------------
+.btn-custom-cancel
+	float right
+	margin-left 10px
+
+// element tooltip 样式 ---------------------------------
+.el-tooltip__popper
+	background-color #0099CC !important
+
+.el-tooltip__popper[x-placement^=top] .popper__arrow
+	border-top-color #0099CC
+
+	&:after
+		border-top-color #0099CC
+
+// el-form-item__content 下的 下拉菜单 级联菜单 宽度百分之百
+.el-form-item__content
+	line-height 34px
+
+	.el-select, .el-cascader
+		width 100%
+
+.el-switch__label
+	color #ccc
+
+// 表单样式部分 ---------------------------------
+.el-form
+	.el-form-item
+		margin-bottom 14px
+
+	.el-form-item__label
+		font-size 12px
+
+// 分页条样式 重新调整 add by wangjie
+.el-pagination
+	line-height 30px !important
+
+	.el-input__inner
+		height 28px !important
+
+	span:not([class*=suffix])
+		line-height 25px !important
+
+.el-input__inner
+	border-radius 2px !important
+
+.top-bar
+	.el-tabs__nav-scroll
+		background-color #f2f2f2 !important
+
+.el-tabs__header
+	margin 0 0 0px
+
+.el-dialog__headerbtn
+	top 12px !important
+
+.el-button-group
+	.el-button
+		&:first-child
+			border-top-left-radius 10px
+			border-bottom-left-radius 10px
+
+		&:last-child
+			border-top-right-radius 10px
+			border-bottom-right-radius 10px
+
+.loading
+	.el-icon-loading, .el-loading-text
+		color #409eff
+
+	.el-icon-loading
+		font-size 130px
+
+	.el-loading-text
+		font-size 40px
+
+// 带标题下拉框样式
+.titel-select .el-scrollbar
+	padding-top 30px
+
+// 带标题分页的下拉框样式
+.pagination-select .el-scrollbar
+	padding 30px 0
+
+.option-title
+	position absolute
+	top 0
+	z-index 200
+	height 30px
+	line-height 30px
+	background-color #fff
+
+	span
+		text-align center
+
+.option-bottom
+	position absolute
+	bottom 0
+	z-index 200
+	background-color #fff
+
+.option-item
+	display inline-block
+	overflow hidden
+	white-space nowrap
+	text-overflow ellipsis
+
+// 全局tooltip 宽度显示，避免超出屏幕范围
+.el-tooltip__popper
+	max-width 800px

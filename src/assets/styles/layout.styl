@@ -1,0 +1,74 @@
+/* 页面布局相关的样式 */
+$leftWidth = 320px // 页面左右两列布局 左侧部分宽度百分比
+// 页面左右两列布局样式
+.two-column
+	position relative
+	height 100%
+	>.left
+		position absolute
+		top 0
+		left 0
+		box-sizing border-box
+		width $leftWidth
+		height 100%
+	>.right
+		box-sizing border-box
+		padding-left $leftWidth + 10px
+		height 100%
+		width 100%
+// 主次两页面布局
+.main-page
+	position relative
+	height 100%
+	overflow-y auto
+	.sub-page
+		position absolute
+		top 0
+		left 0
+		z-index 100
+		width 100%
+		height 100%
+		overflow-x hidden
+		background-color #fff
+		h3
+			display inline-block
+			vertical-align top
+			padding-bottom 10px
+		.sub-box
+			width 100%
+			.form-box
+				width 100%
+				.el-form
+					width 100%
+					.el-input, .el-select, .el-textarea, .el-cascader
+						width 100%
+		.footer
+			padding 10px 65px
+	.sub-page-two
+		position absolute
+		top 0
+		left 0
+		z-index 101
+		width 100%
+		height 100%
+		background-color #fff
+		.footer
+			padding 10px 65px 0
+// 上下两列 可调整上下大小布局
+#top-list
+	height 60%
+	overflow hidden
+	background-color #fff
+#bot-list
+	height 40%
+	position relative
+	overflow hidden
+	background-color #fff
+	.position-line
+		position absolute
+		top 0
+		left 0
+		z-index 100
+		width 100%
+		height 8px
+		cursor s-resize

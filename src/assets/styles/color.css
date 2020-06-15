@@ -1,0 +1,28 @@
+/* element ui 背景色 字体颜色 */
+.bg-blue{
+	background-color: #409EFF;
+}
+.bg-green{
+	background-color: #67C23A;
+}
+.bg-yellow{
+	background-color: #E6A23C;
+}
+.bg-red{
+	color: #F56C6C;
+}
+.fn-blue{
+	color: #409EFF;
+}
+.fn-green{
+	color: #67C23A;
+}
+.fn-yellow{
+	color: #E6A23C;
+}
+.fn-red{
+	color: #F56C6C;
+}
+.fn-gray{
+	color: #ccc;
+}

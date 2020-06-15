@@ -1,0 +1,51 @@
+/*
+ * @Description: 打印相关样式
+ * @Author: jiaxin
+ * @LastEditors: jiaxin
+ * @Date: 2019-04-16 15:23:27
+ * @LastEditTime: 2019-04-18 09:18:31
+ */
+
+@page {
+	size: auto;
+	margin: 1.5cm;
+}
+
+div {
+	width: 100%;
+}
+
+h1,h2,h3{
+	margin-top: 30pt;
+}
+
+h1 {
+	font-size: 24pt;
+}
+
+h2 {
+	font-size: 20pt;
+}
+
+h3 {
+	font-size: 18pt;
+}
+
+p {
+	font-size: 14pt;
+}
+
+table{
+	width: 100%;
+	border: 1;
+	border-collapse: collapse;
+}
+
+td,th{
+	height: 45px;
+	border: 1px solid #ccc;
+}
+
+th{
+	text-align: center;
+}
