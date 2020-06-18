@@ -3,33 +3,38 @@
  -->
 
 <template>
-  <div class="header clearfix"
-       :style="{'backgroundColor':bgCOlor}">
+  <!-- :style="{'backgroundColor':bgCOlor}" -->
+  <div class="header clearfix" style="backgroundColor:#fff">
     <!-- 侧边栏开关 -->
-    <i class="el-icon-menu sidebar"
-       @click="OPEN_SIDEBAR"></i>
+    <i class="el-icon-menu sidebar" @click="OPEN_SIDEBAR"></i>
     <!-- logo -->
     <div class="logo"></div>
     <!-- 系统名称 -->
-    <div class="system-name">敏特达官网后台管理系统</div>
+    <!-- <div class="system-name">敏特达官网后台管理系统</div> -->
     <!-- 菜单列表 -->
     <!-- 右侧图标列表 -->
     <ul class="right-list clearfix">
-      <li class="list-item hover icon-text user"
-          v-popover:user-popover>
-        <img class="userImg"
-             :src="userInfo.avatar">
-        {{userInfo.nickname}}
+      <li class="list-item hover icon-text user" v-popover:user-popover>
+        <span class="mes_box"><i class="iconfont iconxiaoxi message"></i></span>
+        <!-- <img class="userImg" :src="userInfo.avatar" /> -->
+        <img
+          src="../../../../src/assets/images/avatar.png"
+          alt=""
+          class="userImg"
+        />
+        <!-- {{ userInfo.nickname }} -->
       </li>
     </ul>
 
-    <el-popover ref="user-popover"
-                placement="bottom-end"
-                width="200"
-                :open-delay="150"
-                popper-class="header-menu"
-                :visible-arrow="false"
-                trigger="hover">
+    <el-popover
+      ref="user-popover"
+      placement="bottom-end"
+      width="200"
+      :open-delay="150"
+      popper-class="header-menu"
+      :visible-arrow="false"
+      trigger="hover"
+    >
       <ul class="user-control">
         <li @click="toUserSetting">用户设置</li>
         <li @click="logout">退出</li>
@@ -156,7 +161,6 @@ export default {
   }
 
 };
-
 </script>
 
 <style scoped lang="stylus">
@@ -165,23 +169,22 @@ $maxWidth = 1180px
 
 .header
   position relative
-
   .sidebar
     display inline-block
     float left
     padding 0 10px
-    line-height 50px
+    line-height 80px
     font-size 26px
-    color #fff
+    color #1989FA
     cursor pointer
 
   .logo
     float left
-    margin-top 5px
+    margin-top 25px
     margin-left 15px
-    width 40px
-    height 40px
-    background url('../../../assets/images/logo_spek.png') 0 0 no-repeat
+    width 472px
+    height 28px
+    background url('../../../assets/images/logo_title.png') 0 0 no-repeat
     background-size cover
 
   .system-name
@@ -200,8 +203,25 @@ $maxWidth = 1180px
 
   .right-list
     float right
-    padding-right 30px
-
+    margin-right 35px
+    margin-top 17px
+    .mes_box
+      display inline-block
+      width 40px
+      height 40px
+      background-color skyblue
+      margin-top 5px
+      border-radius 50%
+      text-align center
+      position relative
+    .message
+      position absolute
+      font-size 18px!important
+      top: -4px;
+      right: 7px;
+      cursor pointer
+    .message:hover
+      color: #1989FA
     @media (max-width: $maxWidth)
       padding-right 10px
 
@@ -230,8 +250,7 @@ $maxWidth = 1180px
 
     .hover
       &:hover
-        background-color #073464
-
+        background-color #1989fa
     .icon-item
       width $height
       text-align center
@@ -250,11 +269,12 @@ $maxWidth = 1180px
 
       .userImg
         display block
-        float left
-        margin 14px 3px 0 0
-        width 30px
-        height 30px
+        float right
+        margin 5px 3px 0 0
+        width 40px
+        height 40px
         border-radius 50%
+        margin-left: 30px;
 
     .input-wrap
       padding 13px 30px 0 0

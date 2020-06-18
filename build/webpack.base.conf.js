@@ -47,7 +47,11 @@ module.exports = {
 			{
 				test: /\.sass$/,
 				loaders: ['style', 'css', 'sass']
-			},
+      },
+      {
+        test: /\.less$/,
+        loader: "style-loader!css-loader!less-loader",
+      },
 			{
 				test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
 				loader: 'url-loader',

@@ -1,0 +1,149 @@
+{
+  "id": "1884594",
+  "name": "思贝克运营后台",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "15342134",
+      "name": "前往",
+      "font_class": "qianwang",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "15342138",
+      "name": "成功",
+      "font_class": "chenggong",
+      "unicode": "e698",
+      "unicode_decimal": 59032
+    },
+    {
+      "icon_id": "15341282",
+      "name": "停留",
+      "font_class": "tingliu",
+      "unicode": "e695",
+      "unicode_decimal": 59029
+    },
+    {
+      "icon_id": "15341283",
+      "name": "默认",
+      "font_class": "moren",
+      "unicode": "e696",
+      "unicode_decimal": 59030
+    },
+    {
+      "icon_id": "15329684",
+      "name": "右箭头",
+      "font_class": "youjiantou",
+      "unicode": "e685",
+      "unicode_decimal": 59013
+    },
+    {
+      "icon_id": "15329685",
+      "name": "会员",
+      "font_class": "huiyuan",
+      "unicode": "e686",
+      "unicode_decimal": 59014
+    },
+    {
+      "icon_id": "15329686",
+      "name": "商品",
+      "font_class": "shangpin",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "15329687",
+      "name": "供应商",
+      "font_class": "gongyingshang",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "15329688",
+      "name": "信息",
+      "font_class": "xinxi",
+      "unicode": "e689",
+      "unicode_decimal": 59017
+    },
+    {
+      "icon_id": "15329689",
+      "name": "热门",
+      "font_class": "remen",
+      "unicode": "e68a",
+      "unicode_decimal": 59018
+    },
+    {
+      "icon_id": "15329690",
+      "name": "客服",
+      "font_class": "kefu",
+      "unicode": "e68b",
+      "unicode_decimal": 59019
+    },
+    {
+      "icon_id": "15329691",
+      "name": "订单",
+      "font_class": "dingdan",
+      "unicode": "e68c",
+      "unicode_decimal": 59020
+    },
+    {
+      "icon_id": "15329692",
+      "name": "消息",
+      "font_class": "xiaoxi",
+      "unicode": "e68d",
+      "unicode_decimal": 59021
+    },
+    {
+      "icon_id": "15329693",
+      "name": "品牌",
+      "font_class": "pinpai",
+      "unicode": "e68e",
+      "unicode_decimal": 59022
+    },
+    {
+      "icon_id": "15329694",
+      "name": "双箭头",
+      "font_class": "shuangjiantou",
+      "unicode": "e68f",
+      "unicode_decimal": 59023
+    },
+    {
+      "icon_id": "15329695",
+      "name": "自营",
+      "font_class": "ziying",
+      "unicode": "e690",
+      "unicode_decimal": 59024
+    },
+    {
+      "icon_id": "15329696",
+      "name": "白天",
+      "font_class": "baitian",
+      "unicode": "e691",
+      "unicode_decimal": 59025
+    },
+    {
+      "icon_id": "15329697",
+      "name": "系统",
+      "font_class": "xitong",
+      "unicode": "e692",
+      "unicode_decimal": 59026
+    },
+    {
+      "icon_id": "15329698",
+      "name": "晚上",
+      "font_class": "wanshang",
+      "unicode": "e693",
+      "unicode_decimal": 59027
+    },
+    {
+      "icon_id": "15329699",
+      "name": "首页",
+      "font_class": "shouye",
+      "unicode": "e694",
+      "unicode_decimal": 59028
+    }
+  ]
+}

@@ -42,7 +42,7 @@ const mutations = {
   RESET_TABS(state) {
     state.options = [{
       name: '首页',
-      route: "/index"
+      route: "/home"
     }];
     setStore({
       name: 'options',

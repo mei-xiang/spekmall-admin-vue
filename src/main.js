@@ -22,12 +22,20 @@ import 'v-contextmenu/dist/index.css' //右键菜单相关样式
 import 'js/directives.js' // 引入自定义指令
 import rules from 'js/rules.js' // 引入自定义验证
 import myConst from 'js/const.js' // 常量设置
+
+import './assets/font/font.css' // 引入字体
+import './assets/iconfont/iconfont.css' // inonfont字体图标
+import SliderVerificationCode from 'slider-verification-code';
+import 'slider-verification-code/lib/slider-verification-code.css';
+
 // 设置全局混合模式
 import setLayoutHeight from "@/assets/js/mixins/setLayoutHeight"; // 设置布局的高度
 import components from './components/components.js'; //全局组件注册
 
 Vue.prototype.axios = axios_; // 挂载到Vue实例上面
+Vue.prototype.store = store; // 挂载到Vue实例上面
 Vue.config.productionTip = false;
+Vue.use(SliderVerificationCode);
 
 //核心库扩展，把代理加入核心变量中，方便其他模块调用
 window.core = window.core || {};

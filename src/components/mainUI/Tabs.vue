@@ -15,7 +15,7 @@
 			<el-tab-pane :key="item.name"
 			             v-for="item in options"
 			             :name="item.route"
-			             :closable="item.route!=='/index'">
+			             :closable="item.route!=='/home'">
 				<span v-contextmenu:contextmenu
 				      :route="item.route"
 				      @contextmenu="getNode"
@@ -71,7 +71,7 @@ export default {
 		},
 		tabRemove(targetName) {
 			// 首页不可删除
-			if (targetName === "/index") {
+			if (targetName === "/home") {
 				return;
 			}
 			this.deleteTabs(targetName);
@@ -84,7 +84,7 @@ export default {
 					);
 					this.$router.push({ path: this.activeIndex });
 				} else {
-					this.$router.push({ path: "/index" });
+					this.$router.push({ path: "/home" });
 				}
 			}
 		},
@@ -100,7 +100,7 @@ export default {
 		},
 		// 关闭所有tabs
 		closeAllTabs() {
-			this.$router.push("/index");
+			this.$router.push("/home");
 			this.reset_tabs();
 		},
 		// 控制全部tabs按钮是否显示

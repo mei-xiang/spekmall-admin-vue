@@ -7,7 +7,7 @@ const state = {
   // 主题颜色
   theme: getStore({
     name: 'theme'
-  }) || '#1E56A0',
+  }) || '#fff',
   // 保存页面选项卡数据
   options: getStore({
     name: 'options'

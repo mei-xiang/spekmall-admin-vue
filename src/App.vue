@@ -120,9 +120,8 @@ $padding = 30px
   transition padding-left 0.28s
 
 .content
-  padding-right $padding
-  overflow hidden
-
+  padding-right 0px
+  overflow scroll
   @media (max-width: $maxWidth)
     padding-right ($padding / 3)
 
@@ -134,7 +133,7 @@ $padding = 30px
     padding-left 200px
 
   .content
-    padding-left 230px
+    padding-left: 230px;
 
 .hideSidebar
   .side-nav
@@ -144,7 +143,7 @@ $padding = 30px
     padding-left 0
 
   .content
-    padding-left $padding
+    padding-left: 0px
 
     @media (max-width: $maxWidth)
       padding-left ($padding / 3)

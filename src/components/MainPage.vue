@@ -177,129 +177,129 @@ export default {
       this.$refs.table.doLayout();
     },
     // 请求后台设置数据 转化为 本组件配置数据 并 设置页面获取数据
-    getPageConfig(pageCode) {
-      return new Promise((resolve, reject) => {
-        this.axios.get("/api/common-service/core/page/" + pageCode).then((res) => {
-          if (res.data.items && res.data.items.length === 0) return;
-          let toolbarData = res.data.items[0].toolbar.grid;
-          let searchData = toolbarData.searchs;
-          let buttonData = res.data.items[0].toolbar.buttons;
-          let tableData = toolbarData.columns;
-          let configData = {
-            search: {
-              mainConfigData: [],
-              subConfigData: [],
-              searchData: {}
-            },
-            btnListData: [],
-            theaderData: [],
-            pageSize: 20,
-            pageSizes: [20, 30, 50]
-          };
-          let codeList = new Set();
-          // 获取查询面板配置数据相关 ---------------------------------
-          searchData.map(item => {
-            let searchList = {
-              label: item.labelName,
-              key: item.fieldName,
-              defaultValue: this.$dataIsNull(item.defaultValue) ? null : item.defaultValue,
-              type: null,
-              isScope: item.isRange,
-              isLineFeed: item.isNextRow,
-              width: item.width,
-              icon: item.icon,
-              style: item.cls,
-              farmat: "",
-              sort: item.orderNo,
-              helpTxt: item.helpInfo,
-              selectCode: item.dropDownCode
-            };
-            switch (item.type) {
-              case 'text':
-                searchList.type = 0;
-                break;
-              case 'num':
-                searchList.type = 1;
-                break;
-              case 'combox':
-                searchList.type = 2;
-                searchList.selectOption = [];
-                if (!this.$dataIsNull(item.dropDownCode)) codeList.add(item.dropDownCode);
-                break;
-              case 'date':
-                searchList.type = 3;
-                break;
-              default:
-                searchList.type = 0;
-                break;
-            }
-            // 主次查询分类
-            if (item.isMaster) {
-              configData.search.mainConfigData.push(searchList);
-            } else {
-              configData.search.subConfigData.push(searchList);
-            }
-          })
-          // 获取按钮列表 --------------------------------------------------
-          buttonData.sort((a, b) => {
-            return a.orderNum - b.orderNum
-          })
-          buttonData.map(item => {
-            var buttonList = {
-              label: item.name,
-              icon: item.icon,
-              disabled: null,
-              fn: item.execFunc,
-              permission: item.permissions,
-              gridSelectModel: item.gridSelectModel
-            }
-            configData.btnListData.push(buttonList);
-          })
-          // 获取表格 -----------------------------------------------------
-          tableData.map(item => {
-            var tableList = {
-              type: null,
-              width: item.width === 0 ? "none" : item.width,
-              hasSort: item.isSortable,
-              isShow: item.isVisiable,
-              prop: item.fieldName,
-              label: item.caption,
-              format: item.format,
-              selectCode: item.dropDownCode
-            };
-            if (!this.$dataIsNull(item.dropDownCode)) codeList.add(item.dropDownCode);
-            switch (item.dataType) {
-              case 'String':
-                tableList.type = 0;
-                break;
-              case 'Boolean':
-                tableList.type = 4;
-                break;
-              case 'Datetime':
-                tableList.type = 8;
-                break;
-              case 'Number':
-                tableList.type = 9;
-                break;
-              default:
-                tableList.type = 0;
-                break;
-            }
-            configData.theaderData.push(tableList);
-          })
-          // 获取分页 ------------------------------------------------------
-          if (toolbarData.pageSizeDefault > 0) configData.pageSize = toolbarData.pageSizeDefault;
-          if (toolbarData.pageSizeList !== null && toolbarData.pageSizeList !== "") {
-            configData.pageSizes = toolbarData.pageSizeList.split(",").map((item) => {
-              return parseInt(item)
-            });
-          };
-          // 根据转义的配置设置页面
-          this.setPageConfig(configData, codeList);
-          resolve();
-        });
-      })
-    },
+    // getPageConfig(pageCode) {
+    //   return new Promise((resolve, reject) => {
+    //     this.axios.get("/api/common-service/core/page/" + pageCode).then((res) => {
+    //       if (res.data.items && res.data.items.length === 0) return;
+    //       let toolbarData = res.data.items[0].toolbar.grid;
+    //       let searchData = toolbarData.searchs;
+    //       let buttonData = res.data.items[0].toolbar.buttons;
+    //       let tableData = toolbarData.columns;
+    //       let configData = {
+    //         search: {
+    //           mainConfigData: [],
+    //           subConfigData: [],
+    //           searchData: {}
+    //         },
+    //         btnListData: [],
+    //         theaderData: [],
+    //         pageSize: 20,
+    //         pageSizes: [20, 30, 50]
+    //       };
+    //       let codeList = new Set();
+    //       // 获取查询面板配置数据相关 ---------------------------------
+    //       searchData.map(item => {
+    //         let searchList = {
+    //           label: item.labelName,
+    //           key: item.fieldName,
+    //           defaultValue: this.$dataIsNull(item.defaultValue) ? null : item.defaultValue,
+    //           type: null,
+    //           isScope: item.isRange,
+    //           isLineFeed: item.isNextRow,
+    //           width: item.width,
+    //           icon: item.icon,
+    //           style: item.cls,
+    //           farmat: "",
+    //           sort: item.orderNo,
+    //           helpTxt: item.helpInfo,
+    //           selectCode: item.dropDownCode
+    //         };
+    //         switch (item.type) {
+    //           case 'text':
+    //             searchList.type = 0;
+    //             break;
+    //           case 'num':
+    //             searchList.type = 1;
+    //             break;
+    //           case 'combox':
+    //             searchList.type = 2;
+    //             searchList.selectOption = [];
+    //             if (!this.$dataIsNull(item.dropDownCode)) codeList.add(item.dropDownCode);
+    //             break;
+    //           case 'date':
+    //             searchList.type = 3;
+    //             break;
+    //           default:
+    //             searchList.type = 0;
+    //             break;
+    //         }
+    //         // 主次查询分类
+    //         if (item.isMaster) {
+    //           configData.search.mainConfigData.push(searchList);
+    //         } else {
+    //           configData.search.subConfigData.push(searchList);
+    //         }
+    //       })
+    //       // 获取按钮列表 --------------------------------------------------
+    //       buttonData.sort((a, b) => {
+    //         return a.orderNum - b.orderNum
+    //       })
+    //       buttonData.map(item => {
+    //         var buttonList = {
+    //           label: item.name,
+    //           icon: item.icon,
+    //           disabled: null,
+    //           fn: item.execFunc,
+    //           permission: item.permissions,
+    //           gridSelectModel: item.gridSelectModel
+    //         }
+    //         configData.btnListData.push(buttonList);
+    //       })
+    //       // 获取表格 -----------------------------------------------------
+    //       tableData.map(item => {
+    //         var tableList = {
+    //           type: null,
+    //           width: item.width === 0 ? "none" : item.width,
+    //           hasSort: item.isSortable,
+    //           isShow: item.isVisiable,
+    //           prop: item.fieldName,
+    //           label: item.caption,
+    //           format: item.format,
+    //           selectCode: item.dropDownCode
+    //         };
+    //         if (!this.$dataIsNull(item.dropDownCode)) codeList.add(item.dropDownCode);
+    //         switch (item.dataType) {
+    //           case 'String':
+    //             tableList.type = 0;
+    //             break;
+    //           case 'Boolean':
+    //             tableList.type = 4;
+    //             break;
+    //           case 'Datetime':
+    //             tableList.type = 8;
+    //             break;
+    //           case 'Number':
+    //             tableList.type = 9;
+    //             break;
+    //           default:
+    //             tableList.type = 0;
+    //             break;
+    //         }
+    //         configData.theaderData.push(tableList);
+    //       })
+    //       // 获取分页 ------------------------------------------------------
+    //       if (toolbarData.pageSizeDefault > 0) configData.pageSize = toolbarData.pageSizeDefault;
+    //       if (toolbarData.pageSizeList !== null && toolbarData.pageSizeList !== "") {
+    //         configData.pageSizes = toolbarData.pageSizeList.split(",").map((item) => {
+    //           return parseInt(item)
+    //         });
+    //       };
+    //       // 根据转义的配置设置页面
+    //       this.setPageConfig(configData, codeList);
+    //       resolve();
+    //     });
+    //   })
+    // },
     // 设置页面配置数据(本地设置)
 		/* data = {
 			ajaxData:{

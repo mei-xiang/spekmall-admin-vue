@@ -19,6 +19,7 @@
 		"jquery": "^3.4.1",
 		"print-js": "^1.0.55",
 		"qs": "^6.5.2",
+		"slider-verification-code": "^1.0.3",
 		"stylus": "^0.54.5",
 		"stylus-loader": "^3.0.2",
 		"v-contextmenu": "^2.8.0",

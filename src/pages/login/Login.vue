@@ -8,55 +8,70 @@
 
 <template>
   <div class="login">
-    <div class="login-box clearfix">
-      <div class='login-title fl'>
-        <img src="../../assets/images/logo_white.png"
-             alt="logo">
-        <p>敏特达官网后台管理系统</p>
-      </div>
-      <el-form :model="ruleForm"
-               status-icon
-               :rules="rules"
-               ref="ruleForm"
-               @keyup.enter.native="submitForm('ruleForm')"
-               class="fr">
-        <i class="login-icon"
-           :class="isAccount ? 'account-icon' : 'qrcode-icon'"
-           @click="loginMode"></i>
-        <div v-if="isAccount">
-          <p class="login-mode">扫码安全登录</p>
-          <div class="login-qrcode"></div>
-          <p class="login-tips">使用微信扫一扫登录</p>
+    <div class="box">
+      <div class="con-l"></div>
+      <div class="con-r">
+        <div class="title">
+          <p class="title-back">欢迎回来！</p>
+          <p class="title-login">登录</p>
         </div>
-        <div v-else>
-          <p class="login-mode">帐号登录</p>
-          <el-form-item prop="name">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="ruleForm"
+          @keyup.enter.native="submitForm('ruleForm')"
+          class="fr login-form"
+        >
+          <el-form-item prop="username">
             <div class="username-box">
-              <i class="iconfont">&#xe639;</i>
-              <el-input type="text"
-                        v-model="ruleForm.name"
-                        placeholder="请输入用户名"></el-input>
+              <el-input
+                type="text"
+                v-model="ruleForm.username"
+                placeholder="请输入用户名"
+              ></el-input>
             </div>
           </el-form-item>
           <el-form-item prop="password">
             <div class="password-box">
-              <i class="iconfont">&#xe69f;</i>
-              <el-input type="password"
-                        v-model="ruleForm.password"
-                        placeholder="请输入密码"></el-input>
+              <el-input
+                type="password"
+                v-model="ruleForm.password"
+                placeholder="请输入密码"
+              ></el-input>
+              <router-link to="/register" class="forget-password fr"
+                >忘记密码？</router-link
+              >
             </div>
           </el-form-item>
-          <div class="operate-box clearfix">
-            <el-checkbox @change="clickSaveLogin"
-                         v-model="saveLoginInfo">请保存我这次登录信息</el-checkbox>
-            <!-- <router-link to="/register"
-									 class="forget-password fr">忘记密码？</router-link> -->
+          <SliderVerificationCode
+            v-model="sliderVal"
+            @change="handleChange"
+            content="请按住滑块，拖动到最右边"
+            textColor="#909399"
+          />
+          <div class="validata_slider_box">
+            <span class="validata_slider" v-if="isShowSliderText"
+              >请移动滑块</span
+            >
           </div>
-          <el-button type="primary"
-                     @click="submitForm('ruleForm')">登录</el-button>
-        </div>
-        <p class="edition">当前版本 v1.0.0</p>
-      </el-form>
+          <div class="login_for">
+            <el-button
+              type="primary"
+              @click="submitForm('ruleForm')"
+              class="submit"
+              ><i class="iconfont iconqianwang go"></i
+            ></el-button>
+            <div class="operate-box clearfix">
+              <el-switch
+                @change="clickSaveLogin"
+                v-model="saveLoginInfo"
+                inactive-text="记住密码"
+              >
+              </el-switch>
+            </div>
+          </div>
+        </el-form>
+      </div>
     </div>
   </div>
 </template>
@@ -65,18 +80,19 @@
 import { mapMutations } from "vuex";
 import fileList from '@/router/fileList';
 import { setStore, getStore, removeStore } from 'js/store'
+import axios from 'axios'
 export default {
   name: "login",
   data() {
     return {
-      isAccount: false,
+      sliderVal: false,
       saveLoginInfo: false,
       ruleForm: {
-        name: "",
+        username: "",
         password: ""
       },
       rules: {
-        name: [
+        username: [
           this.$rules.setRequired("请输入账号"),
           this.$rules.setNoSpace()
         ],
@@ -85,20 +101,24 @@ export default {
           this.$rules.setPassword(6, 20)
         ]
       },
-      validatorUrl: null
+      validatorUrl: null,
+      isShowSliderText: false // 控制滑块校验文字的显示/隐藏
     };
   },
   methods: {
+    // 滑块的回调
+      handleChange(value){
+        // console.log('您验证结果为:',value);
+        if(value){
+          this.isShowSliderText = false
+        }
+     },
     ...mapMutations({
       set_active_index: "SET_ACTIVE_INDEX",
       set_user_info: "SET_USER_INFO",
       resetTabs: "RESET_TABS"
     }),
     // ...mapActions(["GET_PRODUCTTYPES"]),
-    // 刷新验证码
-    loginMode() {
-      this.isAccount = !this.isAccount
-    },
     // 本地密码加解密方法
     compile(code) {
       var c = String.fromCharCode(code.charCodeAt(0) + code.length);
@@ -117,7 +137,9 @@ export default {
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
+        if(!this.sliderVal) return this.isShowSliderText = true
         if (valid) {
+          if(!this.sliderVal) return this.isShowSliderText = true
           const loading = this.$loading({
             lock: true,
             text: '登录中，请稍等',
@@ -125,16 +147,18 @@ export default {
             background: 'rgba(0, 0, 0, 0.7)'
           });
           removeStore({ name: 'access_token' });
-          this.axios.post("/api/api/sysLogin", {
-            name: this.ruleForm.name,
+          axios.post("http://192.168.212.13:8010/public/login", {
+            username: this.ruleForm.username,
             password: this.ruleForm.password
           }).then((res) => {
-            let useData = res.data.userDetail;
+            console.log(res)
+            // this.$router.push({path: '/page'})
+            let useData = res.data.data;
             this.$message.success("登录成功");
             // 保存token
             setStore({
               name: 'access_token',
-              content: res.data.token,
+              content: res.data.data.token,
               type: "session"
             });
             // 检测密码强度并记录
@@ -145,7 +169,7 @@ export default {
             if (this.saveLoginInfo) {
               loginInfo = {
                 saveLoginInfo: true,
-                name: this.ruleForm.name,
+                username: this.ruleForm.username,
                 password: this.compile(this.ruleForm.password)
               }
             } else {
@@ -270,7 +294,7 @@ export default {
       const loginInfo = getStore({ name: 'login_info' });
       if (loginInfo && loginInfo.saveLoginInfo) {
         this.saveLoginInfo = true;
-        this.ruleForm.name = loginInfo.name;
+        this.ruleForm.username = loginInfo.username;
         this.ruleForm.password = this.uncompile(loginInfo.password);
       }
     },
@@ -291,173 +315,123 @@ export default {
 };
 </script>
 
-<style scoped lang="stylus">
-.login
-  background url('../../assets/images/login_bg.png') 0 0 no-repeat
-  background-size cover
-  position fixed
-  top 0
-  left 0
-  right 0
-  bottom 0
+<style>
+.login {
+  background: url("../../assets/images/login_bg.png") 0 0 no-repeat;
+  background-size: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login .box {
+  width: 80%;
+  height: 90%;
+  background-color: pink;
+  display: flex;
+  background: #ffffff;
+  box-shadow: 0 24px 36px 0 rgba(51, 53, 54, 0.06);
+  border-radius: 24px;
+  overflow: hidden;
+}
 
-  // .login-header
-  // background rgba(0, 0, 0, 0.4)
-  // height 88px
-  // width 100%
-  // img
-  // margin 26px 100px
-  .login-box
-    margin 0 16.66%
-    transform translate(0, -50%)
-    position relative
-    top 50%
+.login .box .con-l {
+  flex: 1;
+  background-color: skyblue;
+  background: url("../../assets/images/login_l_bg.png") no-repeat center center;
+}
+.login .box .con-r {
+  flex: 1;
+  padding: 100px 80px 117px 29px;
+}
+.login .title .title-back {
+  font-size: 40px;
+  color: #47494b;
+  margin-bottom: 4px;
+  line-height: 56px;
+}
+.login .title .title-login {
+  font-size: 40px;
+  color: #47494b;
+  margin-bottom: 50px;
+  line-height: 56px;
+}
+.login .login-form {
+  width: 100%;
+}
+.login .el-input {
+  font-family: "PingFangSC-Regular";
+  font-size: 14px;
+  color: #909399;
+  border-bottom: 1px solid #dddddd;
+}
+.login .el-form .el-input__inner {
+  border: none !important;
+  padding: 0 !important;
+  color: #909399;
+}
+.login .el-form .username-box {
+  border: none !important;
+}
+.login .submit {
+  background-image: linear-gradient(135deg, #7ebdfb 0%, #167fda 100%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  position: relative;
+}
+.login .submit .go {
+  position: absolute;
+  top: 13px;
+  right: 1px;
+  font-size: 38px;
+  transform: translateX(-10px);
+}
+.login .forget-password {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #909399;
+}
+.app-drag {
+  margin-top: 50px !important;
+  /* margin-bottom: 81px !important; */
+  border-radius: 5px!important;
+}
+.app-drag .slider{
+  border-radius: 5px!important;
+}
 
-    @media screen and (min-width: 1020px) and (max-width: 1280px)
-      margin 0 10%
-
-    .login-title
-      margin 177px 0
-
-      img
-        width 320px
-
-      p
-        font-size 32px
-        color #fff
-        margin-top 30px
-
-    .el-form
-      width 460px
-      height 356px
-      padding 0 50px
-      box-sizing border-box
-      background #fff
-      position relative
-
-      @media screen and (max-width: 1440px)
-        width 380px
-
-      .login-icon
-        width 50px
-        height 50px
-        display inline-block
-        cursor pointer
-        position absolute
-        top 20px
-        right 20px
-
-      .login-mode
-        padding 24px 0
-        font-size 20px
-        color #409eff
-        line-height 20px
-        text-align center
-        cursor pointer
-
-      .login-qrcode
-        width 200px
-        height 200px
-        background #ccc
-        margin 30px auto 20px
-
-      .login-tips
-        color #999999
-        font-size 14px
-        text-align center
-        margin-bottom 66px
-
-      >>>.el-form-item
-        margin-bottom 16px
-
-      >>>.el-input__inner:focus
-        border-color #00438a
-
-      .username-box, .password-box
-        position relative
-
-        .iconfont
-          position absolute
-          padding 0 15px
-          z-index 2
-          color #c6d3de
-          font-size 13px
-          line-height 43px
-
-        >>>input
-          padding-left 40px
-
-      .code-box
-        .fl
-          width 220px
-
-          @media screen and (max-width: 1440px)
-            width 150px
-
-        .fr
-          width 100px
-          height 40px
-          border 1px solid #dcdfe6
-
-          img
-            width 100%
-            cursor pointer
-
-      .operate-box
-        margin-bottom 22px
-
-        >>>.el-checkbox__label
-          font-size 14px
-          color #333333
-          line-height 16px
-
-        >>>.el-checkbox__inner
-          width 20px
-          height 20px
-
-          &:after
-            position absolute
-            height 9px
-            width 4px
-            left 6px
-            top 2px
-
-        >>>.el-checkbox__input.is-saveLoginInfo .el-checkbox__inner
-          background-color #00438a
-          border-color #00438a
-
-        >>>.el-checkbox__input.is-focus .el-checkbox__inner
-          border-color #00438a
-
-        .forget-password
-          font-size 14px
-          color #00438a
-          line-height 16px
-
-      .el-button
-        width 100%
-        background #00438a
-        box-shadow 1px 2px 4px 0 #00438a
-        border-radius 4px
-        border-color #00438a
-        font-size 16px
-        color #fff
-
-      .edition
-        font-size 14px
-        color #666666
-        line-height 14px
-        text-align center
-        margin-top 30px
-
-  .login-footer
-    position fixed
-    bottom 30px
-    text-align center
-    width 100%
-
-    p
-      color #fff
-      font-size 14px
-      line-height 22px
+.app-drag .text{
+  border-radius: 5px!important;
+} 
+.background{
+  border-radius: none!important;
+  border-top-left-radius: 5px!important;
+  border-bottom-left-radius: 5px!important;
+}
+.login_for {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.operate-box {
+  display: inline-block;
+}
+.validata_slider_box {
+  margin-top: 4px;
+  margin-bottom: 81px;
+  position: relative;
+}
+.validata_slider {
+  color: #f56c6c;
+  font-size: 12px;
+  position: absolute;
+  top: 4px;
+  left: 0;
+}
 </style>

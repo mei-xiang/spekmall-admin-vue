@@ -3,15 +3,17 @@
  */
 module.exports = {
   development: {
-    apiUrl: 'http://192.168.212.26:9527',
-    socketUrl: ''
+    // apiUrl: 'http://192.168.212.26:9527',
+    apiUrl: "http://http://192.168.212.13:8010",
+    socketUrl: ""
   },
   debug: {
-    apiUrl: 'http://192.168.212.26:9527',
-    socketUrl: ''
+    // apiUrl: 'http://192.168.212.26:9527',
+    apiUrl: "http://http://192.168.212.13:8010",
+    socketUrl: ""
   },
   production: {
-    apiUrl: '',
-    socketUrl: ''
+    apiUrl: "",
+    socketUrl: ""
   }
-}
+};
