@@ -22,6 +22,7 @@ import 'v-contextmenu/dist/index.css' //右键菜单相关样式
 import 'js/directives.js' // 引入自定义指令
 import rules from 'js/rules.js' // 引入自定义验证
 import myConst from 'js/const.js' // 常量设置
+import baseUrl from './api/env'
 
 import './assets/font/font.css' // 引入字体
 import './assets/iconfont/iconfont.css' // inonfont字体图标
@@ -34,8 +35,24 @@ import components from './components/components.js'; //全局组件注册
 
 Vue.prototype.axios = axios_; // 挂载到Vue实例上面
 Vue.prototype.store = store; // 挂载到Vue实例上面
+Vue.prototype.baseUrl = baseUrl.development.apiUrl; // 请求基本地址
+Vue.prototype.imgBaseUrl = `${baseUrl.development.apiUrl}/file/white/download?filePath=` // 图片拼接部分
 Vue.config.productionTip = false;
 Vue.use(SliderVerificationCode);
+
+// 格式化图片地址  return str
+Vue.filter("imgUrlFormat", function (urlStr) {
+  const srcList = urlStr.split(",");
+  return Vue.imgBaseUrl + srcList[0]
+})
+// 格式化图片地址  return strList
+Vue.filter("imgUrlListFormat", function (urlStr) {
+  const srcList = urlStr.split(",");
+  srcList.forEach(item => {
+    item = Vue.imgBaseUrl + item;
+  });
+  return srcList;
+})
 
 //核心库扩展，把代理加入核心变量中，方便其他模块调用
 window.core = window.core || {};
@@ -48,11 +65,11 @@ Vue.use(Common).use(ElementUI).use(contentmenu).use(rules).use(myConst).use(comp
 
 /* eslint-disable no-new */
 new Vue({
-    el: '#app',
-    router,
-    store,
-    components: {
-        App
-    },
-    template: '<App/>'
+  el: '#app',
+  router,
+  store,
+  components: {
+    App
+  },
+  template: '<App/>'
 })

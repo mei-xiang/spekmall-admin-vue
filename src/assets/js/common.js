@@ -12,7 +12,7 @@ let vm = new Vue({});
 const printJS = require('print-js');
 
 export default {
-  install(Vue) {
+  install (Vue) {
     // 确认框 函数
     Vue.prototype.$delBtn = (delAjax, text) => {
       const str = text || '此操作将删除该数据, 是否继续?';
@@ -865,6 +865,39 @@ export default {
       } else {
         return ""
       }
+    }
+    /**
+		 * @description:  标准时间转成时间格式数据 2014-04-23 18:55:49
+		 * @param {String} timeStr [标准时间]
+		 * @return: 2014-04-23 18:55:49
+		 */
+    Vue.prototype.$timeDate = function (timeStr) {
+      const date = new Date(timeStr);
+      const Y = date.getFullYear();
+      const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1);
+      const D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+      const h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+      const m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      const s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+      return Y + '-' + M + '-' + D + ' ' + h + ':' + m + ':' + s;
+    }
+    /**
+		 * @description:  标准时间转成时间格式数据 2014-04-23 18:55:49
+		 * @param {String} timeStr [标准时间]
+		 * @return: 2014-04-23 18:55:49
+		 */
+    Vue.prototype.$token = function (timeStr) {
+      return getStore({ name: "access_token", type: "string" });
+    }
+    /**
+		 * @description:  获取地址栏参数
+		 * @param {String} name [字段名称]
+		 * @return:
+		 */
+    Vue.prototype.$getQueryString = function (name) {
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+      var r = window.location.search.substr(1).match(reg);
+      if (r != null) return unescape(r[2]); return null;
     }
   }
 }

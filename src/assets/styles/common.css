@@ -279,9 +279,24 @@ a:hover {
   padding-left: 15px !important;
 }
 
-.el-input__inner {
+/* 表单input */
+.searchForm .el-input__inner {
   height: 28px;
+}
+.el-input__inner {
+  font-size: 12px;
+}
+.demo-form-inline .el-input__inner {
   width: 180px;
+}
+.demo-form-inline .el-date-editor.el-input,
+.el-date-editor.el-input__inner {
+  width: 180px;
+}
+.el-picker-panel__body .el-input__inner {
+  width: 140px;
+}
+.el-select-dropdown__item {
   font-size: 12px;
 }
 .el-input__icon {
@@ -291,6 +306,25 @@ a:hover {
   background-color: #00438a;
   color: #fff;
 }
-.el-table th{
+.el-table th {
   text-align: center;
+}
+
+/* 分页 */
+.el-pagination {
+  background-color: #f5f5f5;
+  height: 34px;
+  line-height: 25px;
+  overflow: hidden;
+  padding-top: 3px;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.openSidebar .el-pagination {
+  left: 215px;
+}
+.hideSidebar .el-pagination {
+  left: 30px;
 }

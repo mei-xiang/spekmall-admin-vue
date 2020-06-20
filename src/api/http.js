@@ -137,7 +137,7 @@ axios.interceptors.response.use(response => {
   // console.log('响应拦截器', response);
   if (response.headers['content-type'].indexOf('application/octet-stream') !== -1) {
     return Promise.resolve(response);
-  } else if (Number(resData.code) === 200) {
+  } else if (Number(resData.code) === 200||Number(resData.code) === 500) {
     windowAjaxTime.end = new Date().getTime();
     response.data.resTime = windowAjaxTime.end - windowAjaxTime.start;
     return Promise.resolve(response);

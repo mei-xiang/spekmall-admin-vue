@@ -121,7 +121,6 @@ $padding = 30px
 
 .content
   padding-right 0px
-  overflow scroll
   @media (max-width: $maxWidth)
     padding-right ($padding / 3)
 

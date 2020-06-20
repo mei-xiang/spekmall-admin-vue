@@ -150,8 +150,10 @@ export default {
 <style scoped>
 .content {
   width: 100%;
+  height: 100%;
   font-family: "Impact";
   background-color: #f0f2f6;
+  overflow: scroll;
 }
 /* .openSidebar .content {
   padding-left: 0px !important;
