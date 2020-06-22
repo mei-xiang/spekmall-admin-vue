@@ -279,6 +279,10 @@ a:hover {
   padding-left: 15px !important;
 }
 
+.el-table--enable-row-transition .el-table__body td{
+  text-align: center;
+}
+
 /* 表单input */
 .searchForm .el-input__inner {
   height: 28px;

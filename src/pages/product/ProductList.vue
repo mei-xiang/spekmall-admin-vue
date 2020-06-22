@@ -59,10 +59,10 @@
         label="产品编号"
         width="120"
       ></el-table-column>
-      <el-table-column prop="category" label="产品类别（末级）" width="150">
+      <el-table-column prop="categoryName" label="产品类别（末级）" width="300">
       </el-table-column>
       <el-table-column
-        prop=""
+        prop="title"
         label="产品中文名称"
         width="180"
         show-overflow-tooltip
@@ -76,9 +76,17 @@
         show-overflow-tooltip
       >
       </el-table-column>
-      <el-table-column prop="showIndex" label="是否主要产品" width="100">
+      <el-table-column label="是否主要产品" width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.hot">是</span>
+          <span v-else>否</span>
+        </template>
       </el-table-column>
-      <el-table-column prop="" label="是否猜你喜欢" width="100">
+      <el-table-column label="是否猜你喜欢" width="100">
+        <template slot-scope="scope">
+          <span v-if="scope.row.like">是</span>
+          <span v-else>否</span>
+        </template>
       </el-table-column>
       <el-table-column prop="lastUpDate" label="最后发布日期" width="133">
       </el-table-column>
@@ -101,24 +109,28 @@
             size="mini"
             type="text"
             @click="handleApproval(scope.$index, scope.row)"
+            v-if="scope.row.status.status == 1"
             >审核</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleLookApproval(scope.$index, scope.row)"
+            v-if="scope.row.status.status == 1"
             >查看审核</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleSetLike(scope.$index, scope.row)"
+            v-if="scope.row.status.status == 2 && !scope.row.like"
             >设置猜你喜欢</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleCloseLike(scope.$index, scope.row)"
+            v-if="scope.row.status.status == 2 && scope.row.like"
             >取消猜你喜欢</el-button
           >
         </template>
@@ -137,38 +149,15 @@
     >
     </el-pagination>
 
-    <!-- 查看对话框 -->
-    <el-dialog :visible.sync="isShowDialog" title="查看">
-      <el-form
-        :model="lookBuyerForm"
-        ref="lookBuyerRef"
-        label-width="100px"
-        class="demo-ruleForm"
-        center
-      >
-        <el-form-item label="姓名">
-          <el-input v-model="lookBuyerForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.mobile"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="lookBuyerForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="详细地址">
-          <el-input v-model="lookBuyerForm.address"></el-input>
-        </el-form-item>
-        <el-form-item label="公司名称">
-          <el-input v-model="lookBuyerForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-
-      <div slot="footer">
-        <el-button type="primary" @click="isShowDialog = false"
-          >确 定</el-button
-        >
-        <el-button @click="isShowDialog = false">取 消</el-button>
-      </div>
+    <!-- 审核对话框 -->
+    <el-dialog
+      title="产品审核"
+      :visible.sync="isShowApprovalDialog"
+      @close="handleCloseApproval"
+      class="approvalDialog"
+    >
+      <el-button @click="approveNoPass" type="danger">审核不通过</el-button>
+      <el-button @click="approvePass" type="primary">审核通过</el-button>
     </el-dialog>
   </div>
 </template>
@@ -191,23 +180,13 @@ export default {
       },
       total: null,
       productData: [], // 列表数据
-      isShowDialog: false,
-      // 对话框数据
-      lookBuyerForm: {},
-      // 列表图片展示
-      url: "",
-      srcList: []
+      // 审核对话框数据
+      isShowApprovalDialog: false,
+      id: null // 当前数据id
     };
   },
   created() {
     this.getApplyList();
-  },
-  filters: {
-    imgUrlFormat(urlStr) {
-      if (!urlStr) urlStr = "";
-      const srcList = urlStr.split(",");
-      return this.imgBaseUrl + srcList[0];
-    }
   },
   methods: {
     getApplyList() {
@@ -255,34 +234,131 @@ export default {
     handleDetail(index, row) {
       console.log(index, row);
       // 查看 type：1   审核 type：2   新增 type：3
-      // this.$router.push({
-      //   path: "/supperApplyInfo",
-      //   query: { id: row.id, type: 1 }
-      // });
+      this.$router.push({
+        path: "/productListInfo",
+        query: { id: row.id, type: 1 }
+      });
     },
     // 审核
     handleApproval(index, row) {
       console.log(index, row);
-      // this.$router.push({
-      //   path: "/supperApplyInfo",
-      //   query: { id: row.id, type: 2 }
-      // });
+      this.id = row.id;
+      this.isShowApprovalDialog = true;
     },
     // 查看审核
     handleLookApproval(index, row) {
       console.log(index, row);
-      // this.$router.push({
-      //   path: "/supperApplyInfo",
-      //   query: { id: row.id, type: 2 }
-      // });
+      this.$router.push({
+        path: "/productListInfo",
+        query: { id: row.id, type: 2 }
+      });
+    },
+    handleLike(obj, callback) {
+      this.axios.put(`${this.baseUrl}/api/product/like`, obj).then(res => {
+        if (res.code === 200) {
+          callback && callback(res);
+        }
+      });
     },
     // 设置猜你喜欢
     handleSetLike(index, row) {
-      console.log(index, row);
+      const _this = this;
+      this.handleLike(
+        {
+          id: row.id,
+          like: true
+        },
+        function(res) {
+          if (res.code == 200) {
+            _this.getApplyList();
+          }
+        }
+      );
     },
     // 取消猜你喜欢
     handleCloseLike(index, row) {
-      console.log(index, row);
+      const _this = this;
+      this.handleLike(
+        {
+          id: row.id,
+          like: false
+        },
+        function(res) {
+          if (res.code == 200) {
+            _this.getApplyList();
+          }
+        }
+      );
+    },
+    approvePassOrNoPass(obj, callback) {
+      this.axios.put(`${this.baseUrl}/api/product/audit`, obj).then(res => {
+        console.log(res);
+        if (res.code === 200) {
+          callback && callback(res);
+        }
+      });
+    },
+    // 审核通过
+    approvePass() {
+      this.$confirm("审核通过确认", "", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          const _this = this;
+          // this.approvePassOrNoPass(
+          //   {
+          //     id: this.$route.query.id,
+          //     status: "AUDIT_PASS"
+          //   },
+          //   function(res) {
+          //     if (res.code == 200) {
+          //       _this.$message({
+          //         type: "success",
+          //         message: "审核成功!"
+          //       });
+          //       _this.$router.push("/supplierShop");
+          //     }
+          //   }
+          // );
+        })
+        .catch(() => {});
+    },
+    // 审核不通过
+    approveNoPass() {
+      this.$prompt("", "审核不通过确认", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputType: "textarea",
+        inputPlaceholder: "请输入不通过原因",
+        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+        inputErrorMessage: "请输入不通过原因"
+      })
+        .then(({ value }) => {
+          const _this = this;
+          // this.approvePassOrNoPass(
+          //   {
+          //     id: this.$route.query.id,
+          //     status: "AUDIT_FAIL",
+          //     remarks: value
+          //   },
+          //   function(res) {
+          //     if (res.code == 200) {
+          //       _this.$message({
+          //         type: "success",
+          //         message: "审核成功!"
+          //       });
+          //       _this.$router.push("/supplierShop");
+          //     }
+          //   }
+          // );
+        })
+        .catch(() => {});
+    },
+    // 对话框关闭
+    handleCloseApproval() {
+      this.id = null;
     }
   }
 };
@@ -291,5 +367,17 @@ export default {
 <style scopde>
 .content {
   height: 100%;
+}
+.approvalDialog .el-dialog {
+  width: 500px !important;
+  height: 200px !important;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 40%;
+  left: 50%;
+}
+.approvalDialog .el-dialog__body {
+  padding-left: 30px;
 }
 </style>

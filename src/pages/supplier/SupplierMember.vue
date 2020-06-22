@@ -12,10 +12,8 @@
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value=""></el-option>
-          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
-          <el-option label="已激活" value="AUDIT_PASS"></el-option>
-          <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
-          <el-option label="已停用" value="AUDIT_STOP"></el-option>
+          <el-option label="已激活" value="ENABLED"></el-option>
+          <el-option label="已停用" value="DISABLED"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="是否金牌供应商：">
@@ -68,9 +66,9 @@
         width="190"
         show-overflow-tooltip
       ></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="190">
+      <el-table-column prop="mobile" label="手机" width="180">
       </el-table-column>
-      <el-table-column prop="" label="地区" width="190">
+      <el-table-column prop="" label="地区" width="180">
         <template slot-scope="scope">
           <span
             >{{ scope.row.supplierCompanyOutput.province
@@ -83,13 +81,13 @@
           <span>{{ scope.row.status.text }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="金牌供应商" width="190">
+      <el-table-column label="金牌供应商" width="110">
         <template slot-scope="scope">
           <span v-if="scope.row.vip == 0">否</span>
           <span v-if="scope.row.vip == 1">是</span>
         </template>
       </el-table-column>
-      <el-table-column label="金牌时效周期" width="190"
+      <el-table-column label="金牌时效周期" width="260"
         ><template slot-scope="scope">
           <span v-if="!scope.row.vipDate || !scope.row.vipExpired"></span>
           <span v-else>{{
@@ -97,7 +95,7 @@
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="createDate" label="注册时间" sortablewidth="190">
+      <el-table-column prop="createDate" label="注册时间" sortablewidth="170">
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -111,28 +109,28 @@
             size="mini"
             type="text"
             @click="handleStop(scope.$index, scope.row)"
-            v-if="scope.row.status.index == 2"
+            v-if="scope.row.account.status.status == 0"
             >停用</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleStart(scope.$index, scope.row)"
-            v-if="scope.row.status.index == 4"
+            v-if="scope.row.account.status.status == 1"
             >启用</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleCancelGold(scope.$index, scope.row)"
-            v-if="scope.row.status.index == 2 && scope.row.vip == 1"
+            v-if="scope.row.account.status.status == 0 && scope.row.vip == 1"
             >取消金牌</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleBecomeGold(scope.$index, scope.row)"
-            v-if="scope.row.status.index == 2 && scope.row.vip == 0"
+            v-if="scope.row.account.status.status == 0 && scope.row.vip == 0"
             >成为金牌</el-button
           >
         </template>
@@ -212,7 +210,8 @@ export default {
       isShowGlodDialog: false,
       glodForm: {
         dates: []
-      }
+      },
+      id: null // 当前id
     };
   },
   created() {
@@ -221,7 +220,7 @@ export default {
   methods: {
     getApplyList() {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/vip/search`, this.searchForm)
+        .post(`${this.baseUrl}/api/supplier/search`, this.searchForm)
         .then(res => {
           console.log(res);
           if (res.code == 200) {
@@ -333,6 +332,7 @@ export default {
     handleBecomeGold(index, row) {
       console.log(index, row);
       this.isShowGlodDialog = true;
+      this.id = row.id; // 设置当前id
     },
     // 取消金牌
     handleCancelGold(index, row) {
@@ -346,8 +346,8 @@ export default {
         inputErrorMessage: "请输入原因"
       })
         .then(({ value }) => {
-          this.put
-            .post(`${this.baseUrl}/api/supplier/vip`, {
+          this.axios
+            .put(`${this.baseUrl}/api/supplier/vip`, {
               id: row.id,
               vip: false,
               remarks: value
@@ -367,36 +367,35 @@ export default {
     },
     // 成为金牌
     handleGlod() {
-      // 发送请求
-      console.log("发送请求", this.glodForm);
       if (
         new Date(this.glodForm.dates[0]).getTime() >
         new Date(this.glodForm.dates[1]).getTime()
       ) {
         return this.$message.warning("起始时间不能大于结束时间！");
       }
-      console.log(this.searchForm.dates);
-      console.log(this.glodForm.dates);
-      // this.put
-      //   .post(`${this.baseUrl}/api/supplier/vip`, {
-      //     id: row.id,
-      //     vip: false,
-      //     remarks: value
-      //   })
-      //   .then(res => {
-      //     console.log(res);
-      //     if (res.code === 200) {
-      //       this.$message({
-      //         type: "success",
-      //         message: "成为金牌成功"
-      //       });
-      //       this.getApplyList();
-      //     }
-      //   });
+      this.axios
+        .put(`${this.baseUrl}/api/supplier/vip`, {
+          id: this.id,
+          vip: true,
+          vipDate: this.glodForm.dates[0],
+          vipExpired: this.glodForm.dates[1]
+        })
+        .then(res => {
+          console.log(res);
+          if (res.code === 200) {
+            this.$message({
+              type: "success",
+              message: "成为金牌成功"
+            });
+            this.isShowGlodDialog = false;
+            this.getApplyList();
+          }
+        });
     },
     // 对话框关闭数据清除
     handleCloseGlod() {
       this.glodForm.dates = [];
+      this.id = null;
     }
   }
 };

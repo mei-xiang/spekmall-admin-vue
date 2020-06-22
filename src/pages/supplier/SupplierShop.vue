@@ -78,7 +78,7 @@
       >
       <el-table-column label="店铺状态" width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.status.text }}</span>
+          <span>{{ scope.row.shop.shopStatus.text }}</span>
         </template>
       </el-table-column>
 
@@ -99,7 +99,7 @@
             size="mini"
             type="text"
             @click="handleApproval(scope.$index, scope.row)"
-            v-if="scope.row.status.index == 1"
+            v-if="scope.row.shop.shopStatus.ndex == 1"
             >审核</el-button
           >
         </template>

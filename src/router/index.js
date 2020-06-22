@@ -77,6 +77,14 @@ var router = new Router({
         title: '供应商店铺信息'
       }
     },
+    {
+      path: '/productListInfo',
+      name: 'productListInfo',
+      component: resolve => require(['@/pages/product/ProductListInfo'], resolve),
+      meta: {
+        title: '商品查看'
+      }
+    },
   ]
 })
 
