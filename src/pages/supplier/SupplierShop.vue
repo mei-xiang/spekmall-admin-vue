@@ -12,11 +12,13 @@
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value=""></el-option>
-          <el-option label="已启用" value="ENABLED"></el-option>
-          <el-option label="已停用" value="DISABLED"></el-option>
+          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
+          <el-option label="已激活" value="AUDIT_PASS"></el-option>
+          <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
+          <el-option label="已停用" value="AUDIT_STOP"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="注册时间：">
+      <el-form-item label="提交审核时间：">
         <el-date-picker
           v-model="searchForm.dates[0]"
           type="datetime"
@@ -61,23 +63,25 @@
       ></el-table-column>
       <el-table-column prop="mobile" label="手机" width="150">
       </el-table-column>
-      <el-table-column
-        prop="supplierCompanyOutput.legalPersonName"
-        label="地区"
-        width="190"
-      >
+      <el-table-column prop="" label="地区" width="190">
+        <template slot-scope="scope">
+          <span
+            >{{ scope.row.company.province }}{{ scope.row.company.city }}</span
+          >
+        </template>
       </el-table-column>
-       <el-table-column
-        prop="name"
-        label="是否金牌供应商"
-        width="190"
-      ></el-table-column>
+      <el-table-column prop="name" label="是否金牌供应商" width="190">
+        <template slot-scope="scope">
+          <span v-if="scope.row.vip == 0">否</span>
+          <span v-if="scope.row.vip == 1">是</span>
+        </template></el-table-column
+      >
       <el-table-column label="店铺状态" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.status.text }}</span>
         </template>
       </el-table-column>
-     
+
       <el-table-column
         prop="name"
         label="店铺提交审核时间"
@@ -95,6 +99,7 @@
             size="mini"
             type="text"
             @click="handleApproval(scope.$index, scope.row)"
+            v-if="scope.row.status.index == 1"
             >审核</el-button
           >
         </template>
@@ -112,40 +117,6 @@
       :total="total"
     >
     </el-pagination>
-
-    <!-- 查看对话框 -->
-    <el-dialog :visible.sync="isShowDialog" title="查看">
-      <el-form
-        :model="lookBuyerForm"
-        ref="lookBuyerRef"
-        label-width="100px"
-        class="demo-ruleForm"
-        center
-      >
-        <el-form-item label="姓名">
-          <el-input v-model="lookBuyerForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.mobile"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="lookBuyerForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="详细地址">
-          <el-input v-model="lookBuyerForm.address"></el-input>
-        </el-form-item>
-        <el-form-item label="公司名称">
-          <el-input v-model="lookBuyerForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-
-      <div slot="footer">
-        <el-button type="primary" @click="isShowDialog = false"
-          >确 定</el-button
-        >
-        <el-button @click="isShowDialog = false">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -166,23 +137,16 @@ export default {
         dates: [] // 起止时间
       },
       total: null,
-      shopData: [], // 列表数据
-      isShowDialog: false,
-      // 对话框数据
-      lookBuyerForm: {},
-      // 列表图片展示
-      url: "",
-      srcList: []
+      shopData: [] // 列表数据
     };
   },
   created() {
-    this.getApplyList();
+    this.getShopList();
   },
   methods: {
-    getApplyList() {
-      supplierCompanyOutput.businessLicense;
+    getShopList() {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/search`, this.searchForm)
+        .get(`${this.baseUrl}/api/supplier/shop/search`, this.searchForm)
         .then(res => {
           console.log(res);
           if (res.code == 200) {
@@ -208,31 +172,31 @@ export default {
       ) {
         return this.$message.warning("起始时间不能大于结束时间！");
       }
-      this.getApplyList();
+      this.getShopList();
     },
     handleSizeChange(val) {
       this.searchForm.size = val;
-      this.getApplyList();
+      this.getShopList();
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val - 1;
-      this.getApplyList();
+      this.searchForm.page = val;
+      this.getShopList();
     },
     // 查看
     handleDetail(index, row) {
       console.log(index, row);
-      // this.$router.push({
-      //   path: "/supperApplyInfo",
-      //   query: { id: row.id, type: 1 }
-      // });
+      this.$router.push({
+        path: "/supplierShopInfo",
+        query: { id: row.id, type: 1 }
+      });
     },
     // 审核
     handleApproval(index, row) {
       console.log(index, row);
-      // this.$router.push({
-      //   path: "/supperApplyInfo",
-      //   query: { id: row.id, type: 2 }
-      // });
+      this.$router.push({
+        path: "/supplierShopInfo",
+        query: { id: row.id, type: 2 }
+      });
     }
   }
 };

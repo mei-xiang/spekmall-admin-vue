@@ -42,11 +42,13 @@ Vue.use(SliderVerificationCode);
 
 // 格式化图片地址  return str
 Vue.filter("imgUrlFormat", function (urlStr) {
+  if(!urlStr) urlStr = ''
   const srcList = urlStr.split(",");
   return Vue.imgBaseUrl + srcList[0]
 })
 // 格式化图片地址  return strList
 Vue.filter("imgUrlListFormat", function (urlStr) {
+  if(!urlStr) urlStr = ''
   const srcList = urlStr.split(",");
   srcList.forEach(item => {
     item = Vue.imgBaseUrl + item;

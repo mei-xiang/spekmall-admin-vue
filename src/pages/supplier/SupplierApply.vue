@@ -12,8 +12,11 @@
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value=""></el-option>
-          <el-option label="已启用" value="ENABLED"></el-option>
-          <el-option label="已停用" value="DISABLED"></el-option>
+          <!-- [AUDIT_PROCESS,未审核, 1],[AUDIT_PASS,已激活, 2],[AUDIT_FAIL,审核不通过, 3],[AUDIT_STOP,已停用, 4]; -->
+          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
+          <el-option label="已激活" value="AUDIT_PASS"></el-option>
+          <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
+          <el-option label="已停用" value="AUDIT_STOP"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="注册时间：">
@@ -66,33 +69,37 @@
     <el-table :data="buyerData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column
-        prop="name"
+        prop="company"
         label="供应商名称"
         width="190"
         show-overflow-tooltip
       ></el-table-column>
       <el-table-column prop="mobile" label="手机" width="150">
       </el-table-column>
-      <el-table-column
-        prop="supplierCompanyOutput.legalPersonName"
-        label="法人"
-        width="190"
-      >
+      <el-table-column prop="legalPersonName" label="法人" width="190">
       </el-table-column>
       <el-table-column label="营业执照" width="190">
-        <template slot-scope="scope"
-          >{{ msg | msgFormat }}
+        <template slot-scope="scope">
           <el-image
-            style="width: 170px; height: 28px"
+            style="width: 170px; height: 28px;margin-top:5px"
             :src="
-              scope.row.supplierCompanyOutput.businessLicense | imgUrlFormat
+              'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             "
-            :preview-src-list="
-              scope.row.supplierCompanyOutput.businessLicense | imgUrlListFormat
-            "
+            :preview-src-list="[
+              'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
+              'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
+            ]"
           >
           </el-image>
         </template>
+        <!-- <template slot-scope="scope">
+          <el-image
+            style="width: 170px; height: 28px;margin-top:5px"
+            :src="scope.row.businessLicense | imgUrlFormat"
+            :preview-src-list="[]"
+          >
+          </el-image>
+        </template> -->
       </el-table-column>
       <el-table-column label="状态" width="120">
         <template slot-scope="scope">
@@ -182,7 +189,7 @@ export default {
         keyword: "",
         status: "",
         token: token || "",
-        source: '',
+        source: "",
         page: 0,
         size: 20,
         dates: [] // 起止时间
@@ -200,11 +207,18 @@ export default {
   created() {
     this.getApplyList();
   },
+  filters: {
+    imgUrlFormat(urlStr) {
+      if (!urlStr) urlStr = "";
+      const srcList = urlStr.split(",");
+      return this.imgBaseUrl + srcList[0];
+    }
+  },
   methods: {
+    // /api/supplier/register/search
     getApplyList() {
-      supplierCompanyOutput.businessLicense;
       this.axios
-        .post(`${this.baseUrl}/api/supplier/search`, this.searchForm)
+        .post(`${this.baseUrl}/api/supplier/register/search`, this.searchForm)
         .then(res => {
           console.log(res);
           if (res.code == 200) {
@@ -237,7 +251,7 @@ export default {
       this.getApplyList();
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val - 1;
+      this.searchForm.page = val;
       this.getApplyList();
     },
     // 添加供应商
@@ -264,4 +278,9 @@ export default {
 };
 </script>
 
-<style scopde></style>
+<style scopde>
+.content{
+  height: 100%;
+  overflow: scroll;
+}
+</style>

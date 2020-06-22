@@ -61,7 +61,22 @@ var router = new Router({
         title: '供应商注册信息'
       }
     },
-
+    {
+      path: '/supplierMemberInfo',
+      name: 'supplierMemberInfo',
+      component: resolve => require(['@/pages/supplier/SupplierMemberInfo'], resolve),
+      meta: {
+        title: '供应商会员信息'
+      }
+    },
+    {
+      path: '/supplierShopInfo',
+      name: 'supplierShopInfo',
+      component: resolve => require(['@/pages/supplier/SupplierShopInfo'], resolve),
+      meta: {
+        title: '供应商店铺信息'
+      }
+    },
   ]
 })
 

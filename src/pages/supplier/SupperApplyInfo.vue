@@ -37,7 +37,7 @@
         >
           <i class="el-icon-plus"></i>
         </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
+        <el-dialog :visible.sync="dialogVisible" v-if="type == 3">
           <img width="100%" :src="dialogImageUrl" alt="" />
         </el-dialog>
         <!-- 查看与审核图片展示 -->
@@ -56,6 +56,9 @@
           :readonly="readonly"
         ></el-input>
       </el-form-item>
+      <el-form-item label="不通过原因" v-if="remarks">
+        <el-input v-model="remarks" :readonly="readonly" class="noPass"></el-input>
+      </el-form-item>
       <el-form-item>
         <el-button
           type="primary"
@@ -64,10 +67,10 @@
           >确定</el-button
         >
         <el-button @click="close" v-if="type == 3 || type == 1">取消</el-button>
-        <el-button @click="approvePass" type="danger" v-if="type == 2"
+        <el-button @click="approveNoPass" type="danger" v-if="type == 2"
           >审核不通过</el-button
         >
-        <el-button @click="approveNoPass" type="primary" v-if="type == 2"
+        <el-button @click="approvePass" type="primary" v-if="type == 2"
           >审核通过</el-button
         >
       </el-form-item>
@@ -89,6 +92,7 @@ export default {
         businessLicense: "",
         linkEmail: ""
       },
+      remarks: "", // 审核不通过内容
       supperRules: {
         username: [
           { required: true, message: "登录名不能为空", trigger: "blur" }
@@ -144,25 +148,25 @@ export default {
   methods: {
     getApplyList() {
       this.axios
-        .get(`${this.baseUrl}/api/supplier/id/info`, {
+        .post(`${this.baseUrl}/api/supplier/register/detail`, {
           id: this.$route.query.id
         })
         .then(res => {
           console.log(res);
           if (res.code == 200) {
-            this.supperForm.username = res.data.account.username;
-            this.supperForm.company = res.data.company.name;
-            this.supperForm.legalPersonName = res.data.company.legalPersonName;
-            this.supperForm.businessLicense = res.data.company.businessLicense;
-            this.supperForm.linkEmail = res.data.linkEmail;
+            for (let key in this.supperForm) {
+              this.supperForm[key] = res.data[key];
+            }
+            this.remarks = res.data.remarks;
 
             // 展示图片处理
             const srcList = this.supperForm.businessLicense.split(",");
             this.url = this.imgBaseUrl + srcList[0];
             srcList.forEach(item => {
-              item = this.imgBaseUrl + item;
+              this.srcList.push(this.imgBaseUrl + item);
             });
-            this.srcList = srcList;
+            console.log(this.url);
+            console.log(this.srcList);
           }
         });
     },
@@ -180,15 +184,22 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (!valid) return;
+        // 解析图片上传路径
+        // console.log(this.supperForm)
         const businessLicense = [];
         this.supperForm.businessLicense.forEach(item => {
           businessLicense.push(item.response.data);
         });
         this.supperForm.businessLicense = businessLicense.join(",");
+        console.log(this.supperForm);
         this.axios
           .post(`${this.baseUrl}/api/supplier/register/apply`, this.supperForm)
           .then(res => {
             console.log(res);
+            if (res.code !== 200) {
+              console.log(res.message);
+              this.$message.warning(res.message);
+            }
             if (res.code === 200) {
               this.$router.push("/supplierApply");
             }
@@ -201,7 +212,7 @@ export default {
     },
     approvePassOrNoPass(obj, callback) {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/shop/audit`, obj)
+        .post(`${this.baseUrl}/api/supplier/register/audit`, obj)
         .then(res => {
           console.log(res);
           if (res.code === 200) {
@@ -217,46 +228,51 @@ export default {
         type: "warning"
       })
         .then(() => {
+          const _this = this;
           this.approvePassOrNoPass(
             {
               id: this.$route.query.id,
-              status: ""
+              status: "AUDIT_PASS"
             },
             function(res) {
-              console.log(res);
-              // this.$message({
-              //   type: "success",
-              //   message: "审核成功!"
-              // });
-              // 成功返回列表页
+              if (res.code == 200) {
+                _this.$message({
+                  type: "success",
+                  message: "审核成功!"
+                });
+                _this.$router.push("/supplierApply");
+              }
             }
           );
         })
         .catch(() => {});
     },
-    // 审核不通过  todo---status 审核通过状态值
+    // 审核不通过  todo---校验未添加
     approveNoPass() {
-      this.$prompt("不通过原因：", "审核不通过确认", {
+      this.$prompt("", "审核不通过确认", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputType: "textarea",
-        inputPattern: /^[A-Za-z0-9.]{5,1000}$/,
-        inputErrorMessage: "请输入原因"
+        inputPlaceholder: "请输入不通过原因",
+        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+        inputErrorMessage: "请输入不通过原因"
       })
         .then(({ value }) => {
+          const _this = this;
           this.approvePassOrNoPass(
             {
               id: this.$route.query.id,
-              status: "",
+              status: "AUDIT_FAIL",
               remarks: value
             },
             function(res) {
-              console.log(res);
-              // this.$message({
-              //   type: "success",
-              //   message: "审核成功"
-              // });
-              // 成功返回列表页
+              if (res.code == 200) {
+                _this.$message({
+                  type: "success",
+                  message: "审核成功!"
+                });
+                _this.$router.push("/supplierApply");
+              }
             }
           );
         })
@@ -266,4 +282,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.noPass .el-input__inner{
+  color: red!important;
+}
+</style>

@@ -12,8 +12,10 @@
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value=""></el-option>
-          <el-option label="已启用" value="ENABLED"></el-option>
-          <el-option label="已停用" value="DISABLED"></el-option>
+          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
+          <el-option label="已激活" value="AUDIT_PASS"></el-option>
+          <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
+          <el-option label="已停用" value="AUDIT_STOP"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="是否金牌供应商：">
@@ -56,7 +58,7 @@
     <el-table :data="memberData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column
-        prop="name"
+        prop="code"
         label="供应商编号"
         width="190"
       ></el-table-column>
@@ -66,32 +68,38 @@
         width="190"
         show-overflow-tooltip
       ></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="150">
+      <el-table-column prop="mobile" label="手机" width="190">
       </el-table-column>
-      <el-table-column
-        prop="supplierCompanyOutput.legalPersonName"
-        label="地区"
-        width="190"
+      <el-table-column prop="" label="地区" width="190">
+        <template slot-scope="scope">
+          <span
+            >{{ scope.row.supplierCompanyOutput.province
+            }}{{ scope.row.supplierCompanyOutput.city }}</span
+          >
+        </template></el-table-column
       >
-      </el-table-column>
-      <el-table-column label="状态" width="120">
+      <el-table-column label="状态" width="150">
         <template slot-scope="scope">
           <span>{{ scope.row.status.text }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="name"
-        label="金牌供应商"
-        width="190"
-      ></el-table-column>
-      <el-table-column
-        prop="name"
-        label="金牌时效周期"
-        width="190"
-      ></el-table-column>
-      <el-table-column prop="createDate" label="注册时间" sortable>
+      <el-table-column label="金牌供应商" width="190">
+        <template slot-scope="scope">
+          <span v-if="scope.row.vip == 0">否</span>
+          <span v-if="scope.row.vip == 1">是</span>
+        </template>
       </el-table-column>
-      <el-table-column label="操作" width="250">
+      <el-table-column label="金牌时效周期" width="190"
+        ><template slot-scope="scope">
+          <span v-if="!scope.row.vipDate || !scope.row.vipExpired"></span>
+          <span v-else>{{
+            scope.row.vipDate + " - " + scope.row.vipExpired
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="createDate" label="注册时间" sortablewidth="190">
+      </el-table-column>
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -103,24 +111,28 @@
             size="mini"
             type="text"
             @click="handleStop(scope.$index, scope.row)"
+            v-if="scope.row.status.index == 2"
             >停用</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleStart(scope.$index, scope.row)"
+            v-if="scope.row.status.index == 4"
             >启用</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleCancelGold(scope.$index, scope.row)"
+            v-if="scope.row.status.index == 2 && scope.row.vip == 1"
             >取消金牌</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleBecomeGold(scope.$index, scope.row)"
+            v-if="scope.row.status.index == 2 && scope.row.vip == 0"
             >成为金牌</el-button
           >
         </template>
@@ -139,37 +151,39 @@
     >
     </el-pagination>
 
-    <!-- 查看对话框 -->
-    <el-dialog :visible.sync="isShowDialog" title="查看">
-      <el-form
-        :model="lookBuyerForm"
-        ref="lookBuyerRef"
-        label-width="100px"
-        class="demo-ruleForm"
-        center
-      >
-        <el-form-item label="姓名">
-          <el-input v-model="lookBuyerForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.mobile"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="lookBuyerForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="详细地址">
-          <el-input v-model="lookBuyerForm.address"></el-input>
-        </el-form-item>
-        <el-form-item label="公司名称">
-          <el-input v-model="lookBuyerForm.company"></el-input>
+    <!-- 成为金牌会员对话框 -->
+    <el-dialog
+      title="填写金牌供应商时效周期"
+      :visible.sync="isShowGlodDialog"
+      @close="handleCloseGlod"
+      class="glodDialog"
+    >
+      <el-form :model="glodForm">
+        <el-form-item label="">
+          <el-col :span="11">
+            <el-date-picker
+              v-model="glodForm.dates[0]"
+              type="datetime"
+              placeholder="选择起始日期"
+              @change="startChange"
+            >
+            </el-date-picker>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="glodForm.dates[1]"
+              type="datetime"
+              placeholder="选择结束日期"
+              @change="endChange"
+            >
+            </el-date-picker>
+          </el-col>
         </el-form-item>
       </el-form>
-
-      <div slot="footer">
-        <el-button type="primary" @click="isShowDialog = false"
-          >确 定</el-button
-        >
-        <el-button @click="isShowDialog = false">取 消</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isShowGlodDialog = false">取 消</el-button>
+        <el-button type="primary" @click="handleGlod">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -194,12 +208,11 @@ export default {
       },
       total: null,
       memberData: [], // 列表数据
-      isShowDialog: false,
-      // 对话框数据
-      lookBuyerForm: {},
-      // 列表图片展示
-      url: "",
-      srcList: []
+      // 设置金牌对话框数据
+      isShowGlodDialog: false,
+      glodForm: {
+        dates: []
+      }
     };
   },
   created() {
@@ -207,9 +220,8 @@ export default {
   },
   methods: {
     getApplyList() {
-      supplierCompanyOutput.businessLicense;
       this.axios
-        .post(`${this.baseUrl}/api/supplier/search`, this.searchForm)
+        .post(`${this.baseUrl}/api/supplier/vip/search`, this.searchForm)
         .then(res => {
           console.log(res);
           if (res.code == 200) {
@@ -221,10 +233,16 @@ export default {
         });
     },
     startChange() {
-      this.searchForm.dates[0] = this.$timeDate(this.searchForm.dates[0]);
+      if (this.searchForm.dates.length > 0)
+        this.searchForm.dates[0] = this.$timeDate(this.searchForm.dates[0]);
+      if (this.glodForm.dates.length > 0)
+        this.glodForm.dates[0] = this.$timeDate(this.glodForm.dates[0]);
     },
     endChange() {
-      this.searchForm.dates[1] = this.$timeDate(this.searchForm.dates[1]);
+      if (this.searchForm.dates.length > 0)
+        this.searchForm.dates[1] = this.$timeDate(this.searchForm.dates[1]);
+      if (this.glodForm.dates.length > 0)
+        this.glodForm.dates[1] = this.$timeDate(this.glodForm.dates[1]);
     },
     // 查询
     query() {
@@ -242,30 +260,30 @@ export default {
       this.getApplyList();
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val - 1;
+      this.searchForm.page = val;
       this.getApplyList();
     },
     // 查看
     handleDetail(index, row) {
       console.log(index, row);
-      // 查看 type：1   审核 type：2   新增 type：3
+      // type查看类型
       this.$router.push({
-        path: "/supperApplyInfo",
-        query: { id: row.id, type: 1 }
+        path: "/supplierMemberInfo",
+        query: { id: row.id }
       });
     },
     // 停用
     handleStop(index, row) {
-      console.log(index, row);
-      this.$prompt("停用后此账号将不可登录", "备注：", {
+      this.$prompt("停用后此账号将不可登录", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputType: "textarea",
         inputPlaceholder: "请输入停用原因",
-        inputPattern: /^[A-Za-z0-9.]{5,1000}$/,
+        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
         inputErrorMessage: "请输入原因"
       })
         .then(({ value }) => {
+          console.log(value);
           this.axios
             .post(`${this.baseUrl}/api/supplier/disable`, {
               id: row.id,
@@ -311,36 +329,10 @@ export default {
         })
         .catch(() => {});
     },
-    // 成为金牌
+    // 显示成为金牌对话框
     handleBecomeGold(index, row) {
       console.log(index, row);
-      // this.$prompt("填写金牌供应商时效周期", "", {
-      //   confirmButtonText: "确定",
-      //   cancelButtonText: "取消",
-      //   inputType: "textarea",
-      //   inputPlaceholder: "请输入取消原因",
-      //   inputPattern: /^[A-Za-z0-9.]{5,1000}$/,
-      //   inputErrorMessage: "请输入原因"
-      // })
-      //   .then(({ value }) => {
-      //     this.put
-      //       .post(`${this.baseUrl}/api/supplier/vip`, {
-      //         id: row.id,
-      //         vip: false,
-      //         remarks: value
-      //       })
-      //       .then(res => {
-      //         console.log(res);
-      //         if (res.code === 200) {
-      //           this.$message({
-      //             type: "success",
-      //             message: "取消金牌成功"
-      //           });
-      //           this.getApplyList();
-      //         }
-      //       });
-      //   })
-      //   .catch(() => {});
+      this.isShowGlodDialog = true;
     },
     // 取消金牌
     handleCancelGold(index, row) {
@@ -350,7 +342,7 @@ export default {
         cancelButtonText: "取消",
         inputType: "textarea",
         inputPlaceholder: "请输入取消原因",
-        inputPattern: /^[A-Za-z0-9.]{5,1000}$/,
+        inputPattern: /^[A-Za-z0-9.]{1,1000}$/,
         inputErrorMessage: "请输入原因"
       })
         .then(({ value }) => {
@@ -372,9 +364,50 @@ export default {
             });
         })
         .catch(() => {});
+    },
+    // 成为金牌
+    handleGlod() {
+      // 发送请求
+      console.log("发送请求", this.glodForm);
+      if (
+        new Date(this.glodForm.dates[0]).getTime() >
+        new Date(this.glodForm.dates[1]).getTime()
+      ) {
+        return this.$message.warning("起始时间不能大于结束时间！");
+      }
+      console.log(this.searchForm.dates);
+      console.log(this.glodForm.dates);
+      // this.put
+      //   .post(`${this.baseUrl}/api/supplier/vip`, {
+      //     id: row.id,
+      //     vip: false,
+      //     remarks: value
+      //   })
+      //   .then(res => {
+      //     console.log(res);
+      //     if (res.code === 200) {
+      //       this.$message({
+      //         type: "success",
+      //         message: "成为金牌成功"
+      //       });
+      //       this.getApplyList();
+      //     }
+      //   });
+    },
+    // 对话框关闭数据清除
+    handleCloseGlod() {
+      this.glodForm.dates = [];
     }
   }
 };
 </script>
 
-<style scopde></style>
+<style>
+.glodDialog .el-dialog {
+  width: 600px !important;
+  text-align: center;
+}
+.glodDialog .el-dialog__body {
+  padding-left: 30px;
+}
+</style>

@@ -137,7 +137,7 @@ axios.interceptors.response.use(response => {
   // console.log('响应拦截器', response);
   if (response.headers['content-type'].indexOf('application/octet-stream') !== -1) {
     return Promise.resolve(response);
-  } else if (Number(resData.code) === 200||Number(resData.code) === 500) {
+  } else if (Number(resData.code) === 200 || Number(resData.code) === 500 || Number(resData.code) === 412) {
     windowAjaxTime.end = new Date().getTime();
     response.data.resTime = windowAjaxTime.end - windowAjaxTime.start;
     return Promise.resolve(response);
@@ -183,7 +183,7 @@ axios.interceptors.response.use(response => {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-function get(url, params) {
+function get (url, params) {
   // 以下是对含有数组的参数的处理方式，根据目前要求合理选择
   // QS.stringify({ids: [1, 2, 3]}, { indices: false })
   //形式： ids=1&ids=2&ids=3
@@ -235,7 +235,7 @@ function get(url, params) {
  * @param {Object} params [请求时携带的参数]
  * @param {Object/String} config [Object:post请求配置,一般情况下用于设置请求头headers,不传是按默认配置;String:"json"]
  */
-function post(url, params, config) {
+function post (url, params, config) {
   return new Promise((resolve, reject) => {
     let parameters = params;
     if (!config) {
@@ -261,7 +261,7 @@ function post(url, params, config) {
  * @param {Object} params [请求时携带的参数]
  * @param {Object/String} config [Object:post请求配置,一般情况下用于设置请求头headers,不传是按默认配置;String:"json"]
  */
-function put(url, params, config) {
+function put (url, params, config) {
   return new Promise((resolve, reject) => {
     let parameters = params;
     if (!config) {
@@ -282,7 +282,7 @@ function put(url, params, config) {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-function del(url, params) {
+function del (url, params) {
   return new Promise((resolve, reject) => {
     // 此类型参数传递为url传递方式
     axios.delete(url, { params: params })
@@ -305,7 +305,7 @@ function del(url, params) {
  * @param {String} paramName [文件参数命名] 默认值 'files'
  * @param {Object} otherParam [其余参数]
  */
-function upload(files, url, paramName, otherParam) {
+function upload (files, url, paramName, otherParam) {
   url = url || '/api/file/upload';
   paramName = paramName || 'file';
   let param = new FormData(); //创建form对象
@@ -340,7 +340,7 @@ function upload(files, url, paramName, otherParam) {
  * @param {Object} params [请求时携带的参数]
  * @param {Boolean} isDownLoad [是否下载] 默认值 true
  */
-function download(params, isDownLoad = true) {
+function download (params, isDownLoad = true) {
   let config = {
     params: params,
     headers: {

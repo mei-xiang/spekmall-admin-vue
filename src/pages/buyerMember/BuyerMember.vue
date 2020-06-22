@@ -107,7 +107,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="searchForm.page + 1"
-      :page-sizes="[10, 30, 50]"
+      :page-sizes="[20, 30, 50]"
       :page-size.sync="searchForm.size"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
@@ -163,7 +163,7 @@ export default {
         status: "",
         token: token || "",
         page: 0,
-        size: 10,
+        size: 20,
         dates: [] // 起止时间
       },
       total: null,
@@ -212,7 +212,7 @@ export default {
       this.getBuyerList();
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val - 1;
+      this.searchForm.page = val;
       this.getBuyerList();
     },
     handleDetail(index, row) {

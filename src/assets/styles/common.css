@@ -282,6 +282,7 @@ a:hover {
 /* 表单input */
 .searchForm .el-input__inner {
   height: 28px;
+  /* width: 190px; */
 }
 .el-input__inner {
   font-size: 12px;
@@ -289,6 +290,7 @@ a:hover {
 .demo-form-inline .el-input__inner {
   width: 180px;
 }
+
 .demo-form-inline .el-date-editor.el-input,
 .el-date-editor.el-input__inner {
   width: 180px;
@@ -321,6 +323,7 @@ a:hover {
   position: absolute;
   bottom: 0;
   width: 100%;
+  z-index: 999;
 }
 .openSidebar .el-pagination {
   left: 215px;
