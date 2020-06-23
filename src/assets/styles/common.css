@@ -279,7 +279,7 @@ a:hover {
   padding-left: 15px !important;
 }
 
-.el-table--enable-row-transition .el-table__body td{
+.el-table--enable-row-transition .el-table__body td {
   text-align: center;
 }
 
@@ -334,4 +334,29 @@ a:hover {
 }
 .hideSidebar .el-pagination {
   left: 30px;
+}
+
+/* 状态样式 */
+.infoType {
+  color: #cc3333;
+  font-size: 14px;
+  vertical-align: middle;
+  margin-left: 15px;
+}
+
+/* 轮播图 */
+.el-carousel__item h3 {
+  color: #475669;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 150px;
+  margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
 }

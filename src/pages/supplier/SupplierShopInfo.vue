@@ -1,9 +1,15 @@
 <template>
   <!-- 供应商店铺信息 -->
-  <div class="content">
+  <div class="content" v-if="Object.keys(shopObj).length > 0">
     <h1>
-      供应商店铺审核<span class="infoType">状态：已审核</span
-      ><span class="infoType">状态：审核不通过 原因：信息不符合</span>
+      供应商店铺审核
+      <span class="infoType" v-if="shopObj.shop.shopStatus.index !== 3"
+        >状态：{{ shopObj.shop.shopStatus.text }}</span
+      ><span class="infoType" v-if="shopObj.shop.shopStatus.index == 3"
+        >状态：{{ shopObj.shop.shopStatus.text }} 原因：{{
+          shopObj.shop.remarks
+        }}</span
+      >
     </h1>
     <div class="box">
       <h2>
@@ -11,28 +17,35 @@
       </h2>
       <div class="info">
         <div class="item">
-          <span>公司名称</span> <span>深圳市思贝克集团有限公司</span>
+          <span>公司名称</span> <span>{{ shopObj.company.name }}</span>
         </div>
         <div class="item">
-          <span>统一信用代码</span> <span>91320214MA1P52PP8G</span>
+          <span>统一信用代码</span>
+          <span>{{ shopObj.company.creditCode }}</span>
         </div>
         <div class="item">
           <span>地址</span>
-          <span>无锡市新吴区南方不锈钢交易中心B3-41-1411</span>
+          <span>{{ shopObj.company.address }}</span>
         </div>
-        <div class="item"><span>行业</span> <span>行业大类-行业细分</span></div>
+        <div class="item">
+          <span>行业</span> <span>{{ shopObj.company.industry }}</span>
+        </div>
         <div class="item">
           <span>公司简介</span>
-          <span
-            >深圳市思贝克集团有限公司深圳市思贝克集团有限公司深圳市思贝克集团有限公司深圳市思贝克集团有限公司</span
-          >
+          <span>{{ shopObj.company.companyDesc }}</span>
         </div>
         <div class="item">
           <span>主营产品</span>
-          <span>产品A、产品A、产品A、产品A、产品A、产品A、</span>
+          <span>{{ shopObj.majorPorducts }}</span>
         </div>
-        <div class="item"><span>公司成立时间</span> <span>2020-5-28</span></div>
-        <div class="item"><span>注册资金</span> <span>1000万元</span></div>
+        <div class="item">
+          <span>公司成立时间</span>
+          <span>{{ shopObj.company.establishmentDate }}</span>
+        </div>
+        <div class="item">
+          <span>注册资金</span>
+          <span>{{ shopObj.company.registeredCapital }}万元</span>
+        </div>
       </div>
     </div>
     <div class="box">
@@ -41,30 +54,53 @@
       </h2>
       <div class="info">
         <div class="item">
-          <span>公司Logo</span
-          ><el-image style="width: 100px; height: 100px" :src="url"> </el-image>
+          <span>店铺Logo</span
+          ><el-image
+            style="width: 140px; height: 140px"
+            v-for="(item, index) in logo"
+            :key="index"
+            :src="imgBaseUrl + item"
+            :preview-src-list="[imgBaseUrl + item]"
+          >
+          </el-image>
         </div>
         <div class="item">
           <span>店铺主页招牌图片</span
-          ><el-image style="width: 100px; height: 100px" :src="url"> </el-image>
+          ><el-image
+            style="width: 140px; height: 140px"
+            v-for="(item, index) in signboard"
+            :key="index"
+            :src="imgBaseUrl + item"
+            :preview-src-list="[imgBaseUrl + item]"
+          >
+          </el-image>
         </div>
-        <div class="item">
+        <div class="item" style="width:500px;display:flex">
           <span>banner</span>
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="url"
-            :preview-src-list="srcList"
-          >
-          </el-image>
+          <el-carousel style="flex:1;">
+            <el-carousel-item
+              v-for="item in shopObj.shop.banners"
+              :key="item.id"
+            >
+              <img :src="imgBaseUrl + item.src" class="image" />
+            </el-carousel-item>
+          </el-carousel>
         </div>
-        <div class="item">
-          <span>公司图片</span>
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="url"
-            :preview-src-list="srcList"
+        <div class="item" style="width:900px;display:flex">
+          <span>店铺图片</span>
+          <el-carousel
+            :interval="4000"
+            type="card"
+            height="200px"
+            style="flex:1;"
           >
-          </el-image>
+            <el-carousel-item
+              v-for="(item, index) in shopObj.shop.images"
+              :key="index"
+            >
+              <img :src="imgBaseUrl + item" class="image" />
+            </el-carousel-item>
+          </el-carousel>
         </div>
       </div>
     </div>
@@ -75,8 +111,8 @@
       <div class="info">
         <div class="item">
           <span>信息认证标识</span>
-          <el-radio v-model="radio" label="1">有</el-radio>
-          <el-radio v-model="radio" label="2">没有</el-radio>
+          <el-radio v-model="radio" :label="true">有</el-radio>
+          <el-radio v-model="radio" :label="false">没有</el-radio>
         </div>
       </div>
     </div>
@@ -98,22 +134,36 @@ export default {
   data() {
     const token = getStore({ name: "access_token", type: "string" });
     return {
-      url:
-        "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      srcList: [
-        "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
-        "https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg"
-      ],
-      radio: "1",
+      logo: [], // 店铺Logo
+      signboard: [], // 店铺主页招牌图片
+      shopObj: {}, // 店铺数据
+      radio: true,
       type: null // 查看1  审核2
     };
   },
   created() {
     // 查看 type：1   审核 type：2
     this.type = this.$route.query.type;
+    this.getProductList();
   },
   methods: {
-        // 返回
+    getProductList() {
+      this.axios
+        .get(`${this.baseUrl}/api/supplier/shop/${this.$route.query.id}/info`)
+        .then(res => {
+          console.log(res);
+          const data = res.data.data;
+          if (res.code == 200) {
+            this.shopObj = data;
+            this.radio = data.company.validity;
+
+            // 图片解析
+            this.logo = this.$getArrayByStr(data.shop.logo);
+            this.signboard = this.$getArrayByStr(data.shop.signboard);
+          }
+        });
+    },
+    // 返回
     close() {
       this.$router.push("/supplierShop");
     },

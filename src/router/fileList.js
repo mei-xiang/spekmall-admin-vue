@@ -13,7 +13,7 @@ export default {
 
   "supplierApply": resolve => require(["@/pages/supplier/SupplierApply"], resolve), // 供应商申请管理
   "supplierMember": resolve => require(["@/pages/supplier/SupplierMember.vue"], resolve), // 供应商会员管理
-  "supplierShop": resolve => require(["@/pages/supplier/supplierShop"], resolve), // 供应商店铺管理
+  "supplierShop": resolve => require(["@/pages/supplier/SupplierShop"], resolve), // 供应商店铺管理
 
   "productList": resolve => require(["@/pages/product/ProductList"], resolve), // 商品管理列表
   "productLabel": resolve => require(["@/pages/product/ProductLabel"], resolve), // 商品标签管理

@@ -899,5 +899,14 @@ export default {
       var r = window.location.search.substr(1).match(reg);
       if (r != null) return unescape(r[2]); return null;
     }
+    /**
+		 * @description:  根据字符串解析成数组
+		 * @param {String} picStr [路径字符串]
+		 * @return: imgBaseUrl + /home/file/upload/20200620/wgmkkp73uyxvodo7ddf1icon_top_head_user.png
+		 */
+    Vue.prototype.$getArrayByStr = function (picStr) {
+      if (!picStr) return []
+      return picStr.split(",");
+    }
   }
 }
