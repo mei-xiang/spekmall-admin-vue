@@ -94,7 +94,7 @@
       </el-table-column>
       <el-table-column label="产品状态" width="85">
         <template slot-scope="scope">
-          <span>{{ scope.row.status.text || "" }}</span>
+          <span>{{ scope.row.status && scope.row.status.text }}</span>
         </template>
       </el-table-column>
       <el-table-column label="管理产品">
@@ -109,28 +109,34 @@
             size="mini"
             type="text"
             @click="handleApproval(scope.$index, scope.row)"
-            v-if="scope.row.status.status == 1"
+            v-if="scope.row.status && scope.row.status.status == 1"
             >审核</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleLookApproval(scope.$index, scope.row)"
-            v-if="scope.row.status.status == 1"
+            v-if="scope.row.status && scope.row.status.status == 1"
             >查看审核</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleSetLike(scope.$index, scope.row)"
-            v-if="scope.row.status.status == 2 && !scope.row.like"
+            v-if="
+              scope.row.status &&
+                scope.row.status.status == 2 &&
+                !scope.row.like
+            "
             >设置猜你喜欢</el-button
           >
           <el-button
             size="mini"
             type="text"
             @click="handleCloseLike(scope.$index, scope.row)"
-            v-if="scope.row.status.status == 2 && scope.row.like"
+            v-if="
+              scope.row.status && scope.row.status.status == 2 && scope.row.like
+            "
             >取消猜你喜欢</el-button
           >
         </template>
@@ -300,33 +306,35 @@ export default {
     },
     // 审核通过
     approvePass() {
+      const _this = this;
       this.$confirm("审核通过确认", "", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          const _this = this;
-          // this.approvePassOrNoPass(
-          //   {
-          //     id: this.$route.query.id,
-          //     status: "AUDIT_PASS"
-          //   },
-          //   function(res) {
-          //     if (res.code == 200) {
-          //       _this.$message({
-          //         type: "success",
-          //         message: "审核成功!"
-          //       });
-          //       _this.$router.push("/supplierShop");
-          //     }
-          //   }
-          // );
+          _this.approvePassOrNoPass(
+            {
+              id: _this.id,
+              status: true
+            },
+            function(res) {
+              if (res.code == 200) {
+                _this.$message({
+                  type: "success",
+                  message: "审核成功!"
+                });
+                _this.isShowApprovalDialog = false;
+                _this.getApplyList();
+              }
+            }
+          );
         })
         .catch(() => {});
     },
     // 审核不通过
     approveNoPass() {
+      const _this = this;
       this.$prompt("", "审核不通过确认", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -336,23 +344,23 @@ export default {
         inputErrorMessage: "请输入不通过原因"
       })
         .then(({ value }) => {
-          const _this = this;
-          // this.approvePassOrNoPass(
-          //   {
-          //     id: this.$route.query.id,
-          //     status: "AUDIT_FAIL",
-          //     remarks: value
-          //   },
-          //   function(res) {
-          //     if (res.code == 200) {
-          //       _this.$message({
-          //         type: "success",
-          //         message: "审核成功!"
-          //       });
-          //       _this.$router.push("/supplierShop");
-          //     }
-          //   }
-          // );
+          _this.approvePassOrNoPass(
+            {
+              id: _this.id,
+              status: false,
+              remarks: value
+            },
+            function(res) {
+              if (res.code == 200) {
+                _this.$message({
+                  type: "success",
+                  message: "审核成功!"
+                });
+                _this.isShowApprovalDialog = false;
+                _this.getApplyList();
+              }
+            }
+          );
         })
         .catch(() => {});
     },
@@ -370,7 +378,7 @@ export default {
 }
 .approvalDialog .el-dialog {
   width: 500px !important;
-  height: 200px !important;
+  height: 250px !important;
   text-align: center;
   transform: translate(-50%, -50%);
   position: absolute;

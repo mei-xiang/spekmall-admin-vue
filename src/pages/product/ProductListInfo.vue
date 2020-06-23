@@ -13,41 +13,46 @@
       <div class="info">
         <div class="item">
           <span><i class="select">*</i> 产品名称</span>
-          <span>文本标签文本标签文本标签文本标签文本标签</span>
+          <span>{{ productObj.title }}</span>
         </div>
         <div class="item">
           <span><i class="select">*</i> 产品类别</span>
-          <span>最末级的类别</span>
+          <span>{{}}</span>
         </div>
         <div class="item">
-          <span><i class="select">*</i> 品牌名</span> <span>世达</span>
+          <span><i class="select">*</i> 品牌名</span>
+          <span>{{ productObj.brand }}</span>
         </div>
         <div class="item">
           <span><i class="select">&nbsp;</i> 产品型号</span>
-          <span>FM-A600-11</span>
+          <span>{{ productObj.model }}</span>
         </div>
         <div class="item">
-          <span><i class="select">*</i> 生产地</span> <span>广东 深圳</span>
+          <span><i class="select">*</i> 生产地</span> <span>{{}}</span>
         </div>
         <div class="item">
           <span><i class="select">*</i> 最小起订量</span>
-          <span>1</span>
+          <span>{{ productObj.minimumOrderingQuantity }}</span>
         </div>
         <div class="item">
           <span><i class="select">*</i> 价格</span>
-          <span>￥10000</span>
+          <span>￥{{ productObj.price }}</span>
         </div>
         <div class="item">
           <span><i class="select">*</i> 单位</span>
-          <span>件</span>
+          <span>{{ productObj.unit }}</span>
         </div>
         <div class="item">
           <span><i class="select">*</i> 是否主要产品</span>
-          <span>是</span>
+          <span>{{ productObj.isMainProduct ? "是" : "否" }}</span>
         </div>
         <div class="item">
           <span><i class="select">*</i> 产品标签</span>
-          <el-tag :key="tag" v-for="tag in productList" style="margin-right:10px">
+          <el-tag
+            :key="tag"
+            v-for="tag in productObj.tags"
+            style="margin-right:10px"
+          >
             {{ tag }}
           </el-tag>
         </div>
@@ -60,10 +65,10 @@
       <div class="info">
         <div class="item">
           <el-image
-            v-for="(item, index) in 4"
+            v-for="(item, index) in productObj.images"
             :key="index"
             style="width: 100px; height: 100px;margin-right:10px"
-            :src="url"
+            :src="imgBaseUrl + productObj.images"
             :preview-src-list="srcList"
           >
           </el-image>
@@ -155,6 +160,7 @@ export default {
       ],
       radio: "1",
       type: null, // 查看1  审核2
+      productObj: {},
       productList: ["爆品", "新品", "促销"], // 产品标签
       payType: ["支付宝", "微信支付", "银联支付"], // 支付方式
       shipType: ["空运", "海运", "快递", "公路运输", "铁路运输"], // 运输方式
@@ -173,22 +179,45 @@ export default {
   created() {
     // 查看 type：1   审核 type：2
     this.type = this.$route.query.type;
+    this.getProductList();
   },
   methods: {
+    getProductList() {
+      this.axios
+        .get(`${this.baseUrl}/api/product/info`, {
+          productId: this.$route.query.id
+        })
+        .then(res => {
+          console.log(res);
+          if (res.code == 200) {
+            this.productObj = res.data;
+            // for (let key in this.supperForm) {
+            //   this.supperForm[key] = res.data[key];
+            // }
+            // this.remarks = res.data.remarks;
+
+            // // 展示图片处理
+            // const srcList = this.supperForm.businessLicense.split(",");
+            // this.url = this.imgBaseUrl + srcList[0];
+            // srcList.forEach(item => {
+            //   this.srcList.push(this.imgBaseUrl + item);
+            // });
+            // console.log(this.url);
+            // console.log(this.srcList);
+          }
+        });
+    },
     // 返回
     close() {
       this.$router.push("/productList");
     },
     approvePassOrNoPass(obj, callback) {
-
-      this.axios
-        .put(`${this.baseUrl}/api/product/audit`, obj)
-        .then(res => {
-          console.log(res);
-          if (res.code === 200) {
-            callback && callback(res);
-          }
-        });
+      this.axios.put(`${this.baseUrl}/api/product/audit`, obj).then(res => {
+        console.log(res);
+        if (res.code === 200) {
+          callback && callback(res);
+        }
+      });
     },
     approvePass() {
       this.$confirm("审核通过确认", "", {
@@ -198,21 +227,21 @@ export default {
       })
         .then(() => {
           const _this = this;
-          // this.approvePassOrNoPass(
-          //   {
-          //     id: this.$route.query.id,
-          //     status: "AUDIT_PASS"
-          //   },
-          //   function(res) {
-          //     if (res.code == 200) {
-          //       _this.$message({
-          //         type: "success",
-          //         message: "审核成功!"
-          //       });
-          //       _this.$router.push("/supplierShop");
-          //     }
-          //   }
-          // );
+          this.approvePassOrNoPass(
+            {
+              id: this.$route.query.id,
+              status: true
+            },
+            function(res) {
+              if (res.code == 200) {
+                _this.$message({
+                  type: "success",
+                  message: "审核成功!"
+                });
+                _this.$router.push("/productList");
+              }
+            }
+          );
         })
         .catch(() => {});
     },
@@ -227,22 +256,22 @@ export default {
       })
         .then(({ value }) => {
           const _this = this;
-          // this.approvePassOrNoPass(
-          //   {
-          //     id: this.$route.query.id,
-          //     status: "AUDIT_FAIL",
-          //     remarks: value
-          //   },
-          //   function(res) {
-          //     if (res.code == 200) {
-          //       _this.$message({
-          //         type: "success",
-          //         message: "审核成功!"
-          //       });
-          //       _this.$router.push("/supplierShop");
-          //     }
-          //   }
-          // );
+          this.approvePassOrNoPass(
+            {
+              id: this.$route.query.id,
+              status: false,
+              remarks: value
+            },
+            function(res) {
+              if (res.code == 200) {
+                _this.$message({
+                  type: "success",
+                  message: "审核成功!"
+                });
+                _this.$router.push("/productList");
+              }
+            }
+          );
         })
         .catch(() => {});
     }

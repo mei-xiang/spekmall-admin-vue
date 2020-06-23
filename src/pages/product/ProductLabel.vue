@@ -66,8 +66,8 @@
         </el-form-item>
         <el-form-item label="标签类型" prop="type">
           <el-select v-model="labelForm.type">
-            <el-option label="运营产品标签" :value="1"></el-option>
-            <el-option label="商家添加标签" :value="2"></el-option>
+            <el-option label="运营产品标签" :value="2"></el-option>
+            <el-option label="商家添加标签" :value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="标签图标" prop="ico">
@@ -78,7 +78,6 @@
             :on-success="handleSuccess"
             :on-remove="handleRemove"
             :before-upload="beforeAvatarUpload"
-            :limit="1"
           >
             <i class="el-icon-plus"></i>
           </el-upload>
@@ -123,7 +122,8 @@ export default {
       type: "", // 对话框类型 新增/编辑
       uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
       fileList: [],
-      id: null // 当前数据id
+      id: null, // 当前数据id
+      title: ""
     };
   },
   created() {
@@ -159,7 +159,7 @@ export default {
       this.type = 1;
       this.axios.get(`${this.baseUrl}/api/tag/${this.id}`).then(res => {
         if (res.code == 200) {
-          console.log(res)
+          console.log(res);
           this.labelForm.name = res.data.name;
           this.labelForm.type = res.data.type;
           this.labelForm.ico = res.data.ico;
@@ -169,14 +169,28 @@ export default {
     },
     // 删除
     handleDelete(index, row) {
-      const title = "有商品正在使用该标签，确认是否删除";
-      this.$confirm(`${title}`, "提示", {
+      this.axios.get(`${this.baseUrl}/api/tag/use/${row.id}`).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          if (res.data !== 0) {
+            this.title = "有商品正在使用该标签，确认是否删除?";
+            this.del(row.id);
+          }
+          if (res.data == 0) {
+            this.title = "是否确认删除?";
+            this.del(row.id);
+          }
+        }
+      });
+    },
+    del(id) {
+      this.$confirm(`${this.title}`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          axios.delete(`${this.baseUrl}/api/tag/${row.id}`).then(res => {
+          axios.delete(`${this.baseUrl}/api/tag/${id}`).then(res => {
             this.$message({
               type: "success",
               message: "删除成功!"
@@ -189,6 +203,9 @@ export default {
     // 处理图片上传
     handleSuccess(res, file, fileList) {
       console.log(fileList);
+      if (this.labelForm.ico) {
+        fileList.splice(0, 1);
+      }
       // this.labelForm.ico = this.imgBaseUrl + fileList[0].response.data;
       this.labelForm.ico = fileList[0].response.data;
     },
@@ -246,6 +263,6 @@ export default {
 
 <style scoped>
 .el-dialog {
-  width: 450px!important;
+  width: 450px !important;
 }
 </style>
