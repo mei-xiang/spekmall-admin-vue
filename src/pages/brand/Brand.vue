@@ -3,130 +3,70 @@
   <div class="content">
     <!-- 搜索区域 -->
     <el-form :inline="true" :model="searchForm" class="searchForm">
-      <el-form-item label="">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="请输入手机帐号、名称搜索"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="状态：">
-        <el-select v-model="searchForm.status" placeholder="状态">
-          <el-option label="全部" value=""></el-option>
-          <!-- [AUDIT_PROCESS,未审核, 1],[AUDIT_PASS,已激活, 2],[AUDIT_FAIL,审核不通过, 3],[AUDIT_STOP,已停用, 4]; -->
-          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
-          <el-option label="已激活" value="AUDIT_PASS"></el-option>
-          <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
-          <el-option label="已停用" value="AUDIT_STOP"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="注册时间：">
-        <el-date-picker
-          v-model="searchForm.dates[0]"
-          type="datetime"
-          placeholder="选择起始日期"
-          @change="startChange"
-        >
-        </el-date-picker>
-      </el-form-item>
-
-      <el-form-item>
-        <el-date-picker
-          v-model="searchForm.dates[1]"
-          type="datetime"
-          placeholder="选择结束日期"
-          @change="endChange"
-        >
-        </el-date-picker>
-      </el-form-item>
-      <!-- todo---用户来源字段后台未提供 -->
-      <el-form-item label="备注：">
-        <el-select v-model="searchForm.source" placeholder="">
-          <el-option label="全部" value=""></el-option>
-          <el-option label="运营新增" value="OPERATE_ADD"></el-option>
-          <el-option label="用户新增" value="USER_ADD"></el-option>
-        </el-select>
+      <el-form-item label>
+        <el-input v-model="searchForm.keyword" placeholder="请输入品牌编号或品牌名称搜索"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button
-          class="query"
-          icon="el-icon-search"
-          @click="query"
-          size="mini"
-          >查询</el-button
-        >
+        <el-button class="query" icon="el-icon-search" @click="query" size="mini">查询</el-button>
         <el-button
           type="button"
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
-          @click="addSupplier"
-        >
-          新增
-        </el-button>
+          @click="showAddBrand"
+        >新增</el-button>
+        <el-button
+          type="button"
+          class="el-button el-button--default el-button--mini"
+          icon="el-icon-circle-plus-outline"
+          @click="showHomeBrand"
+        >首页品牌管理</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格区域 -->
-    <el-table :data="buyerData" border style="width: 100%;">
+    <el-table :data="brandData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column
-        prop="company"
-        label="供应商名称"
-        width="190"
-        show-overflow-tooltip
-      ></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="150">
-      </el-table-column>
-      <el-table-column prop="legalPersonName" label="法人" width="190">
-      </el-table-column>
-      <el-table-column label="营业执照" width="190">
+      <el-table-column prop="brandCode" label="品牌编号" width="190" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="brandName" label="品牌名称" width="150"></el-table-column>
+      <el-table-column label="图片" width="190">
         <template slot-scope="scope">
           <el-image
-            style="width: 170px; height: 28px;margin-top:5px"
-            :src="
-              'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-            "
-            :preview-src-list="[
-              'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-              'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-            ]"
-          >
-          </el-image>
+            style="width: 120px; height: 28px;margin-top:5px"
+            :src="imgBaseUrl + scope.row.brandImg"
+            :preview-src-list="[imgBaseUrl + scope.row.brandImg]"
+          ></el-image>
         </template>
-        <!-- <template slot-scope="scope">
-          <el-image
-            style="width: 170px; height: 28px;margin-top:5px"
-            :src="scope.row.businessLicense | imgUrlFormat"
-            :preview-src-list="[]"
-          >
-          </el-image>
-        </template> -->
       </el-table-column>
-      <el-table-column label="状态" width="120">
+      <el-table-column label="是否热门品牌" width="150">
         <template slot-scope="scope">
-          <span>{{ scope.row.status.text }}</span>
+          <span>{{ scope.row.hot == true ? "是" : "否" }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="createDate" label="注册时间" sortable>
+      <el-table-column label="是否首页品牌" width="150">
+        <template slot-scope="scope">
+          <span>{{ scope.row.showHome == true ? "是" : "否" }}</span>
+        </template>
       </el-table-column>
+      <el-table-column prop="createDate" label="创建时间" width="150"></el-table-column>
+
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
+          <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+          <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.status.index !== 1"
-            @click="handleDetail(scope.$index, scope.row)"
-            >查看</el-button
-          >
+            @click="handleMark(scope.$index, scope.row)"
+            v-if="scope.row.hot == false"
+          >标记热门</el-button>
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.status.index == 1"
-            @click="handleApproval(scope.$index, scope.row)"
-            >审核</el-button
-          >
+            @click="handleCancel(scope.$index, scope.row)"
+            v-if="scope.row.hot == true"
+          >取消热门</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="source" label="用户来源"> </el-table-column>
     </el-table>
 
     <!-- 分页区域 -->
@@ -138,149 +78,293 @@
       :page-size.sync="searchForm.size"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-    >
-    </el-pagination>
+    ></el-pagination>
 
-    <!-- 查看对话框 -->
-    <el-dialog :visible.sync="isShowDialog" title="查看">
-      <el-form
-        :model="lookBuyerForm"
-        ref="lookBuyerRef"
-        label-width="100px"
-        class="demo-ruleForm"
-        center
-      >
-        <el-form-item label="姓名">
-          <el-input v-model="lookBuyerForm.name"></el-input>
+    <!-- 修改/新增对话框 -->
+    <el-dialog
+      :visible.sync="isShowBrandDialog"
+      :title="type == 1 ? '修改品牌' : '新增品牌'"
+      @close="handleClose"
+    >
+      <el-form :model="brandForm" ref="brandRef" :rules="brandRules" label-width="100px">
+        <el-form-item label="品牌名称" prop="brandName">
+          <el-input v-model="brandForm.brandName"></el-input>
         </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.mobile"></el-input>
+        <el-form-item label="品牌图片" prop="brandImg">
+          <el-upload
+            :action="uploadUrl"
+            list-type="picture-card"
+            :file-list="fileList"
+            :on-success="handleSuccess"
+            :on-remove="handleRemove"
+            :before-upload="beforeAvatarUpload"
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
         </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="lookBuyerForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="详细地址">
-          <el-input v-model="lookBuyerForm.address"></el-input>
-        </el-form-item>
-        <el-form-item label="公司名称">
-          <el-input v-model="lookBuyerForm.company"></el-input>
+        <el-form-item label="品牌类型" prop="hot">
+          <el-radio v-model="brandForm.hot" :label="true">热门品牌</el-radio>
+          <el-radio v-model="brandForm.hot" :label="false">普通品牌</el-radio>
         </el-form-item>
       </el-form>
-
       <div slot="footer">
-        <el-button type="primary" @click="isShowDialog = false"
-          >确 定</el-button
+        <el-button type="primary" @click="addOrEditBrand">确 定</el-button>
+        <el-button @click="isShowBrandDialog = false">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 首页品牌管理对话框 -->
+    <el-dialog :visible.sync="isShowHomeBrandDialog" title="首页品牌管理" @close="handleHomeBrandClose">
+      <div style="padding:20px">
+        <el-upload
+          :action="uploadUrl"
+          list-type="picture-card"
+          :file-list="fileList"
+          :on-success="handleSuccess"
+          :on-remove="handleRemove"
+          :before-upload="beforeAvatarUpload"
         >
-        <el-button @click="isShowDialog = false">取 消</el-button>
+          <i class="el-icon-plus"></i>
+        </el-upload>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getStore } from "js/store";
-import axios from "axios";
+import { getStore } from 'js/store'
+import axios from 'axios'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
+    const token = getStore({ name: 'access_token', type: 'string' })
     return {
       // 搜索表单
       searchForm: {
-        keyword: "",
-        status: "",
-        token: token || "",
-        source: "",
+        keyword: '',
         page: 0,
-        size: 20,
-        dates: [] // 起止时间
+        size: 20
       },
       total: null,
-      buyerData: [], // 列表数据
-      isShowDialog: false,
-      // 对话框数据
-      lookBuyerForm: {},
-      // 列表图片展示
-      url: "",
-      srcList: []
-    };
+      fileList: [], // 展示图片列表
+      brandData: [], // 列表数据
+      id: '', // 当前数据id
+      type: '', // 新增-修改标识
+      isShowBrandDialog: false, // 控制对话框的显示与隐藏
+      brandForm: {
+        brandName: '',
+        brandImg: '',
+        hot: ''
+      }, // 对话框表单数据
+      brandRules: {
+        brandName: [
+          { required: true, message: '品牌名称不能为空', trigger: 'blur' }
+        ],
+        brandImg: [
+          { required: true, message: '品牌图片不能为空', trigger: 'blur' }
+        ],
+        hot: [
+          { required: true, message: '品牌类型不能为空', trigger: 'change' }
+        ]
+      },
+      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
+      isShowHomeBrandDialog: false // 控制首页品牌管理对话框
+    }
   },
   created() {
-    this.getApplyList();
+    this.getBrandList()
   },
   filters: {
     imgUrlFormat(urlStr) {
-      if (!urlStr) urlStr = "";
-      const srcList = urlStr.split(",");
-      return this.imgBaseUrl + srcList[0];
+      if (!urlStr) urlStr = ''
+      const srcList = urlStr.split(',')
+      return this.imgBaseUrl + srcList[0]
     }
   },
   methods: {
-    // /api/supplier/register/search
-    getApplyList() {
-      this.axios
-        .post(`${this.baseUrl}/api/supplier/register/search`, this.searchForm)
-        .then(res => {
-          console.log(res);
-          if (res.code == 200) {
-            this.buyerData = res.data.content;
-            this.searchForm.page = res.data.number;
-            this.searchForm.size = res.data.size;
-            this.total = res.data.totalElements;
-          }
-        });
-    },
-    startChange() {
-      this.searchForm.dates[0] = this.$timeDate(this.searchForm.dates[0]);
-    },
-    endChange() {
-      this.searchForm.dates[1] = this.$timeDate(this.searchForm.dates[1]);
+    getBrandList() {
+      this.axios.get(`${this.baseUrl}/api/brand`, this.searchForm).then(res => {
+        if (res.code == 200) {
+          this.brandData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     // 查询
     query() {
-      this.searchForm.page = 0;
-      if (
-        new Date(this.searchForm.dates[0]).getTime() >
-        new Date(this.searchForm.dates[1]).getTime()
-      ) {
-        return this.$message.warning("起始时间不能大于结束时间！");
-      }
-      this.getApplyList();
+      this.searchForm.page = 0
+      this.getBrandList()
     },
     handleSizeChange(val) {
-      this.searchForm.size = val;
-      this.getApplyList();
+      this.searchForm.size = val
+      this.getBrandList()
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val;
-      this.getApplyList();
+      this.searchForm.page = val
+      this.getBrandList()
     },
-    // 添加供应商
-    addSupplier() {
-      this.$router.push({ path: "/supperApplyInfo", query: { type: 3 } });
+    // 显示添加品牌对话框
+    showAddBrand() {
+      this.isShowBrandDialog = true
+      this.type = 2
     },
-    handleDetail(index, row) {
-      console.log(index, row);
-      // 查看 type：1   审核 type：2   新增 type：3
-      this.$router.push({
-        path: "/supperApplyInfo",
-        query: { id: row.id, type: 1 }
-      });
+    // 显示修改品牌对话框
+    handleEdit(index, row) {
+      this.isShowBrandDialog = true
+      this.type = 1
+      this.id = row.id
+      // todo---发送请求，获取数据，
+      // this.axios.get(`${this.baseUrl}/api/tag/${this.id}`).then(res => {
+      //   if (res.code == 200) {
+      //     console.log(res);
+      //     for(let key in this.brandForm){
+      //       this.brandForm[key] = res.data
+      //     }
+      //     this.fileList.push({ url: this.imgBaseUrl + res.data.brandImg });
+      //   }
+      // });
     },
-    // 审核
-    handleApproval(index, row) {
-      console.log(index, row);
-      this.$router.push({
-        path: "/supperApplyInfo",
-        query: { id: row.id, type: 2 }
-      });
-    }
+    // 删除
+    handleDel(index, row) {
+      this.$confirm('是否确认删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          axios.delete(`${this.baseUrl}/api/brand?id=${row.id}`).then(res => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getBrandList()
+          })
+        })
+        .catch(() => {})
+    },
+    handleHot(obj, callback) {
+      this.axios.put(`${this.baseUrl}/api/brand/sethot`, obj).then(res => {
+        if (res.code === 200) {
+          callback && callback(res)
+        }
+      })
+    },
+    // 标记热门
+    handleMark(index, row) {
+      const _this = this
+      this.handleHot(
+        {
+          id: row.id,
+          hot: true
+        },
+        function(res) {
+          _this.getBrandList()
+        }
+      )
+    },
+    // 取消热门
+    handleCancel(index, row) {
+      const _this = this
+      this.handleHot(
+        {
+          id: row.id,
+          hot: false
+        },
+        function(res) {
+          _this.getBrandList()
+        }
+      )
+    },
+    // 添加或编辑
+    addOrEditBrand() {
+      this.$refs.brandRef.validate(valid => {
+        if (!valid) return false
+        if (this.type == 1) {
+          console.log('编辑操作')
+          this.axios
+            .put(`${this.baseUrl}/api/brand`, {
+              ...this.brandForm,
+              id: this.id
+            })
+            .then(res => {
+              if (res.code === 200) {
+                this.isShowBrandDialog = false
+                this.getBrandList()
+              }
+            })
+        }
+        if (this.type == 2) {
+          console.log('新增操作')
+          this.axios
+            .post(`${this.baseUrl}/api/brand`, this.brandForm)
+            .then(res => {
+              if (res.code === 200) {
+                this.isShowBrandDialog = false
+                this.getBrandList()
+              }
+            })
+        }
+      })
+    },
+    handleClose() {
+      // 清除操作
+      for (let key in this.brandForm) {
+        this.brandForm[key] = ''
+      }
+      this.id = null
+      this.type = ''
+      this.$refs.brandRef.resetFields()
+      this.fileList = []
+    },
+    // 处理图片上传
+    handleSuccess(res, file, fileList) {
+      console.log(fileList)
+      if (this.brandForm.brandImg) {
+        fileList.splice(0, 1)
+      }
+      this.brandForm.brandImg = fileList[0].response.data
+    },
+    handleRemove(file, fileList) {
+      this.brandForm.brandImg = ''
+    },
+    beforeAvatarUpload(file) {
+      // const isJPG = file.type === "image/jpeg";
+      // const isPNG = file.type === "image/png";
+      // const isGIF = file.type === "image/gif";
+      const isLt2M = file.size / 1024 / 1024 < 1
+      // if (!isJPG || !isPNG || !isGIF) {
+      //   this.$message.error("上传头像图片只能是 PNG/JPG/JPEG/GIF 格式!");
+      // }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 1MB!')
+      }
+      return isLt2M
+    },
+    showHomeBrand() {
+      this.isShowHomeBrandDialog = true
+      this.axios
+        .get(`${this.baseUrl}/api/brand/showhome`, {
+          page: 1,
+          size: 10
+        })
+        .then(res => {
+          if (res.code === 200) {
+            console.log(res)
+          }
+        })
+    },
+    handleHomeBrandClose() {}
   }
-};
+}
 </script>
 
 <style scopde>
-.content{
+.content {
   height: 100%;
   overflow: scroll;
+}
+.el-dialog {
+  width: 450px !important;
 }
 </style>

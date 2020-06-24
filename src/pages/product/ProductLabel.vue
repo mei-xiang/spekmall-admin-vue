@@ -261,8 +261,9 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scopde>
 .el-dialog {
   width: 450px !important;
 }
 </style>
+
