@@ -342,7 +342,7 @@ export default {
       return isLt2M
     },
     showHomeBrand() {
-      this.isShowHomeBrandDialog = true
+      // this.isShowHomeBrandDialog = true
       this.axios
         .get(`${this.baseUrl}/api/brand/showhome`, {
           page: 1,
