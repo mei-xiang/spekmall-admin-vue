@@ -14,7 +14,7 @@ module.exports = {
     proxyTable: {
       '/api': {
         // target: 'http://192.168.1.108:9527', // 测试
-        target: 'http://192.168.212.26:9527', // 测试
+        target: 'http://192.168.212.13:8010', // 测试
         changeOrigin: true, // 跨域
         pathRewrite: {
           '^/api': ''
