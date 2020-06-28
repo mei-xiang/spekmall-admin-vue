@@ -3,18 +3,15 @@
   <div class="content">
     <!-- 搜索区域 -->
     <el-form :inline="true" :model="searchForm" class="searchForm">
-      <el-form-item label="">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="请输入产品名称、供应商名称、编号搜索"
-        ></el-input>
+      <el-form-item label>
+        <el-input v-model="searchForm.keyword" placeholder="请输入产品名称、供应商名称、编号搜索"></el-input>
       </el-form-item>
       <el-form-item label="产品类别：">
         <el-input v-model="searchForm.categoryId"></el-input>
       </el-form-item>
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="全部" value></el-option>
           <el-option label="已发布" value="UPER_SHELF"></el-option>
           <el-option label="已下架" value="LOWER_SHELF"></el-option>
           <el-option label="待审核" value="AUDIT_PROCESS"></el-option>
@@ -27,8 +24,7 @@
           type="datetime"
           placeholder="选择起始日期"
           @change="startChange"
-        >
-        </el-date-picker>
+        ></el-date-picker>
       </el-form-item>
 
       <el-form-item>
@@ -37,45 +33,21 @@
           type="datetime"
           placeholder="选择结束日期"
           @change="endChange"
-        >
-        </el-date-picker>
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button
-          class="query"
-          icon="el-icon-search"
-          @click="query"
-          size="mini"
-          >查询</el-button
-        >
+        <el-button class="query" icon="el-icon-search" @click="query" size="mini">查询</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格区域 -->
     <el-table :data="productData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column
-        prop="code"
-        label="产品编号"
-        width="120"
-      ></el-table-column>
-      <el-table-column prop="categoryName" label="产品类别（末级）" width="300">
-      </el-table-column>
-      <el-table-column
-        prop="title"
-        label="产品中文名称"
-        width="180"
-        show-overflow-tooltip
-      >
-      </el-table-column>
-      <el-table-column prop="price" label="价格" width="130"> </el-table-column>
-      <el-table-column
-        prop="supplierOutput.name"
-        label="供应商名称"
-        width="180"
-        show-overflow-tooltip
-      >
-      </el-table-column>
+      <el-table-column prop="code" label="产品编号" width="120"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别（末级）" width="300"></el-table-column>
+      <el-table-column prop="title" label="产品中文名称" width="180" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="price" label="价格" width="130"></el-table-column>
+      <el-table-column prop="supplierOutput.name" label="供应商名称" width="180" show-overflow-tooltip></el-table-column>
       <el-table-column label="是否主要产品" width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.hot">是</span>
@@ -88,10 +60,8 @@
           <span v-else>否</span>
         </template>
       </el-table-column>
-      <el-table-column prop="lastUpDate" label="最后发布日期" width="133">
-      </el-table-column>
-      <el-table-column prop="lastModifyDate" label="最后编辑日期" width="133">
-      </el-table-column>
+      <el-table-column prop="lastUpDate" label="最后发布日期" width="133"></el-table-column>
+      <el-table-column prop="lastModifyDate" label="最后编辑日期" width="133"></el-table-column>
       <el-table-column label="产品状态" width="85">
         <template slot-scope="scope">
           <span>{{ scope.row.status && scope.row.status.text }}</span>
@@ -99,26 +69,19 @@
       </el-table-column>
       <el-table-column label="管理产品">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleDetail(scope.$index, scope.row)"
-            >查看</el-button
-          >
+          <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleApproval(scope.$index, scope.row)"
             v-if="scope.row.status && scope.row.status.status == 1"
-            >审核</el-button
-          >
+          >审核</el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleLookApproval(scope.$index, scope.row)"
             v-if="scope.row.status && scope.row.status.status == 1"
-            >查看审核</el-button
-          >
+          >查看审核</el-button>
           <el-button
             size="mini"
             type="text"
@@ -128,8 +91,7 @@
                 scope.row.status.status == 2 &&
                 !scope.row.like
             "
-            >设置猜你喜欢</el-button
-          >
+          >设置猜你喜欢</el-button>
           <el-button
             size="mini"
             type="text"
@@ -137,8 +99,7 @@
             v-if="
               scope.row.status && scope.row.status.status == 2 && scope.row.like
             "
-            >取消猜你喜欢</el-button
-          >
+          >取消猜你喜欢</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -152,8 +113,7 @@
       :page-size.sync="searchForm.size"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-    >
-    </el-pagination>
+    ></el-pagination>
 
     <!-- 审核对话框 -->
     <el-dialog
@@ -169,17 +129,17 @@
 </template>
 
 <script>
-import { getStore } from "js/store";
+import { getStore } from 'js/store'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
+    const token = getStore({ name: 'access_token', type: 'string' })
     return {
       // 搜索表单
       searchForm: {
-        keyword: "",
-        categoryId: "",
-        status: "",
-        token: token || "",
+        keyword: '',
+        categoryId: '',
+        status: '',
+        token: token || '',
         page: 0,
         size: 20,
         publishDate: [] // 起止时间
@@ -189,86 +149,86 @@ export default {
       // 审核对话框数据
       isShowApprovalDialog: false,
       id: null // 当前数据id
-    };
+    }
   },
   created() {
-    this.getApplyList();
+    this.getApplyList()
   },
   methods: {
     getApplyList() {
       this.axios
         .get(`${this.baseUrl}/api/product/search`, this.searchForm)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code == 200) {
-            this.productData = res.data.content;
-            this.searchForm.page = res.data.number;
-            this.searchForm.size = res.data.size;
-            this.total = res.data.totalElements;
+            this.productData = res.data.content
+            this.searchForm.page = res.data.number
+            this.searchForm.size = res.data.size
+            this.total = res.data.totalElements
           }
-        });
+        })
     },
     startChange() {
       this.searchForm.publishDate[0] = this.$timeDate(
         this.searchForm.publishDate[0]
-      );
+      )
     },
     endChange() {
       this.searchForm.publishDate[1] = this.$timeDate(
         this.searchForm.publishDate[1]
-      );
+      )
     },
     // 查询
     query() {
-      this.searchForm.page = 0;
+      this.searchForm.page = 0
       if (
         new Date(this.searchForm.publishDate[0]).getTime() >
         new Date(this.searchForm.publishDate[1]).getTime()
       ) {
-        return this.$message.warning("起始时间不能大于结束时间！");
+        return this.$message.warning('起始时间不能大于结束时间！')
       }
-      this.getApplyList();
+      this.getApplyList()
     },
     handleSizeChange(val) {
-      this.searchForm.size = val;
-      this.getApplyList();
+      this.searchForm.size = val
+      this.getApplyList()
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val;
-      this.getApplyList();
+      this.searchForm.page = val
+      this.getApplyList()
     },
     handleDetail(index, row) {
-      console.log(index, row);
+      console.log(index, row)
       // 查看 type：1   审核 type：2   新增 type：3
       this.$router.push({
-        path: "/productListInfo",
+        path: '/productListInfo',
         query: { id: row.id, type: 1 }
-      });
+      })
     },
     // 审核
     handleApproval(index, row) {
-      console.log(index, row);
-      this.id = row.id;
-      this.isShowApprovalDialog = true;
+      console.log(index, row)
+      this.id = row.id
+      this.isShowApprovalDialog = true
     },
     // 查看审核
     handleLookApproval(index, row) {
-      console.log(index, row);
+      console.log(index, row)
       this.$router.push({
-        path: "/productListInfo",
+        path: '/productListInfo',
         query: { id: row.id, type: 2 }
-      });
+      })
     },
     handleLike(obj, callback) {
       this.axios.put(`${this.baseUrl}/api/product/like`, obj).then(res => {
         if (res.code === 200) {
-          callback && callback(res);
+          callback && callback(res)
         }
-      });
+      })
     },
     // 设置猜你喜欢
     handleSetLike(index, row) {
-      const _this = this;
+      const _this = this
       this.handleLike(
         {
           id: row.id,
@@ -276,14 +236,14 @@ export default {
         },
         function(res) {
           if (res.code == 200) {
-            _this.getApplyList();
+            _this.getApplyList()
           }
         }
-      );
+      )
     },
     // 取消猜你喜欢
     handleCloseLike(index, row) {
-      const _this = this;
+      const _this = this
       this.handleLike(
         {
           id: row.id,
@@ -291,26 +251,26 @@ export default {
         },
         function(res) {
           if (res.code == 200) {
-            _this.getApplyList();
+            _this.getApplyList()
           }
         }
-      );
+      )
     },
     approvePassOrNoPass(obj, callback) {
       this.axios.put(`${this.baseUrl}/api/product/audit`, obj).then(res => {
-        console.log(res);
+        console.log(res)
         if (res.code === 200) {
-          callback && callback(res);
+          callback && callback(res)
         }
-      });
+      })
     },
     // 审核通过
     approvePass() {
-      const _this = this;
-      this.$confirm("审核通过确认", "", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      const _this = this
+      this.$confirm('审核通过确认', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           _this.approvePassOrNoPass(
@@ -321,27 +281,27 @@ export default {
             function(res) {
               if (res.code == 200) {
                 _this.$message({
-                  type: "success",
-                  message: "审核成功!"
-                });
-                _this.isShowApprovalDialog = false;
-                _this.getApplyList();
+                  type: 'success',
+                  message: '审核成功!'
+                })
+                _this.isShowApprovalDialog = false
+                _this.getApplyList()
               }
             }
-          );
+          )
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 审核不通过
     approveNoPass() {
-      const _this = this;
-      this.$prompt("", "审核不通过确认", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputType: "textarea",
-        inputPlaceholder: "请输入不通过原因",
+      const _this = this
+      this.$prompt('', '审核不通过确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'textarea',
+        inputPlaceholder: '请输入不通过原因',
         inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
-        inputErrorMessage: "请输入不通过原因"
+        inputErrorMessage: '请输入不通过原因'
       })
         .then(({ value }) => {
           _this.approvePassOrNoPass(
@@ -353,23 +313,23 @@ export default {
             function(res) {
               if (res.code == 200) {
                 _this.$message({
-                  type: "success",
-                  message: "审核成功!"
-                });
-                _this.isShowApprovalDialog = false;
-                _this.getApplyList();
+                  type: 'success',
+                  message: '审核成功!'
+                })
+                _this.isShowApprovalDialog = false
+                _this.getApplyList()
               }
             }
-          );
+          )
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 对话框关闭
     handleCloseApproval() {
-      this.id = null;
+      this.id = null
     }
   }
-};
+}
 </script>
 
 <style scopde>

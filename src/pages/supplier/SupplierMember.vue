@@ -3,22 +3,19 @@
   <div class="content">
     <!-- 搜索区域 -->
     <el-form :inline="true" :model="searchForm" class="searchForm">
-      <el-form-item label="">
-        <el-input
-          v-model="searchForm.keyword"
-          placeholder="请输入编号、手机、名称搜索"
-        ></el-input>
+      <el-form-item label>
+        <el-input v-model="searchForm.keyword" placeholder="请输入编号、手机、名称搜索"></el-input>
       </el-form-item>
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="全部" value></el-option>
           <el-option label="已激活" value="ENABLED"></el-option>
           <el-option label="已停用" value="DISABLED"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="是否金牌供应商：">
         <el-select v-model="searchForm.vip">
-          <el-option label="全部" value=""></el-option>
+          <el-option label="全部" value></el-option>
           <el-option label="否" value="0"></el-option>
           <el-option label="是" value="1"></el-option>
         </el-select>
@@ -29,8 +26,7 @@
           type="datetime"
           placeholder="选择起始日期"
           @change="startChange"
-        >
-        </el-date-picker>
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-date-picker
@@ -38,44 +34,27 @@
           type="datetime"
           placeholder="选择结束日期"
           @change="endChange"
-        >
-        </el-date-picker>
+        ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button
-          class="query"
-          icon="el-icon-search"
-          @click="query"
-          size="mini"
-          >查询</el-button
-        >
+        <el-button class="query" icon="el-icon-search" @click="query" size="mini">查询</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格区域 -->
     <el-table :data="memberData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column
-        prop="code"
-        label="供应商编号"
-        width="190"
-      ></el-table-column>
-      <el-table-column
-        prop="name"
-        label="供应商名称"
-        width="190"
-        show-overflow-tooltip
-      ></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="180">
-      </el-table-column>
-      <el-table-column prop="" label="地区" width="180">
+      <el-table-column prop="code" label="供应商编号" width="190"></el-table-column>
+      <el-table-column prop="name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="mobile" label="手机" width="180"></el-table-column>
+      <el-table-column prop label="地区" width="180">
         <template slot-scope="scope">
-          <span
-            >{{ scope.row.supplierCompanyOutput.province
-            }}{{ scope.row.supplierCompanyOutput.city }}</span
-          >
-        </template></el-table-column
-      >
+          <span>
+            {{ scope.row.supplierCompanyOutput.province
+            }}{{ scope.row.supplierCompanyOutput.city }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" width="150">
         <template slot-scope="scope">
           <span>{{ scope.row.status.text }}</span>
@@ -87,52 +66,44 @@
           <span v-if="scope.row.vip == 1">是</span>
         </template>
       </el-table-column>
-      <el-table-column label="金牌时效周期" width="260"
-        ><template slot-scope="scope">
+      <el-table-column label="金牌时效周期" width="260">
+        <template slot-scope="scope">
           <span v-if="!scope.row.vipDate || !scope.row.vipExpired"></span>
-          <span v-else>{{
+          <span v-else>
+            {{
             scope.row.vipDate + " - " + scope.row.vipExpired
-          }}</span>
+            }}
+          </span>
         </template>
       </el-table-column>
-      <el-table-column prop="createDate" label="注册时间" sortablewidth="170">
-      </el-table-column>
+      <el-table-column prop="createDate" label="注册时间" sortablewidth="170"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleDetail(scope.$index, scope.row)"
-            >查看</el-button
-          >
+          <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleStop(scope.$index, scope.row)"
             v-if="scope.row.account.status.status == 0"
-            >停用</el-button
-          >
+          >停用</el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleStart(scope.$index, scope.row)"
             v-if="scope.row.account.status.status == 1"
-            >启用</el-button
-          >
+          >启用</el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleCancelGold(scope.$index, scope.row)"
             v-if="scope.row.account.status.status == 0 && scope.row.vip == 1"
-            >取消金牌</el-button
-          >
+          >取消金牌</el-button>
           <el-button
             size="mini"
             type="text"
             @click="handleBecomeGold(scope.$index, scope.row)"
             v-if="scope.row.account.status.status == 0 && scope.row.vip == 0"
-            >成为金牌</el-button
-          >
+          >成为金牌</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -146,8 +117,7 @@
       :page-size.sync="searchForm.size"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
-    >
-    </el-pagination>
+    ></el-pagination>
 
     <!-- 成为金牌会员对话框 -->
     <el-dialog
@@ -157,15 +127,14 @@
       class="glodDialog"
     >
       <el-form :model="glodForm">
-        <el-form-item label="">
+        <el-form-item label>
           <el-col :span="11">
             <el-date-picker
               v-model="glodForm.dates[0]"
               type="datetime"
               placeholder="选择起始日期"
               @change="startChange"
-            >
-            </el-date-picker>
+            ></el-date-picker>
           </el-col>
           <el-col class="line" :span="2">-</el-col>
           <el-col :span="11">
@@ -174,8 +143,7 @@
               type="datetime"
               placeholder="选择结束日期"
               @change="endChange"
-            >
-            </el-date-picker>
+            ></el-date-picker>
           </el-col>
         </el-form-item>
       </el-form>
@@ -188,18 +156,18 @@
 </template>
 
 <script>
-import { getStore } from "js/store";
-import axios from "axios";
+import { getStore } from 'js/store'
+import axios from 'axios'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
+    const token = getStore({ name: 'access_token', type: 'string' })
     return {
       // 搜索表单
       searchForm: {
-        keyword: "",
-        status: "",
-        token: token || "",
-        vip: "",
+        keyword: '',
+        status: '',
+        token: token || '',
+        vip: '',
         page: 0,
         size: 20,
         dates: [] // 起止时间
@@ -212,103 +180,103 @@ export default {
         dates: []
       },
       id: null // 当前id
-    };
+    }
   },
   created() {
-    this.getApplyList();
+    this.getApplyList()
   },
   methods: {
     getApplyList() {
       this.axios
         .post(`${this.baseUrl}/api/supplier/search`, this.searchForm)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code == 200) {
-            this.memberData = res.data.content;
-            this.searchForm.page = res.data.number;
-            this.searchForm.size = res.data.size;
-            this.total = res.data.totalElements;
+            this.memberData = res.data.content
+            this.searchForm.page = res.data.number
+            this.searchForm.size = res.data.size
+            this.total = res.data.totalElements
           }
-        });
+        })
     },
     startChange() {
       if (this.searchForm.dates.length > 0)
-        this.searchForm.dates[0] = this.$timeDate(this.searchForm.dates[0]);
+        this.searchForm.dates[0] = this.$timeDate(this.searchForm.dates[0])
       if (this.glodForm.dates.length > 0)
-        this.glodForm.dates[0] = this.$timeDate(this.glodForm.dates[0]);
+        this.glodForm.dates[0] = this.$timeDate(this.glodForm.dates[0])
     },
     endChange() {
       if (this.searchForm.dates.length > 0)
-        this.searchForm.dates[1] = this.$timeDate(this.searchForm.dates[1]);
+        this.searchForm.dates[1] = this.$timeDate(this.searchForm.dates[1])
       if (this.glodForm.dates.length > 0)
-        this.glodForm.dates[1] = this.$timeDate(this.glodForm.dates[1]);
+        this.glodForm.dates[1] = this.$timeDate(this.glodForm.dates[1])
     },
     // 查询
     query() {
-      this.searchForm.page = 0;
+      this.searchForm.page = 0
       if (
         new Date(this.searchForm.dates[0]).getTime() >
         new Date(this.searchForm.dates[1]).getTime()
       ) {
-        return this.$message.warning("起始时间不能大于结束时间！");
+        return this.$message.warning('起始时间不能大于结束时间！')
       }
-      this.getApplyList();
+      this.getApplyList()
     },
     handleSizeChange(val) {
-      this.searchForm.size = val;
-      this.getApplyList();
+      this.searchForm.size = val
+      this.getApplyList()
     },
     handleCurrentChange(val) {
-      this.searchForm.page = val;
-      this.getApplyList();
+      this.searchForm.page = val
+      this.getApplyList()
     },
     // 查看
     handleDetail(index, row) {
-      console.log(index, row);
+      console.log(index, row)
       // type查看类型
       this.$router.push({
-        path: "/supplierMemberInfo",
+        path: '/supplierMemberInfo',
         query: { id: row.id }
-      });
+      })
     },
     // 停用
     handleStop(index, row) {
-      this.$prompt("停用后此账号将不可登录", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputType: "textarea",
-        inputPlaceholder: "请输入停用原因",
+      this.$prompt('停用后此账号将不可登录', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'textarea',
+        inputPlaceholder: '请输入停用原因',
         inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
-        inputErrorMessage: "请输入原因"
+        inputErrorMessage: '请输入原因'
       })
         .then(({ value }) => {
-          console.log(value);
+          console.log(value)
           this.axios
             .post(`${this.baseUrl}/api/supplier/disable`, {
               id: row.id,
-              status: "DISABLED",
+              status: 'DISABLED',
               remarks: value
             })
             .then(res => {
-              console.log(res);
+              console.log(res)
               if (res.code === 200) {
                 this.$message({
-                  type: "success",
-                  message: "停用成功"
-                });
-                this.getApplyList();
+                  type: 'success',
+                  message: '停用成功'
+                })
+                this.getApplyList()
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 启用
     handleStart(index, row) {
-      console.log(index, row);
-      this.$confirm("是否启用此帐号", "", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      console.log(index, row)
+      this.$confirm('是否启用此帐号', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           this.axios
@@ -316,34 +284,34 @@ export default {
               id: row.id
             })
             .then(res => {
-              console.log(res);
+              console.log(res)
               if (res.code === 200) {
                 this.$message({
-                  type: "success",
-                  message: "启用成功"
-                });
-                this.getApplyList();
+                  type: 'success',
+                  message: '启用成功'
+                })
+                this.getApplyList()
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 显示成为金牌对话框
     handleBecomeGold(index, row) {
-      console.log(index, row);
-      this.isShowGlodDialog = true;
-      this.id = row.id; // 设置当前id
+      console.log(index, row)
+      this.isShowGlodDialog = true
+      this.id = row.id // 设置当前id
     },
     // 取消金牌
     handleCancelGold(index, row) {
-      console.log(index, row);
-      this.$prompt("是否取消金牌供应商", "取消原因：", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputType: "textarea",
-        inputPlaceholder: "请输入取消原因",
+      console.log(index, row)
+      this.$prompt('是否取消金牌供应商', '取消原因：', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'textarea',
+        inputPlaceholder: '请输入取消原因',
         inputPattern: /^[A-Za-z0-9.]{1,1000}$/,
-        inputErrorMessage: "请输入原因"
+        inputErrorMessage: '请输入原因'
       })
         .then(({ value }) => {
           this.axios
@@ -353,17 +321,17 @@ export default {
               remarks: value
             })
             .then(res => {
-              console.log(res);
+              console.log(res)
               if (res.code === 200) {
                 this.$message({
-                  type: "success",
-                  message: "取消金牌成功"
-                });
-                this.getApplyList();
+                  type: 'success',
+                  message: '取消金牌成功'
+                })
+                this.getApplyList()
               }
-            });
+            })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 成为金牌
     handleGlod() {
@@ -371,7 +339,7 @@ export default {
         new Date(this.glodForm.dates[0]).getTime() >
         new Date(this.glodForm.dates[1]).getTime()
       ) {
-        return this.$message.warning("起始时间不能大于结束时间！");
+        return this.$message.warning('起始时间不能大于结束时间！')
       }
       this.axios
         .put(`${this.baseUrl}/api/supplier/vip`, {
@@ -381,24 +349,24 @@ export default {
           vipExpired: this.glodForm.dates[1]
         })
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code === 200) {
             this.$message({
-              type: "success",
-              message: "成为金牌成功"
-            });
-            this.isShowGlodDialog = false;
-            this.getApplyList();
+              type: 'success',
+              message: '成为金牌成功'
+            })
+            this.isShowGlodDialog = false
+            this.getApplyList()
           }
-        });
+        })
     },
     // 对话框关闭数据清除
     handleCloseGlod() {
-      this.glodForm.dates = [];
-      this.id = null;
+      this.glodForm.dates = []
+      this.id = null
     }
   }
-};
+}
 </script>
 
 <style>

@@ -4,9 +4,9 @@
     供应商注册信息
     <!-- <span class="infoType" v-if="remarks"
       >状态：{{ statusText }} 原因：{{ remarks }}</span
-    > -->
-    <span class="infoType" v-if="remarks">状态：{{ statusText }}</span
-    ><span class="infoType" v-else>状态：{{ statusText }}</span>
+    >-->
+    <span class="infoType" v-if="remarks">状态：{{ statusText }}</span>
+    <span class="infoType" v-else>状态：{{ statusText }}</span>
     <el-form
       :model="supperForm"
       ref="supperRef"
@@ -25,10 +25,7 @@
         <el-input v-model="supperForm.company" :readonly="readonly"></el-input>
       </el-form-item>
       <el-form-item label="法人姓名" prop="legalPersonName">
-        <el-input
-          v-model="supperForm.legalPersonName"
-          :readonly="readonly"
-        ></el-input>
+        <el-input v-model="supperForm.legalPersonName" :readonly="readonly"></el-input>
       </el-form-item>
       <el-form-item label="营业执照" prop="businessLicense">
         <el-upload
@@ -43,7 +40,7 @@
           <i class="el-icon-plus"></i>
         </el-upload>
         <el-dialog :visible.sync="dialogVisible" v-if="type == 3">
-          <img width="100%" :src="dialogImageUrl" alt="" />
+          <img width="100%" :src="dialogImageUrl" alt />
         </el-dialog>
         <!-- 查看与审核图片展示 -->
         <el-image
@@ -51,85 +48,67 @@
           :src="url"
           :preview-src-list="srcList"
           v-if="type == 1 || type == 2"
-        >
-        </el-image>
+        ></el-image>
       </el-form-item>
       <el-form-item label="联系邮箱">
-        <el-input
-          v-model="supperForm.linkEmail"
-          placeholder="请输入你的联系邮箱"
-          :readonly="readonly"
-        ></el-input>
+        <el-input v-model="supperForm.linkEmail" placeholder="请输入你的联系邮箱" :readonly="readonly"></el-input>
       </el-form-item>
       <el-form-item label="不通过原因" v-if="remarks">
-        <el-input
-          v-model="remarks"
-          :readonly="readonly"
-          class="noPass"
-        ></el-input>
+        <el-input v-model="remarks" :readonly="readonly" class="noPass"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          @click="submitForm('supperRef')"
-          v-if="type == 3"
-          >确定</el-button
-        >
+        <el-button type="primary" @click="submitForm('supperRef')" v-if="type == 3">确定</el-button>
         <el-button @click="close" v-if="type == 3 || type == 1">取消</el-button>
-        <el-button @click="approveNoPass" type="danger" v-if="type == 2"
-          >审核不通过</el-button
-        >
-        <el-button @click="approvePass" type="primary" v-if="type == 2"
-          >审核通过</el-button
-        >
+        <el-button @click="approveNoPass" type="danger" v-if="type == 2">审核不通过</el-button>
+        <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import { getStore } from "js/store";
+import { getStore } from 'js/store'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
+    const token = getStore({ name: 'access_token', type: 'string' })
     return {
       supperForm: {
-        username: "",
-        password: "",
-        company: "",
-        legalPersonName: "",
-        businessLicense: "",
-        linkEmail: ""
+        username: '',
+        password: '',
+        company: '',
+        legalPersonName: '',
+        businessLicense: '',
+        linkEmail: ''
       },
-      statusText: "", // 状态
-      remarks: "", // 审核不通过内容
+      statusText: '', // 状态
+      remarks: '', // 审核不通过内容
       supperRules: {
         username: [
-          { required: true, message: "登录名不能为空", trigger: "blur" }
+          { required: true, message: '登录名不能为空', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: "登录密码不能为空", trigger: "blur" }
+          { required: true, message: '登录密码不能为空', trigger: 'blur' }
         ],
         company: [
-          { required: true, message: "公司名称不能为空", trigger: "blur" }
+          { required: true, message: '公司名称不能为空', trigger: 'blur' }
         ],
         legalPersonName: [
-          { required: true, message: "法人姓名不能为空", trigger: "blur" }
+          { required: true, message: '法人姓名不能为空', trigger: 'blur' }
         ],
         businessLicense: [
-          { required: true, message: "营业执照不能为空", trigger: "change" }
+          { required: true, message: '营业执照不能为空', trigger: 'change' }
         ]
       },
       fileList: [],
       uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
-      dialogImageUrl: "",
+      dialogImageUrl: '',
       dialogVisible: false,
       readonly: false, // 只读
       type: null, // 查看/审核/新增
       // 查看-审核 图片展示
-      url: "",
+      url: '',
       srcList: []
-    };
+    }
   },
   computed: {
     // url() {
@@ -149,10 +128,10 @@ export default {
   },
   created() {
     // 查看 type：1   审核 type：2   新增 type：3
-    this.type = this.$route.query.type;
+    this.type = this.$route.query.type
     if (this.type == 2 || this.type == 1) {
-      this.getApplyList();
-      this.readonly = true;
+      this.getApplyList()
+      this.readonly = true
     }
   },
   methods: {
@@ -162,135 +141,135 @@ export default {
           id: this.$route.query.id
         })
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code == 200) {
             for (let key in this.supperForm) {
-              this.supperForm[key] = res.data[key];
+              this.supperForm[key] = res.data[key]
             }
-            this.remarks = res.data.remarks;
-            this.statusText = res.data.status.text;
+            this.remarks = res.data.remarks
+            this.statusText = res.data.status.text
 
             // 展示图片处理
-            const srcList = this.supperForm.businessLicense.split(",");
-            this.url = this.imgBaseUrl + srcList[0];
+            const srcList = this.supperForm.businessLicense.split(',')
+            this.url = this.imgBaseUrl + srcList[0]
             srcList.forEach(item => {
-              this.srcList.push(this.imgBaseUrl + item);
-            });
-            console.log(this.url);
-            console.log(this.srcList);
+              this.srcList.push(this.imgBaseUrl + item)
+            })
+            console.log(this.url)
+            console.log(this.srcList)
           }
-        });
+        })
     },
     // 处理图片上传
     handleSuccess(res, file, fileList) {
-      this.supperForm.businessLicense = fileList;
+      this.supperForm.businessLicense = fileList
     },
     handleRemove(file, fileList) {
-      this.supperForm.businessLicense = fileList;
+      this.supperForm.businessLicense = fileList
     },
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
-        if (!valid) return;
+        if (!valid) return
         // 解析图片上传路径
         // console.log(this.supperForm)
-        const businessLicense = [];
+        const businessLicense = []
         this.supperForm.businessLicense.forEach(item => {
-          businessLicense.push(item.response.data);
-        });
-        this.supperForm.businessLicense = businessLicense.join(",");
-        console.log(this.supperForm);
+          businessLicense.push(item.response.data)
+        })
+        this.supperForm.businessLicense = businessLicense.join(',')
+        console.log(this.supperForm)
         this.axios
           .post(`${this.baseUrl}/api/supplier/register/apply`, this.supperForm)
           .then(res => {
-            console.log(res);
+            console.log(res)
             if (res.code !== 200) {
-              console.log(res.message);
-              this.$message.warning(res.message);
+              console.log(res.message)
+              this.$message.warning(res.message)
             }
             if (res.code === 200) {
-              this.$router.push("/supplierApply");
+              this.$router.push('/supplierApply')
             }
-          });
-      });
+          })
+      })
     },
     // 返回
     close() {
-      this.$router.push("/supplierApply");
+      this.$router.push('/supplierApply')
     },
     approvePassOrNoPass(obj, callback) {
       this.axios
         .post(`${this.baseUrl}/api/supplier/register/audit`, obj)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code === 200) {
-            callback && callback(res);
+            callback && callback(res)
           }
-        });
+        })
     },
     // 审核通过  todo---status 审核通过状态值
     approvePass() {
-      this.$confirm("审核通过确认", "", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('审核通过确认', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          const _this = this;
+          const _this = this
           this.approvePassOrNoPass(
             {
               id: this.$route.query.id,
-              status: "AUDIT_PASS"
+              status: 'AUDIT_PASS'
             },
             function(res) {
               if (res.code == 200) {
                 _this.$message({
-                  type: "success",
-                  message: "审核成功!"
-                });
-                _this.$router.push("/supplierApply");
+                  type: 'success',
+                  message: '审核成功!'
+                })
+                _this.$router.push('/supplierApply')
               }
             }
-          );
+          )
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 审核不通过  todo---校验未添加
     approveNoPass() {
-      this.$prompt("", "审核不通过确认", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        inputType: "textarea",
-        inputPlaceholder: "请输入不通过原因",
+      this.$prompt('', '审核不通过确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'textarea',
+        inputPlaceholder: '请输入不通过原因',
         inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
-        inputErrorMessage: "请输入不通过原因"
+        inputErrorMessage: '请输入不通过原因'
       })
         .then(({ value }) => {
-          const _this = this;
+          const _this = this
           this.approvePassOrNoPass(
             {
               id: this.$route.query.id,
-              status: "AUDIT_FAIL",
+              status: 'AUDIT_FAIL',
               remarks: value
             },
             function(res) {
               if (res.code == 200) {
                 _this.$message({
-                  type: "success",
-                  message: "审核成功!"
-                });
-                _this.$router.push("/supplierApply");
+                  type: 'success',
+                  message: '审核成功!'
+                })
+                _this.$router.push('/supplierApply')
               }
             }
-          );
+          )
         })
-        .catch(() => {});
+        .catch(() => {})
     }
   }
-};
+}
 </script>
 
 <style>

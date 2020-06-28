@@ -3,28 +3,27 @@
   <div class="content" v-if="Object.keys(memberObj).length > 0">
     <div class="box">
       <h2>
-        供应商基本信息<span class="infoType"
-          >状态：{{ memberObj.status.text }}</span
-        >
+        供应商基本信息
+        <span class="infoType">状态：{{ memberObj.status.text }}</span>
       </h2>
       <div class="info">
         <div class="glod">
-          <div class="glodSup">
-            是否金牌供应商：{{ memberObj.vip == 0 ? "否" : "是" }}
-          </div>
+          <div class="glodSup">是否金牌供应商：{{ memberObj.vip == 0 ? "否" : "是" }}</div>
           <div class="glodCycle">
             金牌时效周期：{{
-              memberObj.vip == 0
-                ? "/"
-                : memberObj.vipDate + " ~ " + memberObj.vipExpired
+            memberObj.vip == 0
+            ? "/"
+            : memberObj.vipDate + " ~ " + memberObj.vipExpired
             }}
           </div>
         </div>
         <div class="item">
-          <span>供应商编号</span> <span>{{ memberObj.code }}</span>
+          <span>供应商编号</span>
+          <span>{{ memberObj.code }}</span>
         </div>
         <div class="item">
-          <span>手机账号</span> <span>{{ memberObj.username }}</span>
+          <span>手机账号</span>
+          <span>{{ memberObj.username }}</span>
         </div>
         <div class="item">
           <span>公司名称</span>
@@ -48,15 +47,16 @@
         </div>
         <div class="item">
           <span>注册资金</span>
-          <span
-            >{{ memberObj.supplierCompanyOutput.registeredCapital }}万元</span
-          >
+          <span>{{ memberObj.supplierCompanyOutput.registeredCapital }}万元</span>
         </div>
         <div class="item">
           <span>公司简介</span>
           <span>{{ memberObj.supplierCompanyOutput.companyDesc }}</span>
         </div>
-        <div class="item"><span>店铺地址</span> <span></span></div>
+        <div class="item">
+          <span>店铺地址</span>
+          <span></span>
+        </div>
         <template
           v-if="
             memberObj.supplierShopOutput && memberObj.supplierShopOutput.linkMan
@@ -72,15 +72,21 @@
           </div>
           <div class="item">
             <span>性别</span>
-            <span>{{
+            <span>
+              {{
               memberObj.supplierShopOutput.linkMan.sex.index == 0
-            }}</span
-            ><span>{{
+              }}
+            </span>
+            <span>
+              {{
               memberObj.supplierShopOutput.linkMan.sex.index == 1
-            }}</span
-            ><span>{{
+              }}
+            </span>
+            <span>
+              {{
               memberObj.supplierShopOutput.linkMan.sex.index == 2
-            }}</span>
+              }}
+            </span>
           </div>
           <div class="item">
             <span>联系手机</span>
@@ -90,9 +96,7 @@
       </div>
     </div>
     <div class="box">
-      <h2>
-        企业资料信息
-      </h2>
+      <h2>企业资料信息</h2>
       <div class="info">
         <div class="item">
           <span>公司全称</span>
@@ -111,8 +115,7 @@
             :key="index"
             :src="imgBaseUrl + item"
             :preview-src-list="[imgBaseUrl + item]"
-          >
-          </el-image>
+          ></el-image>
         </div>
         <div class="item">
           <span>法人代表姓名</span>
@@ -131,8 +134,7 @@
             :key="index"
             :src="imgBaseUrl + item"
             :preview-src-list="[imgBaseUrl + item]"
-          >
-          </el-image>
+          ></el-image>
         </div>
       </div>
     </div>
@@ -140,18 +142,18 @@
 </template>
 
 <script>
-import { getStore } from "js/store";
+import { getStore } from 'js/store'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
+    const token = getStore({ name: 'access_token', type: 'string' })
     return {
-      memberObj: "", // 会员数据对象
+      memberObj: '', // 会员数据对象
       businessLicense: [], // 营业执照
       legalPersonCardPicture: [] // 法人代表身份证
-    };
+    }
   },
   created() {
-    this.getProductList();
+    this.getProductList()
   },
   methods: {
     getProductList() {
@@ -160,20 +162,20 @@ export default {
           id: this.$route.query.id
         })
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.code == 200) {
-            this.memberObj = res.data;
+            this.memberObj = res.data
             this.businessLicense = this.$getArrayByStr(
               res.data.supplierCompanyOutput.businessLicense
-            );
+            )
             this.legalPersonCardPicture = this.$getArrayByStr(
               res.data.supplierCompanyOutput.legalPersonCardPicture
-            );
+            )
           }
-        });
+        })
     }
   }
-};
+}
 </script>
 
 <style scoped>

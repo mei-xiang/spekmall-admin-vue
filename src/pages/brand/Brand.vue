@@ -214,16 +214,16 @@ export default {
       this.isShowBrandDialog = true
       this.type = 1
       this.id = row.id
-      // todo---发送请求，获取数据，
-      // this.axios.get(`${this.baseUrl}/api/tag/${this.id}`).then(res => {
-      //   if (res.code == 200) {
-      //     console.log(res);
-      //     for(let key in this.brandForm){
-      //       this.brandForm[key] = res.data
-      //     }
-      //     this.fileList.push({ url: this.imgBaseUrl + res.data.brandImg });
-      //   }
-      // });
+      this.axios
+        .get(`${this.baseUrl}/api/brand/info`, { id: row.id })
+        .then(res => {
+          if (res.code == 200) {
+            for (let key in this.brandForm) {
+              this.brandForm[key] = res.data[key]
+            }
+            this.fileList.push({ url: this.imgBaseUrl + res.data.brandImg })
+          }
+        })
     },
     // 删除
     handleDel(index, row) {
@@ -281,7 +281,6 @@ export default {
       this.$refs.brandRef.validate(valid => {
         if (!valid) return false
         if (this.type == 1) {
-          console.log('编辑操作')
           this.axios
             .put(`${this.baseUrl}/api/brand`, {
               ...this.brandForm,
@@ -295,7 +294,6 @@ export default {
             })
         }
         if (this.type == 2) {
-          console.log('新增操作')
           this.axios
             .post(`${this.baseUrl}/api/brand`, this.brandForm)
             .then(res => {
@@ -319,7 +317,6 @@ export default {
     },
     // 处理图片上传
     handleSuccess(res, file, fileList) {
-      console.log(fileList)
       if (this.brandForm.brandImg) {
         fileList.splice(0, 1)
       }
@@ -342,7 +339,7 @@ export default {
       return isLt2M
     },
     showHomeBrand() {
-      // this.isShowHomeBrandDialog = true
+      this.isShowHomeBrandDialog = true
       this.axios
         .get(`${this.baseUrl}/api/brand/showhome`, {
           page: 1,

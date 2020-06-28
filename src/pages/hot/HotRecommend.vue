@@ -4,7 +4,7 @@
     <!-- 搜索区域 -->
     <el-form :inline="true" :model="searchForm" class="searchForm">
       <el-form-item label>
-        <el-input v-model="searchForm.keyword" placeholder="请输入品牌编号或品牌名称搜索"></el-input>
+        <el-input v-model="searchForm.keyword" placeholder="请输入产品名称、供应商名称、供应商编号搜索"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button class="query" icon="el-icon-search" @click="query" size="mini">查询</el-button>
@@ -12,59 +12,37 @@
           type="button"
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
-          @click="showAddBrand"
-        >新增</el-button>
+          @click="showHotProduct"
+        >添加热门商品</el-button>
         <el-button
           type="button"
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="showHomeBrand"
-        >首页品牌管理</el-button>
+        >首页热门管理</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 表格区域 -->
-    <el-table :data="brandData" border style="width: 100%;">
+    <el-table :data="recommendData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="brandCode" label="品牌编号" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="brandName" label="品牌名称" width="150"></el-table-column>
-      <el-table-column label="图片" width="190">
+      <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
+      <el-table-column prop="title" label="产品中文名称" width="190" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="price" label="价格" width="120"></el-table-column>
+      <el-table-column prop="supplierOutput.name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="supplierOutput.code" label="供应商编号" width="150"></el-table-column>
+      <el-table-column prop="showBegin" label="成为热门推荐时间" width="150"></el-table-column>
+      <el-table-column label="是否首页展示" width="120">
         <template slot-scope="scope">
-          <el-image
-            style="width: 120px; height: 28px;margin-top:5px"
-            :src="imgBaseUrl + scope.row.brandImg"
-            :preview-src-list="[imgBaseUrl + scope.row.brandImg]"
-          ></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否热门品牌" width="150">
-        <template slot-scope="scope">
-          <span>{{ scope.row.hot == true ? "是" : "否" }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否首页品牌" width="150">
-        <template slot-scope="scope">
-          <span>{{ scope.row.showHome == true ? "是" : "否" }}</span>
+          <span>{{ scope.row.showIndex == true ? "是" : "否" }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="150"></el-table-column>
 
-      <el-table-column label="操作" width="220">
+      <el-table-column label="管理">
         <template slot-scope="scope">
-          <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleMark(scope.$index, scope.row)"
-            v-if="scope.row.hot == false"
-          >标记热门</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleCancel(scope.$index, scope.row)"
-            v-if="scope.row.hot == true"
-          >取消热门</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -80,58 +58,125 @@
       :total="total"
     ></el-pagination>
 
-    <!-- 修改/新增对话框 -->
-    <el-dialog
-      :visible.sync="isShowBrandDialog"
-      :title="type == 1 ? '修改品牌' : '新增品牌'"
-      @close="handleClose"
-    >
-      <el-form :model="brandForm" ref="brandRef" :rules="brandRules" label-width="100px">
-        <el-form-item label="品牌名称" prop="brandName">
-          <el-input v-model="brandForm.brandName"></el-input>
-        </el-form-item>
-        <el-form-item label="品牌图片" prop="brandImg">
-          <el-upload
-            :action="uploadUrl"
-            list-type="picture-card"
-            :file-list="fileList"
-            :on-success="handleSuccess"
-            :on-remove="handleRemove"
-            :before-upload="beforeAvatarUpload"
-          >
-            <i class="el-icon-plus"></i>
-          </el-upload>
-        </el-form-item>
-        <el-form-item label="品牌类型" prop="hot">
-          <el-radio v-model="brandForm.hot" :label="true">热门品牌</el-radio>
-          <el-radio v-model="brandForm.hot" :label="false">普通品牌</el-radio>
-        </el-form-item>
-      </el-form>
+    <!-- 热门商品对话框 -->
+    <el-dialog :visible.sync="isShowHotProductDialog" title="热门商品" @close="handleClose">
+      <div>
+        <el-form :inline="true" :model="searchHotForm" class="searchForm">
+          <el-form-item label>
+            <el-input v-model="searchHotForm.keyword" placeholder="请输入产品名称、供应商名称搜索"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button class="query" icon="el-icon-search" @click="hotquery" size="mini">查询</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table :data="hotData" @selection-change="handleSelectionChange" ref="multipleHotTable">
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="code" label="商品编号" width="150"></el-table-column>
+          <el-table-column prop="title" label="产品名" width="190" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="title" label="品牌" show-overflow-tooltip></el-table-column>
+          <el-table-column
+            prop="supplierOutput.name"
+            label="供应商名称"
+            width="190"
+            show-overflow-tooltip
+          ></el-table-column>
+        </el-table>
+        <el-pagination
+          style="position: static; margin-top: 20px;"
+          @size-change="handleHotSizeChange"
+          @current-change="handleHotCurrentChange"
+          :current-page="searchHotForm.page + 1"
+          :page-sizes="[10, 20, 50]"
+          :page-size.sync="searchHotForm.size"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="hotTotal"
+        ></el-pagination>
+      </div>
       <div slot="footer">
-        <el-button type="primary" @click="addOrEditBrand">确 定</el-button>
-        <el-button @click="isShowBrandDialog = false">取 消</el-button>
+        <el-button type="primary" @click="addHotProduct">确 定</el-button>
+        <el-button @click="isShowHotProductDialog = false">取 消</el-button>
       </div>
     </el-dialog>
 
-    <!-- 首页品牌管理对话框 -->
-    <el-dialog :visible.sync="isShowHomeBrandDialog" title="首页品牌管理" @close="handleHomeBrandClose">
-      <div style="padding:20px">
-        <el-upload
-          :action="uploadUrl"
-          list-type="picture-card"
-          :file-list="fileList"
-          :on-success="handleSuccess"
-          :on-remove="handleRemove"
-          :before-upload="beforeAvatarUpload"
+    <!-- 首页热门管理对话框 -->
+    <el-dialog :visible.sync="isShowHomeBrandDialog" title="热门管理">
+      <div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+          "
         >
-          <i class="el-icon-plus"></i>
-        </el-upload>
+          <span>拖拽排列顺序</span>
+          <el-button
+            type="button"
+            class="el-button el-button--default el-button--mini"
+            icon="el-icon-circle-plus-outline"
+            @click="showHomeProduct"
+          >添加商品</el-button>
+        </div>
+
+        <el-table :data="homeData" ref="homeTable" row-key="id">
+          <el-table-column type="index" label="序号" fixed></el-table-column>
+          <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
+          <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
+          <el-table-column prop="title" label="产品中文名称" width="175" show-overflow-tooltip></el-table-column>
+          <el-table-column
+            prop="supplierOutput.name"
+            label="供应商名称"
+            width="175"
+            show-overflow-tooltip
+          ></el-table-column>
+          <el-table-column prop="createDate" label="首页展示时效周期" width="150"></el-table-column>
+          <el-table-column label="管理">
+            <template slot-scope="scope">
+              <el-button size="mini" type="text" @click="handleHomeDel(scope.$index, scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
+
+    <!-- 首页展示时效周期对话框 -->
+    <el-dialog
+      title="填写首页展示时效周期"
+      :visible.sync="isShowHomeDialog"
+      @close="handleCloseHome"
+      class="glodDialog"
+    >
+      <el-form :model="homeShowForm">
+        <el-form-item label>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="homeShowForm.effectDate[0]"
+              type="datetime"
+              placeholder="选择起始日期"
+              @change="startChange"
+            ></el-date-picker>
+          </el-col>
+          <el-col class="line" :span="2">-</el-col>
+          <el-col :span="11">
+            <el-date-picker
+              v-model="homeShowForm.effectDate[1]"
+              type="datetime"
+              placeholder="选择结束日期"
+              @change="endChange"
+            ></el-date-picker>
+          </el-col>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isShowHomeDialog = false">取 消</el-button>
+        <el-button type="primary" @click="handleHome">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import Sortable from 'sortablejs'
 import { getStore } from 'js/store'
 import axios from 'axios'
 export default {
@@ -141,220 +186,295 @@ export default {
       // 搜索表单
       searchForm: {
         keyword: '',
+        isHot: true,
+        showIndex: false,
         page: 0,
         size: 20
       },
-      total: null,
-      fileList: [], // 展示图片列表
-      brandData: [], // 列表数据
-      id: '', // 当前数据id
-      type: '', // 新增-修改标识
-      isShowBrandDialog: false, // 控制对话框的显示与隐藏
-      brandForm: {
-        brandName: '',
-        brandImg: '',
-        hot: ''
-      }, // 对话框表单数据
-      brandRules: {
-        brandName: [
-          { required: true, message: '品牌名称不能为空', trigger: 'blur' }
-        ],
-        brandImg: [
-          { required: true, message: '品牌图片不能为空', trigger: 'blur' }
-        ],
-        hot: [
-          { required: true, message: '品牌类型不能为空', trigger: 'change' }
-        ]
+      // 热门商品搜索表单
+      searchHotForm: {
+        keyword: '',
+        isHot: false,
+        showIndex: false,
+        page: 0,
+        size: 10
       },
-      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
-      isShowHomeBrandDialog: false // 控制首页品牌管理对话框
+      // 首页热门搜索表单
+      searchHomeForm: {
+        keyword: '',
+        isHot: true,
+        showIndex: true,
+        page: 0,
+        size: 10
+      },
+      total: null,
+      hotTotal: null, // 热门商品总数
+      recommendData: [], // 列表数据
+      hotData: [], // 热门商品列表数据
+      homeData: [], // 首页热门列表数据
+      type: '', // 添加热门/首页
+      isShowHotProductDialog: false, // 控制对话框的显示与隐藏
+      isShowHomeBrandDialog: false, // 控制首页品牌管理对话框
+      multipleSelection: [], // 热门多选数据
+      // 首页展示时效周期
+      isShowHomeDialog: false,
+      homeShowForm: {
+        effectDate: []
+      }
     }
   },
   created() {
-    this.getBrandList()
+    this.getRecommentList() // 获取热门商品数据
   },
-  filters: {
-    imgUrlFormat(urlStr) {
-      if (!urlStr) urlStr = ''
-      const srcList = urlStr.split(',')
-      return this.imgBaseUrl + srcList[0]
-    }
+  mounted() {
+    this.rowDrop()
+    this.columnDrop()
   },
   methods: {
-    getBrandList() {
-      this.axios.get(`${this.baseUrl}/api/brand`, this.searchForm).then(res => {
-        if (res.code == 200) {
-          this.brandData = res.data.content
-          this.searchForm.page = res.data.number
-          this.searchForm.size = res.data.size
-          this.total = res.data.totalElements
+    //行拖拽
+    rowDrop() {
+      const tbody = document.querySelector('.el-table__body-wrapper tbody')
+      const _this = this
+      Sortable.create(tbody, {
+        onEnd({ newIndex, oldIndex }) {
+          const currRow = _this.tableData.splice(oldIndex, 1)[0]
+          _this.tableData.splice(newIndex, 0, currRow)
         }
       })
+    },
+    //列拖拽
+    columnDrop() {
+      const wrapperTr = document.querySelector('.el-table__header-wrapper tr')
+      this.sortable = Sortable.create(wrapperTr, {
+        animation: 180,
+        delay: 0,
+        onEnd: evt => {
+          const oldItem = this.dropCol[evt.oldIndex]
+          this.dropCol.splice(evt.oldIndex, 1)
+          this.dropCol.splice(evt.newIndex, 0, oldItem)
+        }
+      })
+    },
+    getRecommentList() {
+      this.axios
+        .get(`${this.baseUrl}/hot/product`, this.searchForm)
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
+            this.recommendData = res.data.content
+            this.searchForm.page = res.data.number
+            this.searchForm.size = res.data.size
+            this.total = res.data.totalElements
+          }
+        })
+    },
+    // 获取热门商品数据
+    getHotList() {
+      this.axios
+        .get(`${this.baseUrl}/hot/product`, this.searchHotForm)
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
+            this.hotData = res.data.content
+            this.searchHotForm.page = res.data.number
+            this.searchHotForm.size = res.data.size
+            this.hotTotal = res.data.totalElements
+          }
+        })
+    },
+    // 获取首页首页展示数据
+    getHomeList() {
+      this.axios
+        .get(`${this.baseUrl}/hot/product`, this.searchHomeForm)
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
+            this.homeData = res.data.content
+            this.searchHomeForm.page = res.data.number
+            this.searchHomeForm.size = res.data.size
+          }
+        })
     },
     // 查询
     query() {
       this.searchForm.page = 0
-      this.getBrandList()
+      this.getRecommentList()
     },
     handleSizeChange(val) {
       this.searchForm.size = val
-      this.getBrandList()
+      this.getRecommentList()
     },
     handleCurrentChange(val) {
       this.searchForm.page = val
-      this.getBrandList()
+      this.getRecommentList()
     },
-    // 显示添加品牌对话框
-    showAddBrand() {
-      this.isShowBrandDialog = true
-      this.type = 2
+    // 显示热门商品对话框
+    showHotProduct() {
+      this.type = 'hot'
+      this.isShowHotProductDialog = true
+      this.getHotList()
     },
-    // 显示修改品牌对话框
-    handleEdit(index, row) {
-      this.isShowBrandDialog = true
-      this.type = 1
-      this.id = row.id
-      // todo---发送请求，获取数据，
-      // this.axios.get(`${this.baseUrl}/api/tag/${this.id}`).then(res => {
-      //   if (res.code == 200) {
-      //     console.log(res);
-      //     for(let key in this.brandForm){
-      //       this.brandForm[key] = res.data
-      //     }
-      //     this.fileList.push({ url: this.imgBaseUrl + res.data.brandImg });
-      //   }
-      // });
+    // 显示热门管理对话框
+    showHomeBrand() {
+      this.type = 'home'
+      this.isShowHomeBrandDialog = true
+      this.getHomeList()
     },
     // 删除
     handleDel(index, row) {
+      console.log(row)
       this.$confirm('是否确认删除？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          axios.delete(`${this.baseUrl}/api/brand?id=${row.id}`).then(res => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
+          axios
+            .post(
+              `${this.baseUrl}/hot/product/isHot?ids=${[row.id]}&isHot=false`
+            )
+            .then(res => {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.getRecommentList()
             })
-            this.getBrandList()
-          })
         })
         .catch(() => {})
     },
-    handleHot(obj, callback) {
-      this.axios.put(`${this.baseUrl}/api/brand/sethot`, obj).then(res => {
-        if (res.code === 200) {
-          callback && callback(res)
-        }
-      })
-    },
-    // 标记热门
-    handleMark(index, row) {
-      const _this = this
-      this.handleHot(
-        {
-          id: row.id,
-          hot: true
-        },
-        function(res) {
-          _this.getBrandList()
-        }
-      )
-    },
-    // 取消热门
-    handleCancel(index, row) {
-      const _this = this
-      this.handleHot(
-        {
-          id: row.id,
-          hot: false
-        },
-        function(res) {
-          _this.getBrandList()
-        }
-      )
-    },
-    // 添加或编辑
-    addOrEditBrand() {
-      this.$refs.brandRef.validate(valid => {
-        if (!valid) return false
-        if (this.type == 1) {
-          console.log('编辑操作')
-          this.axios
-            .put(`${this.baseUrl}/api/brand`, {
-              ...this.brandForm,
-              id: this.id
-            })
-            .then(res => {
-              if (res.code === 200) {
-                this.isShowBrandDialog = false
-                this.getBrandList()
-              }
-            })
-        }
-        if (this.type == 2) {
-          console.log('新增操作')
-          this.axios
-            .post(`${this.baseUrl}/api/brand`, this.brandForm)
-            .then(res => {
-              if (res.code === 200) {
-                this.isShowBrandDialog = false
-                this.getBrandList()
-              }
-            })
-        }
-      })
+
+    // 热门商品分页操作
+    hotquery() {
+      this.searchHotForm.page = 0
+      this.getHotList()
     },
     handleClose() {
-      // 清除操作
-      for (let key in this.brandForm) {
-        this.brandForm[key] = ''
-      }
-      this.id = null
+      // 重置操作
+      this.multipleSelection = [] // 清空热门选中数据
+      this.$refs.multipleHotTable.clearSelection() // 重置选中状态
+      this.searchHotForm.page = 0 // 重置分页
+      this.searchHotForm.isHot = false
+      this.searchHotForm.showIndex = false
       this.type = ''
-      this.$refs.brandRef.resetFields()
-      this.fileList = []
+      this.searchHotForm.keyword = ''
+      this.searchHomeForm.keyword = ''
     },
-    // 处理图片上传
-    handleSuccess(res, file, fileList) {
-      console.log(fileList)
-      if (this.brandForm.brandImg) {
-        fileList.splice(0, 1)
-      }
-      this.brandForm.brandImg = fileList[0].response.data
+    handleHotSizeChange(val) {
+      this.searchHotForm.size = val
+      this.getHotList()
     },
-    handleRemove(file, fileList) {
-      this.brandForm.brandImg = ''
+    handleHotCurrentChange(val) {
+      this.searchHotForm.page = val
+      this.getHotList()
     },
-    beforeAvatarUpload(file) {
-      // const isJPG = file.type === "image/jpeg";
-      // const isPNG = file.type === "image/png";
-      // const isGIF = file.type === "image/gif";
-      const isLt2M = file.size / 1024 / 1024 < 1
-      // if (!isJPG || !isPNG || !isGIF) {
-      //   this.$message.error("上传头像图片只能是 PNG/JPG/JPEG/GIF 格式!");
-      // }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 1MB!')
-      }
-      return isLt2M
+    handleSelectionChange(val) {
+      this.multipleSelection = val
     },
-    showHomeBrand() {
-      // this.isShowHomeBrandDialog = true
-      this.axios
-        .get(`${this.baseUrl}/api/brand/showhome`, {
-          page: 1,
-          size: 10
+    addHotProduct() {
+      if (this.type == 'hot') {
+        const ids = []
+        this.multipleSelection.forEach(item => {
+          ids.push(item.id)
         })
-        .then(res => {
-          if (res.code === 200) {
+        axios
+          .post(`${this.baseUrl}/hot/product/isHot?ids=${ids}&isHot=true`)
+          .then(res => {
             console.log(res)
+            if (res.status == 200) {
+              this.$message({
+                type: 'success',
+                message: '添加成功!'
+              })
+              this.isShowHotProductDialog = false
+              this.getRecommentList()
+            }
+          })
+      }
+      if (this.type == 'home') {
+        this.isShowHomeDialog = true
+      }
+    },
+
+    // 首页热门删除
+    handleHomeDel(index, row) {
+      this.$confirm('是否确认删除？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          axios
+            .post(
+              `${this.baseUrl}/hot/product/showIndex?ids=${row.id}&showIndex=false`
+            )
+            .then(res => {
+              console.log(res)
+              if (res.data.code == 200) {
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                })
+                this.getHomeList()
+              }
+            })
+        })
+        .catch(() => {})
+    },
+    showHomeProduct() {
+      this.isShowHotProductDialog = true
+      this.searchHotForm.isHot = true
+      this.searchHotForm.showIndex = false
+      this.getHotList()
+    },
+    // 首页展示起始时间
+    startChange() {
+      if (this.homeShowForm.effectDate.length > 0)
+        this.homeShowForm.effectDate[0] = this.$timeDate(
+          this.homeShowForm.effectDate[0]
+        )
+    },
+    endChange() {
+      if (this.homeShowForm.effectDate.length > 0)
+        this.homeShowForm.effectDate[1] = this.$timeDate(
+          this.homeShowForm.effectDate[1]
+        )
+    },
+    // 首页展示
+    handleHome() {
+      if (this.homeShowForm.effectDate.length == 0) return false
+      if (
+        new Date(this.homeShowForm.effectDate[0]).getTime() >
+        new Date(this.homeShowForm.effectDate[1]).getTime()
+      ) {
+        return this.$message.warning('起始时间不能大于结束时间！')
+      }
+      const ids = []
+      this.multipleSelection.forEach(item => {
+        ids.push(item.id)
+      })
+      axios
+        .post(
+          `${this.baseUrl}/hot/product/showIndex?ids=${ids}&showIndex=true&effectDate=${this.homeShowForm.effectDate}`
+        )
+        .then(res => {
+          console.log(res)
+          if (res.data.code == 200) {
+            this.$message({
+              type: 'success',
+              message: '添加成功!'
+            })
+            this.isShowHomeDialog = false
+            this.isShowHotProductDialog = false
+            this.getHomeList()
           }
         })
     },
-    handleHomeBrandClose() {}
+    // 首页展示对话框关闭数据清除
+    handleCloseHome() {
+      this.homeShowForm.effectDate = []
+      this.id = null
+    }
   }
 }
 </script>
@@ -365,7 +485,13 @@ export default {
   overflow: scroll;
 }
 .el-dialog {
-  width: 450px !important;
+  width: 1100px !important;
+}
+.glodDialog .el-dialog {
+  width: 600px !important;
+  text-align: center;
+}
+.glodDialog .el-dialog__body {
+  padding-left: 30px;
 }
 </style>
-
