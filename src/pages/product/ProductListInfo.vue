@@ -4,7 +4,10 @@
     <h1>
       {{ type == 1 ? "商品查看" : "商品审核"
       }}
-      <span class="infoType" v-if="productObj.status.status !== 4">状态：{{ productObj.status.text }}</span>
+      <span
+        class="infoType"
+        v-if="productObj.status.status !== 4"
+      >状态：{{ productObj.status.text }}</span>
       <span
         class="infoType"
         v-if="productObj.status.status == 4"
@@ -71,7 +74,11 @@
           <span>
             <i class="select">*</i> 产品标签
           </span>
-          <el-tag :key="tag" v-for="tag in productObj.tags" style="margin-right:10px">{{ tag }}</el-tag>
+          <el-tag
+            :key="index"
+            v-for="(tag,index) in productObj.tags"
+            style="margin-right:10px"
+          >{{ tag.name }}</el-tag>
         </div>
       </div>
     </div>

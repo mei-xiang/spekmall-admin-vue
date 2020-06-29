@@ -37,17 +37,17 @@
     </el-form>
 
     <!-- 表格区域 -->
-    <el-table :data="shopData" border style="width: 100%;">
+    <el-table :data="shopData" border style="width: 90%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="name" label="供应商编号" width="190"></el-table-column>
       <el-table-column prop="name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="150"></el-table-column>
+      <el-table-column prop="mobile" label="手机" width="190"></el-table-column>
       <el-table-column prop label="地区" width="190">
         <template slot-scope="scope">
           <span>{{ scope.row.company.province }}{{ scope.row.company.city }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="是否金牌供应商" width="190">
+      <el-table-column prop="name" label="是否金牌供应商">
         <template slot-scope="scope">
           <span v-if="scope.row.vip == 0">否</span>
           <span v-if="scope.row.vip == 1">是</span>

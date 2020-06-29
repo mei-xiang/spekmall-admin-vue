@@ -86,6 +86,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="createDate" label="注册时间" sortable></el-table-column>
+      <el-table-column prop="source" label="用户来源"></el-table-column>
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <el-button
@@ -102,7 +103,6 @@
           >审核</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="source" label="用户来源"></el-table-column>
     </el-table>
 
     <!-- 分页区域 -->

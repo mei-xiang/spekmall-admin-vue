@@ -335,10 +335,9 @@ export default {
         productIds: ids
       })
       this.axios
-        .post(`${this.baseUrl}/api/hotCategoryProduct/apply`, {
-          categoryId: this.categoryId,
-          productIds: this.multipleSelection[0].productId
-        })
+        .post(
+          `${this.baseUrl}/api/hotCategoryProduct/apply?categoryId=${this.categoryId}&productIds=${ids}`
+        )
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -365,7 +364,7 @@ export default {
       console.log(index, row)
       this.axios
         .del(`${this.baseUrl}/api/hotCategoryProduct/delete`, {
-          id: this.categoryId
+          id: row.id
         })
         .then(res => {
           console.log(res)

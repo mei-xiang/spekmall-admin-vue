@@ -85,6 +85,14 @@ var router = new Router({
         title: '商品查看'
       }
     },
+    {
+      path: '/selfShopInfo',
+      name: 'selfShopInfo',
+      component: resolve => require(['@/pages/self/SelfShopInfo'], resolve),
+      meta: {
+        title: '自营店铺信息'
+      }
+    },
   ]
 })
 
