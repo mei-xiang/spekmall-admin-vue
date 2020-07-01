@@ -294,7 +294,12 @@ a:hover {
 .demo-form-inline .el-input__inner {
   width: 180px;
 }
-
+.el-cascader {
+  line-height: 28px !important;
+}
+.el-cascader .el-input {
+  width: 300px !important;
+}
 .demo-form-inline .el-date-editor.el-input,
 .el-date-editor.el-input__inner {
   width: 180px;
@@ -396,10 +401,75 @@ a:hover {
 .product .city .el-form-item__content .el-cascader {
   width: 147px;
 }
-.product .el-form-item__content .el-select,
-.product .el-form-item__content .el-cascader {
+.product .el-form-item__content .el-select {
   width: 300px;
 }
+.product .el-form-item__content .el-cascader {
+  width: 350px;
+}
+
 .product .price.el-input {
   width: 280px !important;
+}
+.product .storage.el-input {
+  width: 280px !important;
+}
+
+/* 自营订单管理 */
+.el-tabs--border-card > .el-tabs__content {
+  padding: 0;
+}
+.order .el-tabs--border-card {
+  width: 82.2%;
+}
+.order .order_title {
+  padding-left: 20px;
+  color: #797979;
+  line-height: 49px;
+  background-color: #f2f2f2;
+}
+.order .item {
+  margin-top: 10px;
+  border: 1px solid #eee;
+}
+.order .item_hd {
+  padding-left: 20px;
+  line-height: 40px;
+  height: 40px;
+  text-align: center;
+  background-color: #f2f2f2;
+  color: #797979;
+}
+.order .code {
+  text-align: left;
+}
+.order .time {
+}
+.order .user {
+}
+.order .detail {
+}
+.order .item_bd {
+  height: 140px;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #515151;
+}
+.order .avatar {
+  display: flex;
+  align-items: top;
+}
+.order .item_bd .handle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.order .handle span {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.order .tit {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
