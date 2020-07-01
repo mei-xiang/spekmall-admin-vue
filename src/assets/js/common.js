@@ -908,5 +908,15 @@ export default {
       if (!picStr) return []
       return picStr.split(",");
     }
+    /**
+		 * @description:  获取截取后的制定字符后面字符
+		 * @param {String} picStr [路径字符串]
+		 * @return: 
+		 */
+    Vue.prototype.$getPartStr = function (complete, part) {
+      var str = complete;
+      str = str.match(eval('/' + part + '(\S*)/'))[1];
+      return str
+    }
   }
 }

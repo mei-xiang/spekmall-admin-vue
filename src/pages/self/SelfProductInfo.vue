@@ -1,0 +1,544 @@
+<template>
+  <!-- 商品查看 -->
+  <div class="content product">
+    <h1>
+      <span v-if="type==1">查看商品</span>
+      <span v-if="type==2">编辑商品</span>
+      <span v-if="type==3">发布商品</span>
+      <!-- <span class="infoType" v-if="selfProductForm.status.status !== 4">状态：{{ selfProductForm.status.text }}</span>
+      <span
+        class="infoType"
+        v-if="selfProductForm.status.status == 4"
+      >状态：{{ selfProductForm.status.text }} 原因：{{ selfProductForm.remarks }}</span>-->
+    </h1>
+    <el-form
+      :model="selfProductForm"
+      ref="selfProductRef"
+      :rules="selfProductRules"
+      label-width="150px"
+      label-position="right"
+      style="width:700px;margin-left:100px"
+    >
+      <div class="box">
+        <h2>公司基本信息</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="产品名称" prop="title">
+              <el-input v-model="selfProductForm.title" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="产品类别" prop="categoryName">
+              <!-- <el-input v-model="selfProductForm.categoryName" :readonly="readonly"></el-input> -->
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="品牌名" prop="brand">
+              <el-input v-model="selfProductForm.brand" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="产品型号" prop="model">
+              <el-input v-model="selfProductForm.model" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item city">
+            <el-form-item label="生产地" prop="city" v-if="type==1">
+              <el-input
+                v-model="selfProductForm.province + selfProductForm.city"
+                :readonly="readonly"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="生产地" prop="city" v-if="type==2||type==3">
+              <el-select
+                v-model="selfProductForm.countryId"
+                placeholder="国家"
+                @change="countryChange"
+              >
+                <el-option
+                  v-for="item in country"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+              <el-select
+                v-model="selfProductForm.province"
+                placeholder="请选择省份"
+                @change="provincesChange"
+                :disabled="disabled"
+              >
+                <el-option
+                  v-for="item in provinces"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+              <el-select
+                v-model="selfProductForm.city"
+                placeholder="请选择城市"
+                @change="cityChange"
+                :disabled="disabled"
+              >
+                <el-option
+                  v-for="item in cities"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="最小起订量" prop="minimumOrderingQuantity">
+              <el-input v-model="selfProductForm.minimumOrderingQuantity" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="价格" prop="price">
+              <el-input v-model="selfProductForm.price" :readonly="readonly" class="price"></el-input>
+              <el-checkbox v-model="selfProductForm.bargain">议价</el-checkbox>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="单位" prop="unit">
+              <el-input v-model="selfProductForm.unit" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="是否主要产品" prop="isMainProduct">
+              <el-radio
+                v-model="selfProductForm.isMainProduct"
+                :label="true"
+                :readonly="readonly"
+              >主要产品</el-radio>
+              <el-radio
+                v-model="selfProductForm.isMainProduct"
+                :label="false"
+                :readonly="readonly"
+              >普通产品</el-radio>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="产品标签" prop="tagsId" v-if="type==2||type==3">
+              <el-select v-model="selfProductForm.tagsId" multiple placeholder="请选择产品标签">
+                <el-option
+                  v-for="item in optionsTag"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <div v-if="type==1">
+              <span>
+                <i class="select"></i> 产品标签
+              </span>
+              <el-tag
+                :key="index"
+                v-for="(tag,index) in selfProductForm.tagsId"
+                style="margin-right:10px"
+                v-if="type==1"
+              >{{ tag.name }}</el-tag>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>产品图片上传</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="产品图片" prop="images">
+              <el-upload
+                :action="uploadUrl"
+                list-type="picture-card"
+                :on-success="handleImagesSuccess"
+                :on-preview="handleImagesPreview"
+                :on-remove="handleImagesRemove"
+                :on-exceed="handleImagesExceed"
+                :file-list="fileImagesList"
+                v-if="type == 2 || type == 3"
+                style="width:850px;"
+                :limit="5"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+              <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
+                <img width="100%" :src="imagesDialogImageUrl" alt />
+              </el-dialog>
+              <el-image
+                style="width: 140px; height: 140px"
+                v-for="(item, index) in selfProductForm.images"
+                :key="index"
+                :src="imgBaseUrl + item"
+                :preview-src-list="[imgBaseUrl + item]"
+                v-if="type == 1"
+              ></el-image>
+            </el-form-item>
+          </div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>产品贸易信息</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="商品库存" prop="storage">
+              <el-input v-model="selfProductForm.storage" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="支付方式" prop="payModels">
+              <el-checkbox-group v-model="selfProductForm.payModels" style="display:inline-block">
+                <el-checkbox v-for="item in payType" :label="item" :key="item">{{item }}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="运输方式" prop="shippingTypes">
+              <el-checkbox-group
+                v-model="selfProductForm.shippingTypes"
+                style="display:inline-block"
+              >
+                <el-checkbox v-for="item in shipType" :label="item" :key="item">{{item}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>产品详情</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="产品规格" prop="specsList">
+              <!-- 表格区域 -->
+              <el-table :data="selfProductForm.specsList" border style="display:inline-block">
+                <el-table-column align="center" prop="specsName" label="名称">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.specsName" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column align="center" prop="specsParam" label="参数">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.specsParam" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作">
+                  <template slot-scope="scope">
+                    <el-button
+                      size="mini"
+                      type="text"
+                      @click="handleDel(scope.$index, scope.row)"
+                    >删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-button
+                type="button"
+                class="el-button el-button--primary el-button--mini"
+                @click="addSpecs"
+              >增行</el-button>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="产品详情" prop="introduction">
+              <vue-ueditor-wrap
+                v-model="selfProductForm.introduction"
+                :destroy="true"
+                :config="UEDITOR_CONFIG"
+                style="width:900px"
+                v-if="type == 2 || type == 3"
+              ></vue-ueditor-wrap>
+              <div v-if="type==1" v-html="selfProductForm.introduction" style="color:#606266"></div>
+            </el-form-item>
+          </div>
+        </div>
+      </div>
+    </el-form>
+
+    <el-button @click="close" class="close">取消</el-button>
+    <!-- type:1 查看 type:2 编辑 type:3 新增-->
+    <el-button @click="save" type="primary" v-if="type == 2||type == 3">保存为草稿</el-button>
+    <el-button @click="approve" type="primary" v-if="type == 2||type == 3">添加审核</el-button>
+  </div>
+</template>
+
+<script>
+import VueUeditorWrap from 'vue-ueditor-wrap'
+import { getStore } from 'js/store'
+export default {
+  data() {
+    const token = getStore({ name: 'access_token', type: 'string' })
+    return {
+      selfProductForm: {
+        title: '', // 产品名称
+        categoryId: '', // 产品类别
+        brand: '', // 品牌
+        model: '', // 产品型号
+        countryId: 1, // 国家id
+        provinceId: '', // 省份编码
+        province: '', // 省份
+        cityId: '', // 城市编码
+        city: '', // 城市
+        minimumOrderingQuantity: '', // 最小起订量
+        price: '', // 价格
+        bargain: null, // 议价 teur/false
+        unit: '', // 单位
+        isMainProduct: '', // 是否主要产品 true/false
+        tagsId: [], // 产品标签id
+        storage: '', // 库存
+        payModels: [], // 支付方式
+        shippingTypes: [], // 运输方式
+        introduction: '', // 产品介绍
+        status: '', // 产品状态 0.草稿 1.提交审核
+        images: [], // 产品图片多张，图片url
+        specsList: [] // 规格名称,规格参数。上传需要解析
+      },
+      // 校验规则
+      selfProductRules: {},
+
+      tagList: [], // 标签展示 type 1
+      country: [], // 国家列表
+      provinces: [], // 省份列表
+      cities: [], // 城市列表
+      disabled: false, // 是否禁用省市
+      optionsTag: [], // 标签多选列表
+
+      payType: ['支付宝', '微信支付', '银联支付'], // 支付方式
+      shipType: ['空运', '海运', '快递', '公路运输', '铁路运输'], // 运输方式
+
+      type: null, // 查看1  编辑2  新增3
+      readonly: false, // 只读
+      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
+      fileImagesList: [], // images图片
+      imagesDialogImageUrl: '', // images图片预览
+      imagesDialogVisible: false
+    }
+  },
+  created() {
+    // 查看 type：1   编辑 type：2  新增 type：3
+    this.type = this.$route.query.type
+    if (this.type == 1) {
+      this.getProductList()
+      this.readonly = true
+    }
+    if (this.type == 2) {
+      this.getProductList()
+      this.readonly = false
+    }
+    if (this.type == 3) {
+      this.readonly = false
+    }
+    this.UEDITOR_CONFIG = getStore({ name: 'UEDITOR_CONFIG' })
+    this.getCountryList() // 获取国家列表
+    this.getProvinces() // 获取省份列表
+    this.getTagList() // 获取标签列表
+  },
+  watch: {
+    'selfProductForm.specsList': function(val, oldval) {
+      console.log(val + 'aaa')
+      if (val.length > 20) {
+        val.splice(20, 1)
+        this.$message.warning('产品规格限20个')
+      }
+    }
+  },
+  components: {
+    VueUeditorWrap
+  },
+  methods: {
+    getProductList() {
+      this.axios
+        .get(`${this.baseUrl}/api/product/info`, {
+          productId: this.$route.query.id
+        })
+        .then(res => {
+          console.log(res)
+          if (res.code == 200) {
+            for (let key in this.selfProductForm) {
+              this.selfProductForm[key] = res.data[key]
+            }
+            this.selfProductForm.tagsId = res.data.tags
+            this.selfProductForm.isMainProduct = res.data.mainProduct
+            if (!this.selfProductForm.countryId) {
+              this.selfProductForm.countryId = 1
+            }
+            // 标签展示
+            this.selfProductForm.tagsId.forEach(item => {
+              this.tagList.push({
+                name: item
+              })
+            })
+            // 编辑时图片展示
+            this.selfProductForm.images.forEach(item => {
+              this.fileImagesList.push({
+                url: this.imgBaseUrl + item
+              })
+            })
+          }
+        })
+    },
+    // 获取国家
+    getCountryList() {
+      this.axios.get(`${this.baseUrl}/public/countries`).then(res => {
+        res.data.forEach(item => {
+          this.country.push({
+            label: item.nameZh,
+            value: item.id
+          })
+        })
+      })
+    },
+    // 获取所有省份
+    getProvinces() {
+      this.axios.get(`${this.baseUrl}/public/address/provinces`).then(res => {
+        console.log(res)
+        res.data.forEach(item => {
+          this.provinces.push({
+            label: item.name,
+            value: item.name,
+            id: item.id
+          })
+        })
+      })
+    },
+    // 根据省份编码获取所有市
+    getCitiesById(provinceId) {
+      this.cities = []
+      this.axios
+        .get(
+          `${this.baseUrl}/public/address/cities/provinces?provincesid=${provinceId}`
+        )
+        .then(res => {
+          console.log(res)
+          res.data.forEach(item => {
+            this.cities.push({
+              label: item.name,
+              value: item.name,
+              id: item.id
+            })
+          })
+        })
+    },
+    // 国家改变。不是中国，禁用省市
+    countryChange(val) {
+      if (val != 1) {
+        this.selfProductForm.province = ''
+        this.selfProductForm.provinceId = ''
+        this.selfProductForm.city = ''
+        this.selfProductForm.cityId = ''
+        this.disabled = true
+      } else {
+        this.disabled = false
+      }
+    },
+    // 省份改变
+    provincesChange(val) {
+      this.selfProductForm.city = ''
+      this.selfProductForm.cityId = ''
+      const provinceId = this.provinces.find(item => {
+        return item.value == val
+      }).id
+      this.getCitiesById(provinceId)
+      this.selfProductForm.provinceId = provinceId
+    },
+    // 城市改变
+    cityChange(val) {
+      const cityId = this.cities.find(item => {
+        return item.value == val
+      }).id
+      this.selfProductForm.cityId = cityId
+    },
+
+    // 获取标签多选列表
+    getTagList() {
+      this.axios.get(`${this.baseUrl}/api/tag/list`).then(res => {
+        if (res.code != 200) return false
+        res.data.forEach(item => {
+          this.optionsTag.push({
+            label: item.name,
+            value: item.id
+          })
+        })
+      })
+    },
+    // 处理产品图片上传
+    handleImagesSuccess(res, file, fileList) {
+      this.selfProductForm.images.push(res.data)
+    },
+    handleImagesPreview(file, fileList) {
+      this.imagesDialogImageUrl = file.url
+      this.imagesDialogVisible = true
+    },
+    handleImagesRemove(file, fileList) {
+      if (file.response) {
+        const item = this.selfProductForm.images.findIndex(i => {
+          return i.src == file.response.data
+        })
+        this.selfProductForm.images.splice(item, 1)
+      } else {
+        const item = this.selfProductForm.images.findIndex(i => {
+          return i.src == file.url.match(/filePath=(\S*)/)[1]
+        })
+        this.selfProductForm.images.splice(item, 1)
+      }
+    },
+    handleImagesExceed(files, fileList) {
+      this.$message.warning(`最多添加5张`)
+    },
+    // 表格删除
+    handleDel(index, row) {
+      this.selfProductForm.specsList.splice(index, 1)
+    },
+    // 表格添加
+    addSpecs() {
+      const obj = {
+        specsName: '',
+        specsParam: ''
+      }
+      this.selfProductForm.specsList.push(obj)
+    },
+    // 返回
+    close() {
+      this.$router.push('/selfProduct')
+    },
+    saveOrApprove(obj, callback) {
+      // this.$refs.selfRef.validate(valid => {
+      //   if (!valid) return
+      //   this.axios
+      //     .post(`${this.baseUrl}/api/supplier/shop/self/info`, obj)
+      //     .then(res => {
+      //       callback && callback(res)
+      //     })
+      // })
+    },
+    save() {
+      // this.selfProductForm.status = 0 // 草稿
+      // const _this = this
+      // this.saveOrApprove(this.selfProductForm, function(res) {
+      //   if (res.code == 200) {
+      //     console.log('保存了')
+      //   }
+      //   if (res.code == 500) {
+      //     _this.$message.warning(res.message)
+      //   }
+      // })
+    },
+    approve() {
+      // this.selfProductForm.status = 1 // 审核
+      // const _this = this
+      // this.saveOrApprove(this.selfProductForm, function(res) {
+      //   if (res.code == 200) {
+      //     console.log('审核了')
+      //   }
+      //   if (res.code == 500) {
+      //     _this.$message.warning(res.message)
+      //   }
+      // })
+    }
+  }
+}
+</script>
+
+<style>
+</style>

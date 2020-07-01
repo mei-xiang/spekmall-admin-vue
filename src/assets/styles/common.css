@@ -360,3 +360,46 @@ a:hover {
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
 }
+
+/* 自营产品模块 */
+.product.content {
+  padding-top: 10px;
+  height: 100%;
+  overflow: scroll;
+}
+.product h1 {
+  font-size: 22px;
+  line-height: 35px;
+  font-weight: 700;
+}
+.product .box {
+  margin-bottom: 20px;
+}
+.product h2 {
+  font-size: 18px;
+  line-height: 35px;
+  font-weight: 700;
+}
+.product .info {
+  padding-left: 100px;
+  position: relative;
+}
+.product .info .item {
+  line-height: 35px;
+  /* display: flex; */
+}
+
+.product .close {
+  margin-left: 450px;
+}
+.product .city .el-form-item__content .el-select,
+.product .city .el-form-item__content .el-cascader {
+  width: 147px;
+}
+.product .el-form-item__content .el-select,
+.product .el-form-item__content .el-cascader {
+  width: 300px;
+}
+.product .price.el-input {
+  width: 280px !important;
+}

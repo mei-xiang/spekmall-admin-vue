@@ -56,9 +56,8 @@
             <el-table-column type="index" label="序号" fixed></el-table-column>
             <el-table-column prop="productCode" label="产品编号" width="120"></el-table-column>
             <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
-            <el-table-column prop="productName" label="产品中文名称" width="180" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="companyName" label="供应商名称" width="180" show-overflow-tooltip></el-table-column>
-            <el-table-column prop label="首页展示时效周期" width="180" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="productName" label="产品中文名称"></el-table-column>
+            <el-table-column prop="companyName" label="供应商名称"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button

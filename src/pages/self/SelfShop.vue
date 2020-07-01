@@ -2,26 +2,34 @@
   <!-- 自营店铺管理 -->
   <div class="content">
     <!-- 表格区域 -->
-    <el-table :data="shopData" border style="width: 90%;">
+    <div v-if="!isOwnShop">
+      <span>您的店铺暂未开通</span>
+      <el-button class="query" @click="publish" size="mini">店铺发布</el-button>
+    </div>
+    <el-table :data="selfData" border style="width: 90%;" v-if="isOwnShop">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="name" label="店铺名称" width="190"></el-table-column>
-      <el-table-column prop="name" label="店铺成立时间" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="mobile" label="供应商类型" width="190"></el-table-column>
-      <el-table-column label="店铺状态" width="190">
+      <el-table-column prop="supplierShopOutput.name" label="店铺名称" width="190"></el-table-column>
+      <el-table-column
+        prop="supplierCompanyOutput.establishmentDate"
+        label="店铺成立时间"
+        width="190"
+        show-overflow-tooltip
+      ></el-table-column>
+      <el-table-column label="供应商类型" width="190">
         <template slot-scope="scope">
-          <span>{{ scope.row.shop.shopStatus.text }}</span>
+          <span>{{ scope.row.selfSupport?'自营':'非自营' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="mobile" label="信息" width="190"></el-table-column>
+      <el-table-column label="店铺状态" width="190">
+        <template slot-scope="scope">
+          <span>{{ }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop label="信息" width="190"></el-table-column>
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleEdit(scope.$index, scope.row)"
-            v-if="scope.row.shop.shopStatus.ndex == 1"
-          >编辑</el-button>
+          <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -29,11 +37,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 export default {
   data() {
     return {
-      shopData: [] // 列表数据
+      selfData: [], // 列表数据
+      isOwnShop: true
     }
   },
   created() {
@@ -41,14 +49,15 @@ export default {
   },
   methods: {
     getShopList() {
-      this.axios
-        .get(`${this.baseUrl}/api/supplier/shop/search`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.shopData = res.data.content
+      this.axios.post(`${this.baseUrl}/api/supplier/self/search`).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.selfData = res.data.content
+          if (res.data.content.length > 0) {
+            this.isOwnShop = true
           }
-        })
+        }
+      })
     },
     // 查看
     handleDetail(index, row) {
@@ -64,6 +73,13 @@ export default {
       this.$router.push({
         path: '/selfShopInfo',
         query: { id: row.id, type: 2 }
+      })
+    },
+    // 发布店铺
+    publish() {
+      this.$router.push({
+        path: '/selfShopInfo',
+        query: { type: 3 }
       })
     }
   }

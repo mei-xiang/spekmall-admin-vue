@@ -96,14 +96,7 @@
       <div class="info">
         <div class="item">
           <span>公司详情介绍</span>
-          <span>2017年成立的蓝滨不锈钢，是国内第一家专注做双相钢冷热轧2205/0.8MM-12MM卷板的现货型公司。经过快速发展，现已成为国内双相钢这一材质的领军企业，同时也是全国销售规模居于前列的钢铁零售企业。</span>
-          <el-image
-            style="width: 140px; height: 140px;margin-left:300px"
-            v-for="(item, index) in signboard"
-            :key="index"
-            :src="imgBaseUrl + item"
-            :preview-src-list="[imgBaseUrl + item]"
-          ></el-image>
+          <span></span>
         </div>
       </div>
     </div>

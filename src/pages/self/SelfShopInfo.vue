@@ -1,273 +1,692 @@
 <template>
   <!-- 供应商店铺信息 -->
-  <div class="content" v-if="Object.keys(shopObj).length > 0">
+  <div class="content self" v-if="Object.keys(selfForm).length > 0">
     <h1>
-      店铺查看
-      <span
+      <span v-if="type==1">店铺查看</span>
+      <span v-if="type==2">店铺编辑</span>
+      <span v-if="type==3">店铺发布</span>
+      <!-- <span
         class="infoType"
-        v-if="shopObj.shop.shopStatus.index !== 3"
-      >状态：{{ shopObj.shop.shopStatus.text }}</span>
-      <span class="infoType" v-if="shopObj.shop.shopStatus.index == 3">
-        状态：{{ shopObj.shop.shopStatus.text }} 原因：{{
-        shopObj.shop.remarks
+        v-if="selfForm.shop.shopStatus.index !== 3"
+      >状态：{{ selfForm.shop.shopStatus.text }}</span>
+      <span class="infoType" v-if="selfForm.shop.shopStatus.index == 3">
+        状态：{{ selfForm.shop.shopStatus.text }} 原因：{{
+        selfForm.shop.remarks
         }}
-      </span>
+      </span>-->
     </h1>
-    <div class="box">
-      <h2>公司基本信息</h2>
-      <div class="info">
-        <div class="item">
-          <span>公司名称</span>
-          <span>{{ shopObj.company.name }}</span>
-        </div>
-        <div class="item">
-          <span>统一信用代码</span>
-          <span>{{ shopObj.company.creditCode }}</span>
-        </div>
-        <div class="item">
-          <span>地址</span>
-          <span>{{ shopObj.company.address }}</span>
-        </div>
-        <div class="item">
-          <span>行业</span>
-          <span>{{ shopObj.company.industry }}</span>
-        </div>
-        <div class="item">
-          <span>公司简介</span>
-          <span>{{ shopObj.company.companyDesc }}</span>
-        </div>
-        <div class="item">
-          <span>主营产品</span>
-          <span>{{ shopObj.majorPorducts }}</span>
-        </div>
-        <div class="item">
-          <span>公司成立时间</span>
-          <span>{{ shopObj.company.establishmentDate }}</span>
-        </div>
-        <div class="item">
-          <span>注册资金</span>
-          <span>{{ shopObj.company.registeredCapital }}万元</span>
-        </div>
-      </div>
-    </div>
-    <div class="box">
-      <h2>公司其他信息</h2>
-      <div class="info">
-        <div class="item">
-          <span>店铺Logo</span>
-          <el-image
-            style="width: 140px; height: 140px"
-            v-for="(item, index) in logo"
-            :key="index"
-            :src="imgBaseUrl + item"
-            :preview-src-list="[imgBaseUrl + item]"
-          ></el-image>
-        </div>
-        <div class="item">
-          <span>店铺主页招牌图片</span>
-          <el-image
-            style="width: 140px; height: 140px"
-            v-for="(item, index) in signboard"
-            :key="index"
-            :src="imgBaseUrl + item"
-            :preview-src-list="[imgBaseUrl + item]"
-          ></el-image>
-        </div>
-        <div class="item" style="width:500px;display:flex">
-          <span>banner</span>
-          <el-carousel style="flex:1;">
-            <el-carousel-item v-for="item in shopObj.shop.banners" :key="item.id">
-              <img :src="imgBaseUrl + item.src" class="image" />
-            </el-carousel-item>
-          </el-carousel>
-        </div>
-        <div class="item" style="width:900px;display:flex">
-          <span>店铺图片</span>
-          <el-carousel :interval="4000" type="card" height="200px" style="flex:1;">
-            <el-carousel-item v-for="(item, index) in shopObj.shop.images" :key="index">
-              <img :src="imgBaseUrl + item" class="image" />
-            </el-carousel-item>
-          </el-carousel>
-        </div>
-      </div>
-    </div>
-    <div class="box">
-      <h2>公司介绍</h2>
-      <div class="info">
-        <div class="item">
-          <span>信息认证标识</span>
-          <el-radio v-model="radio" :label="true">有</el-radio>
-          <el-radio v-model="radio" :label="false">没有</el-radio>
+    <el-form
+      :model="selfForm"
+      ref="selfRef"
+      :rules="selfRules"
+      label-width="150px"
+      label-position="right"
+      style="width:700px;margin-left:100px"
+    >
+      <div class="box">
+        <h2>公司基本信息</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="公司名称" prop="name">
+              <el-input v-model="selfForm.name" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="统一信用代码" prop="creditCode">
+              <el-input v-model="selfForm.creditCode" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="地址" prop="address">
+              <el-select v-model="provincesVal" placeholder="请选择省份" @change="provincesChange">
+                <el-option
+                  v-for="item in provinces"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+              <el-select v-model="cityVal" placeholder="请选择城市" @change="cityChange">
+                <el-option
+                  v-for="item in cities"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+              <el-input
+                v-model="selfForm.address"
+                :readonly="readonly"
+                placeholder="请输入详细地址"
+                class="address"
+              ></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="行业" prop="industry">
+              <el-input v-model="selfForm.industry" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="公司简介" prop="companyDesc">
+              <el-input v-model="selfForm.companyDesc" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="主营产品" prop="majorPorducts">
+              <el-input v-model="selfForm.majorPorducts" :readonly="readonly"></el-input>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="公司成立时间" prop="establishmentDate">
+              <el-date-picker
+                v-model="selfForm.establishmentDate"
+                type="datetime"
+                placeholder="选择日期时间"
+                :readonly="readonly"
+                @change="dateChange"
+              ></el-date-picker>
+            </el-form-item>
+          </div>
+          <div class="item">
+            <el-form-item label="注册资金" prop="registeredCapital">
+              <el-input v-model="selfForm.registeredCapital" :readonly="readonly" class="regMon"></el-input>
+              <span class="money">万元</span>
+            </el-form-item>
+          </div>
         </div>
       </div>
-    </div>
+      <div class="box">
+        <h2>公司其他信息</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="店铺Logo" prop="logo">
+              <!-- <span>店铺Logo</span> -->
+              <el-upload
+                :action="uploadUrl"
+                list-type="picture-card"
+                :on-success="handleLogoSuccess"
+                :on-preview="handleLogoPicPreview"
+                :on-remove="handleLogoRemove"
+                :file-list="fileLogoList"
+                v-if="type == 2 || type == 3"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+              <el-dialog :visible.sync="logoDialogVisible" v-if="type == 2 || type == 3">
+                <img width="100%" :src="logoDialogImageUrl" alt />
+              </el-dialog>
+              <el-image
+                style="width: 140px; height: 140px"
+                v-for="(item, index) in selfForm.logo"
+                :key="index"
+                :src="imgBaseUrl + item"
+                :preview-src-list="[imgBaseUrl + item]"
+                v-if="type == 1"
+              ></el-image>
+            </el-form-item>
+          </div>
 
-    <el-button @click="close" v-if="type == 1">取消</el-button>
-    <!-- type:1 查看 type:2 审核-->
-    <el-button @click="approveNoPass" type="danger" v-if="type == 2">审核不通过</el-button>
-    <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>
+          <div class="item">
+            <el-form-item label="店铺主页招牌图片" prop="signboard">
+              <!-- <span>店铺主页招牌图片</span> -->
+              <el-upload
+                :action="uploadUrl"
+                list-type="picture-card"
+                :on-success="handleSignboardSuccess"
+                :on-remove="handleSignboardRemove"
+                :on-preview="handleSignboardPreview"
+                :file-list="fileSignboardList"
+                v-if="type == 2 || type == 3"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+              <el-dialog :visible.sync="signboardDialogVisible" v-if="type == 2 || type == 3">
+                <img width="100%" :src="signboardDialogImageUrl" alt />
+              </el-dialog>
+              <el-image
+                style="width: 140px; height: 140px"
+                v-for="(item, index) in selfForm.signboard"
+                :key="index"
+                :src="imgBaseUrl + item"
+                :preview-src-list="[imgBaseUrl + item]"
+                v-if="type == 1"
+              ></el-image>
+            </el-form-item>
+          </div>
+
+          <div class="item" style="width:500px;">
+            <el-form-item label="banner" prop="banners">
+              <!-- <span>banner</span> -->
+
+              <el-carousel style="flex:1;" v-if="type == 1">
+                <el-carousel-item v-for="item in selfForm.banners" :key="item.id">
+                  <img :src="imgBaseUrl + item.src" class="image" style="width:400px;height:400px" />
+                </el-carousel-item>
+              </el-carousel>
+              <el-upload
+                style="width:850px;"
+                :action="uploadUrl"
+                list-type="picture-card"
+                :on-success="handleBannerSuccess"
+                :on-remove="handleBannerRemove"
+                :on-preview="handleBannerPreview"
+                :file-list="fileBannerList"
+                :on-exceed="handleBannerExceed"
+                :limit="5"
+                v-if="type == 2 || type == 3"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+              <el-dialog :visible.sync="bannerDialogVisible" v-if="type == 2 || type == 3">
+                <img width="100%" :src="bannerDialogImageUrl" alt />
+              </el-dialog>
+            </el-form-item>
+          </div>
+
+          <div class="item" style="width:900px;">
+            <el-form-item label="店铺图片" prop="images">
+              <!-- <span>店铺图片</span> -->
+              <el-carousel
+                :interval="4000"
+                type="card"
+                height="200px"
+                style="flex:1;"
+                v-if="type == 1"
+              >
+                <el-carousel-item v-for="(item, index) in selfForm.images" :key="index">
+                  <img :src="imgBaseUrl + item" class="image" style="width:400px;height:400px" />
+                </el-carousel-item>
+              </el-carousel>
+              <el-upload
+                style="width:850px;"
+                :action="uploadUrl"
+                list-type="picture-card"
+                :on-success="handleImagesSuccess"
+                :on-remove="handleImagesRemove"
+                :on-preview="handleImagesPreview"
+                :file-list="fileImagesList"
+                :on-exceed="handleImagesExceed"
+                :limit="10"
+                v-if="type == 2 || type == 3"
+              >
+                <i class="el-icon-plus"></i>
+              </el-upload>
+              <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
+                <img width="100%" :src="imagesDialogImageUrl" alt />
+              </el-dialog>
+            </el-form-item>
+          </div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>公司介绍</h2>
+        <div class="info">
+          <div class="item">
+            <el-form-item label="公司详情介绍" prop="introduction">
+              <!-- <span>公司详情介绍</span> -->
+              <span>
+                <vue-ueditor-wrap
+                  v-model="selfForm.introduction"
+                  :destroy="true"
+                  :config="UEDITOR_CONFIG"
+                  style="width:900px"
+                  v-if="type == 2 || type == 3"
+                ></vue-ueditor-wrap>
+                <div v-if="type==1" v-html="selfForm.introduction"></div>
+              </span>
+            </el-form-item>
+          </div>
+        </div>
+      </div>
+    </el-form>
+
+    <el-button @click="close" class="close">取消</el-button>
+    <!-- type:1 查看 type:2 编辑 type:3 新增-->
+    <el-button @click="save" type="primary" v-if="type == 2||type == 3">保存为草稿</el-button>
+    <el-button @click="approve" type="primary" v-if="type == 2||type == 3">添加审核</el-button>
   </div>
 </template>
 
 <script>
+import VueUeditorWrap from 'vue-ueditor-wrap'
 import { getStore } from 'js/store'
+import Qs from 'qs'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
     return {
-      logo: [], // 店铺Logo
-      signboard: [], // 店铺主页招牌图片
-      shopObj: {}, // 店铺数据
-      radio: true,
-      type: null // 查看1  审核2
+      // 店铺数据
+      selfForm: {
+        name: '',
+        creditCode: '',
+        province: '',
+        provinceId: '',
+        city: '',
+        cityId: '',
+        address: '',
+        industry: '',
+        companyDesc: '',
+        majorPorducts: '',
+        establishmentDate: '',
+        registeredCapital: '',
+        introduction: '',
+        status: '', // 状态 0  1
+        logo: [], // 店铺Logo
+        signboard: [], // 店铺主页招牌图片
+        banners: [], // banner列表
+        images: [] // 店铺图片列表
+      },
+      // 校验规则
+      selfRules: {
+        name: [
+          { required: true, message: '公司名称不能为空', trigger: 'blur' }
+        ],
+        creditCode: [
+          { required: true, message: '统一信用代码不能为空', trigger: 'blur' }
+        ],
+        address: [
+          { required: true, message: '地址不能为空', trigger: 'change' }
+        ],
+        industry: [
+          { required: true, message: '行业不能为空', trigger: 'blur' }
+        ],
+        companyDesc: [
+          { required: true, message: '公司简介不能为空', trigger: 'blur' }
+        ],
+        majorPorducts: [
+          { required: true, message: '主营产品不能为空', trigger: 'blur' }
+        ],
+        establishmentDate: [
+          { required: true, message: '公司成立时间不能为空', trigger: 'change' }
+        ],
+        registeredCapital: [
+          { required: true, message: '注册资金不能为空', trigger: 'blur' }
+        ],
+        introduction: [
+          { required: true, message: '公司详情介绍不能为空', trigger: 'blur' }
+        ],
+        logo: [
+          { required: true, message: '店铺Logo不能为空', trigger: 'change' }
+        ],
+        signboard: [
+          {
+            required: true,
+            message: '店铺主页招牌图片不能为空',
+            trigger: 'change'
+          }
+        ],
+        banners: [
+          { required: true, message: 'banner不能为空', trigger: 'change' }
+        ],
+        images: [
+          { required: true, message: '店铺图片不能为空', trigger: 'change' }
+        ]
+      },
+      provincesVal: '', // 省份选择框
+      cityVal: '', // 城市选择框
+      provinces: [], // 省份列表
+      cities: [], //城市列表
+
+      type: null, // 查看1/编辑2/新增3
+      readonly: false, // 只读
+      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
+
+      fileLogoList: [], // logo图片
+      logoDialogImageUrl: '', // logo图片预览
+      logoDialogVisible: false,
+      fileSignboardList: [], // 店铺主页招牌图片
+      signboardDialogImageUrl: '', // 店铺主页图片预览
+      signboardDialogVisible: false,
+      fileBannerList: [], // banner图片
+      bannerDialogImageUrl: '', // banner图片预览
+      bannerDialogVisible: false,
+      fileImagesList: [], // images图片
+      imagesDialogImageUrl: '', // 店铺图片预览
+      imagesDialogVisible: false,
+      UEDITOR_CONFIG: {} // 富文本编辑器
     }
   },
   created() {
-    // 查看 type：1   审核 type：2
+    // 查看 type：1   编辑 type：2  新增 type：3
     this.type = this.$route.query.type
-    this.getProductList()
+    if (this.type == 1) {
+      this.getSelfShopList()
+      this.readonly = true
+    }
+    if (this.type == 2) {
+      this.getSelfShopList()
+      this.readonly = false
+    }
+    if (this.type == 3) {
+      this.readonly = false
+    }
+    // 获取所有省份
+    this.getProvinces()
+    this.UEDITOR_CONFIG = getStore({ name: 'UEDITOR_CONFIG' })
+  },
+  components: {
+    VueUeditorWrap
   },
   methods: {
-    getProductList() {
+    getSelfShopList() {
       this.axios
         .get(`${this.baseUrl}/api/supplier/shop/${this.$route.query.id}/info`)
         .then(res => {
           console.log(res)
-          const data = res.data.data
+          const data = res.data
           if (res.code == 200) {
-            this.shopObj = data
-            this.radio = data.company.validity
+            // 解析数据
+            this.selfForm.name = data.company.name
+            this.selfForm.creditCode = data.company.creditCode
+            this.selfForm.province = data.company.province
+            this.selfForm.provinceId = data.company.provinceId
+            this.selfForm.city = data.company.city
+            this.selfForm.cityId = data.company.cityId
+            this.selfForm.address = data.company.address
+            this.selfForm.industry = data.company.industry
+            this.selfForm.companyDesc = data.company.companyDesc
+            this.selfForm.majorPorducts = data.majorPorducts
+            this.selfForm.establishmentDate = data.company.establishmentDate
+            this.selfForm.registeredCapital = data.company.registeredCapital
+            this.selfForm.introduction = data.shop.introduction || ''
+
+            // 显示省市
+            this.provincesVal = data.company.province
+            this.cityVal = data.company.city
 
             // 图片解析
-            this.logo = this.$getArrayByStr(data.shop.logo)
-            this.signboard = this.$getArrayByStr(data.shop.signboard)
+            this.selfForm.logo = this.$getArrayByStr(data.shop.logo)
+            this.selfForm.signboard = this.$getArrayByStr(data.shop.signboard)
+            this.selfForm.banners = data.shop.banners
+            this.selfForm.images = data.shop.images
+
+            // 编辑时图片展示
+            this.fileLogoList.push({ url: this.imgBaseUrl + data.shop.logo })
+            this.fileSignboardList.push({
+              url: this.imgBaseUrl + data.shop.signboard
+            })
+            this.selfForm.banners.forEach(item => {
+              item.type = 1
+              this.fileBannerList.push({
+                url: this.imgBaseUrl + item.src
+              })
+            })
+            this.selfForm.images.forEach(item => {
+              this.fileImagesList.push({
+                url: this.imgBaseUrl + item
+              })
+            })
           }
         })
+    },
+    // 获取所有省份
+    getProvinces() {
+      this.axios.get(`${this.baseUrl}/public/address/provinces`).then(res => {
+        console.log(res)
+        res.data.forEach(item => {
+          this.provinces.push({
+            label: item.name,
+            value: item.name,
+            id: item.id
+          })
+        })
+      })
+    },
+    // 根据省份编码获取所有市
+    getCitiesById(provinceId) {
+      this.cities = []
+      this.axios
+        .get(
+          `${this.baseUrl}/public/address/cities/provinces?provincesid=${provinceId}`
+        )
+        .then(res => {
+          console.log(res)
+          res.data.forEach(item => {
+            this.cities.push({
+              label: item.name,
+              value: item.name,
+              id: item.id
+            })
+          })
+        })
+    },
+    // 省份改变
+    provincesChange(val) {
+      this.cityVal = ''
+      this.selfForm.city = ''
+      this.selfForm.cityId = ''
+      const provinceId = this.provinces.find(item => {
+        return item.value == val
+      }).id
+      this.getCitiesById(provinceId)
+      this.selfForm.province = this.provincesVal
+      this.selfForm.provinceId = provinceId
+    },
+    // 城市改变
+    cityChange(val) {
+      const cityId = this.cities.find(item => {
+        return item.value == val
+      }).id
+      this.selfForm.city = this.cityVal
+      this.selfForm.cityId = cityId
+    },
+    // 时间改变
+    dateChange() {
+      this.selfForm.establishmentDate = this.$timeDate(
+        this.selfForm.establishmentDate
+      )
     },
     // 返回
     close() {
-      this.$router.push('/supplierShop')
+      this.$router.push('/selfShop')
     },
-    approvePassOrNoPass(obj, callback) {
-      this.axios
-        .post(`${this.baseUrl}/api/supplier/shop/audit`, obj)
-        .then(res => {
-          console.log(res)
-          if (res.code === 200) {
+    // 处理logo图片上传
+    handleLogoSuccess(res, file, fileList) {
+      if (this.selfForm.logo.length > 0) {
+        fileList.splice(0, 1)
+      }
+      this.selfForm.logo = fileList[0].response.data
+    },
+    handleLogoRemove(file, fileList) {
+      this.selfForm.logo = fileList
+    },
+    handleLogoPicPreview(file) {
+      this.logoDialogImageUrl = file.url
+      this.logoDialogVisible = true
+    },
+    // 处理店铺主页招牌图片上传
+    handleSignboardSuccess(res, file, fileList) {
+      if (this.selfForm.signboard.length > 0) {
+        fileList.splice(0, 1)
+      }
+      this.selfForm.signboard = fileList[0].response.data
+    },
+    handleSignboardRemove(file, fileList) {
+      this.selfForm.signboard = fileList
+    },
+    handleSignboardPreview(file) {
+      this.signboardDialogImageUrl = file.url
+      this.signboardDialogVisible = true
+    },
+    // 处理banner图片上传
+    handleBannerSuccess(res, file, fileList) {
+      this.selfForm.banners.push({
+        src: res.data,
+        sort: this.selfForm.banners.length + 1,
+        type: 1
+      })
+    },
+    handleBannerPreview(file, fileList) {
+      this.bannerDialogImageUrl = file.url
+      this.bannerDialogVisible = true
+    },
+    handleBannerRemove(file, fileList) {
+      if (file.response) {
+        const item = this.selfForm.banners.findIndex(i => {
+          return i.src == file.response.data
+        })
+        this.selfForm.banners.splice(item, 1)
+      } else {
+        const item = this.selfForm.banners.findIndex(i => {
+          return i.src == file.url.match(/filePath=(\S*)/)[1]
+        })
+        this.selfForm.banners.splice(item, 1)
+      }
+    },
+    handleBannerExceed(files, fileList) {
+      this.$message.warning(`最多添加5张`)
+    },
+    // 处理店铺图片上传
+    handleImagesSuccess(res, file, fileList) {
+      this.selfForm.images.push(res.data)
+    },
+    handleImagesPreview(file, fileList) {
+      this.imagesDialogImageUrl = file.url
+      this.imagesDialogVisible = true
+    },
+    handleImagesRemove(file, fileList) {
+      if (file.response) {
+        const item = this.selfForm.images.findIndex(i => {
+          return i.src == file.response.data
+        })
+        this.selfForm.images.splice(item, 1)
+      } else {
+        const item = this.selfForm.images.findIndex(i => {
+          return i.src == file.url.match(/filePath=(\S*)/)[1]
+        })
+        this.selfForm.images.splice(item, 1)
+      }
+    },
+    handleImagesExceed(files, fileList) {
+      this.$message.warning(`最多添加10张`)
+    },
+    saveOrApprove(obj, callback) {
+      this.selfForm.logo = this.selfForm.logo.toString()
+      this.selfForm.signboard = this.selfForm.signboard.toString()
+      const bannerList = []
+      this.selfForm.banners.forEach(item => {
+        bannerList.push({
+          src: item.src,
+          sort: item.sort,
+          type: item.type
+        })
+      })
+      this.selfForm.banners = bannerList
+      this.$refs.selfRef.validate(valid => {
+        if (!valid) return
+        if (this.selfForm.city == '' || this.selfForm.city == null)
+          return this.$message.warning('请选择省市')
+        this.axios
+          .post(`${this.baseUrl}/api/supplier/shop/self/info`, obj)
+          // .post(
+          //   `${this.baseUrl}/api/supplier/shop/self/info?name=${this.selfForm.name}&creditCode=${this.selfForm.creditCode}&province=${this.selfForm.province}&provinceId=${this.selfForm.provinceId}&city=${this.selfForm.city}&cityId=${this.selfForm.cityId}&address=${this.selfForm.address}&industry=${this.selfForm.industry}&companyDesc=${this.selfForm.companyDesc}&majorPorducts=${this.selfForm.majorPorducts}&establishmentDate=${this.selfForm.establishmentDate}&registeredCapital=${this.selfForm.registeredCapital}&introduction=${this.selfForm.introduction}&status=${this.selfForm.status}&logo=${this.selfForm.logo}&signboard=${this.selfForm.signboard}&banners=${this.selfForm.banners}&images=${this.selfForm.images}`
+          // )
+          .then(res => {
             callback && callback(res)
-          }
-        })
-    },
-    approvePass() {
-      this.$confirm('审核通过确认', '', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+          })
       })
-        .then(() => {
-          const _this = this
-          this.approvePassOrNoPass(
-            {
-              id: this.$route.query.id,
-              status: 'AUDIT_PASS'
-            },
-            function(res) {
-              if (res.code == 200) {
-                _this.$message({
-                  type: 'success',
-                  message: '审核成功!'
-                })
-                _this.$router.push('/supplierShop')
-              }
-            }
-          )
-        })
-        .catch(() => {})
     },
-    approveNoPass() {
-      this.$prompt('', '审核不通过确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputType: 'textarea',
-        inputPlaceholder: '请输入不通过原因',
-        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
-        inputErrorMessage: '请输入不通过原因'
+    save() {
+      this.selfForm.status = 0 // 草稿
+      const _this = this
+      this.saveOrApprove(this.selfForm, function(res) {
+        if (res.code == 200) {
+          console.log('保存了')
+        }
+        if (res.code == 500) {
+          _this.$message.warning(res.message)
+        }
       })
-        .then(({ value }) => {
-          const _this = this
-          this.approvePassOrNoPass(
-            {
-              id: this.$route.query.id,
-              status: 'AUDIT_FAIL',
-              remarks: value
-            },
-            function(res) {
-              if (res.code == 200) {
-                _this.$message({
-                  type: 'success',
-                  message: '审核成功!'
-                })
-                _this.$router.push('/supplierShop')
-              }
-            }
-          )
-        })
-        .catch(() => {})
+    },
+    approve() {
+      this.selfForm.status = 1 // 审核
+      const _this = this
+      this.saveOrApprove(this.selfForm, function(res) {
+        if (res.code == 200) {
+          console.log('审核了')
+        }
+        if (res.code == 500) {
+          _this.$message.warning(res.message)
+        }
+      })
     }
   }
 }
 </script>
 
-<style scoped>
-.content {
+<style>
+.self.content {
   padding-top: 10px;
   height: 100%;
   overflow: scroll;
 }
-h1 {
+.self h1 {
   font-size: 22px;
   line-height: 35px;
   font-weight: 700;
 }
-.box {
+.self .box {
   margin-bottom: 20px;
 }
-h2 {
+.self h2 {
   font-size: 18px;
   line-height: 35px;
   font-weight: 700;
 }
-.infoType {
+.self .infoType {
   color: #cc3333;
   font-size: 14px;
   vertical-align: middle;
   margin-left: 15px;
 }
-.info {
+.self .info {
   padding-left: 100px;
   position: relative;
 }
-.info .item {
+.self .info .item {
   line-height: 35px;
 }
-.info .item span:first-of-type {
+.self .info .item span:first-of-type {
   display: inline-block;
   width: 150px;
 }
-.glod {
+.self .glod {
   position: absolute;
   top: 33px;
   left: 500px;
 }
-.glodSup,
-.glodCycle {
+.self .glodSup,
+.self .glodCycle {
   font-size: 22px;
   color: #cc3333;
   font-weight: 500;
   line-height: 35px;
 }
-span,
-img {
+.self span,
+.self img {
   vertical-align: top;
+}
+.self .regMon .el-input__inner {
+  width: 400px !important;
+}
+.self .close {
+  margin-left: 450px;
+}
+.self .money {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.self .el-form-item__content .el-select,
+.self .el-form-item__content .el-cascader {
+  width: 135px;
+}
+.self .info .item span:first-of-type {
+  display: inline-block;
+  width: auto;
+}
+.self .address.el-input {
+  width: auto;
 }
 </style>
