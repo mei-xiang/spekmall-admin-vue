@@ -4,7 +4,7 @@
 module.exports = {
   development: {
     // apiUrl: 'http://192.168.212.26:9527',
-    apiUrl: "http://192.168.212.13:8010",
+    apiUrl: "http://192.168.212.13:8010/api",
     socketUrl: ""
   },
   debug: {
