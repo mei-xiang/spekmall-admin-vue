@@ -29,7 +29,7 @@ export default {
 
   "msg": resolve => require(["@/pages/message/Msg"], resolve), // 消息管理
 
-  "info": resolve => require(["@/pages/info/Info"], resolve), // 信息管理
+  "banner": resolve => require(["@/pages/info/Banner"], resolve), // 信息管理
 
   "systemUser": resolve => require(["@/pages/system/SystemUser"], resolve), // 系统用户管理
   "systemRole": resolve => require(["@/pages/system/SystemRole"], resolve), // 系统角色管理
