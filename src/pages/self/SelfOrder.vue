@@ -147,7 +147,7 @@
     ></el-pagination>
 
     <!-- 物流信息对话框 -->
-    <el-dialog :visible.sync="isShowPostDialog" title="物流信息">
+    <el-dialog :visible.sync="isShowPostDialog" title="物流信息" @close="handleDiaClose">
       <el-form
         :model="postForm"
         ref="postRef"
@@ -160,7 +160,7 @@
             <el-option
               v-for="item in deliveryType"
               :key="item.value"
-              :label="item.label"
+              :label="item.text"
               :value="item.value"
             ></el-option>
           </el-select>
@@ -170,7 +170,7 @@
             <el-option
               v-for="item in expressCompany"
               :key="item.value"
-              :label="item.label"
+              :label="item.text"
               :value="item.value"
             ></el-option>
           </el-select>
@@ -374,23 +374,49 @@ export default {
     handlePost(id) {
       this.isShowPostDialog = true
       this.id = id
+      this.axios
+        .get(`${this.baseUrl}/dictionary/detail/child/transportationType`)
+        .then(res => {
+          if (res.code === 200) {
+            this.deliveryType = res.data
+          }
+        })
+      this.axios
+        .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
+        .then(res => {
+          if (res.code === 200) {
+            this.expressCompany = res.data
+          }
+        })
+    },
+    // 物流信息对话框关闭数据重置
+    handleDiaClose() {
+      for (let key in this.postForm) {
+        this.postForm[key] = ''
+      }
+      this.$refs.postRef.resetFields()
     },
     // 添加物流信息
     addPost() {
-      this.axios
-        .put(`${this.baseUrl}/api/admin/add/express`, {
-          ...this.postForm,
-          orderId: this.id
-        })
-        .then(res => {
-          if (res.code === 200) {
-            this.$message({
-              type: 'success',
-              message: '添加成功'
-            })
-            this.getOrderList()
-          }
-        })
+      this.$refs.postRef.validate(valid => {
+        if (!valid) return false
+        this.axios
+          .put(`${this.baseUrl}/api/admin/add/express`, {
+            ...this.postForm,
+            orderId: this.id
+          })
+          .then(res => {
+            if (res.code === 200) {
+              this.$message({
+                type: 'success',
+                message: '添加成功'
+              })
+              this.isShowPostDialog = false
+              this.getOrderList()
+              this.getOrderLenList()
+            }
+          })
+      })
     },
     // 退款确认
     handleRefund(id) {

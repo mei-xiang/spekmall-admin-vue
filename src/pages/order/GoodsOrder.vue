@@ -100,13 +100,16 @@
                 </div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item2.price}}</div>
+                <div class="grid-content bg-purple-light" v-if="item2.price">¥{{item2.price}}</div>
               </el-col>
               <el-col :span="3">
                 <div class="grid-content bg-purple">{{item2.num}}</div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item1.totalPrice}}</div>
+                <div
+                  class="grid-content bg-purple-light"
+                  v-if="item1.totalPrice"
+                >¥{{item1.totalPrice}}</div>
               </el-col>
               <el-col :span="3">
                 <!-- index2==0 表示只显示第一个列表数据 -->

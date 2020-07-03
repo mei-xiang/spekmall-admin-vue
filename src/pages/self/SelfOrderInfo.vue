@@ -14,7 +14,7 @@
         </div>
         <div class="item">
           <span>交易金额：</span>
-          <span style="color:#FF4400">¥{{orderInfo.totalPrice}}</span>
+          <span style="color:#FF4400" v-if="orderInfo.totalPrice">¥{{orderInfo.totalPrice}}</span>
         </div>
         <div class="item">
           <span>下单时间：</span>
@@ -26,7 +26,7 @@
         </div>
         <div class="item">
           <span>最后确认金额：</span>
-          <span>¥{{orderInfo.totalPriceComfirm}}</span>
+          <span v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
         </div>
         <div class="item" v-if="type==1">
           <span>操作：</span>
@@ -43,11 +43,15 @@
         </div>
         <div class="item">
           <span>运送方式</span>
-          <span v-if="orderInfo.expressInfoView">{{orderInfo.expressInfoView.deliveryType}}</span>
+          <span
+            v-if="orderInfo.expressInfoView"
+          >{{orderInfo.expressInfoView.deliveryType|handleDelivery}}</span>
         </div>
         <div class="item">
           <span>物流公司</span>
-          <span v-if="orderInfo.expressInfoView">{{orderInfo.expressInfoView.expressCompany}}</span>
+          <span
+            v-if="orderInfo.expressInfoView"
+          >{{orderInfo.expressInfoView.expressCompany|handleexpressCom}}</span>
         </div>
         <div class="item">
           <span>运单号</span>
@@ -114,19 +118,48 @@
 
 <script>
 import { getStore } from 'js/store'
+let _this
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    _this = this
     return {
       orderInfo: {}, // 店铺数据
       id: null,
-      type: '' // 1自营订单详情 2电商订单详情
+      type: '', // 1自营订单详情 2电商订单详情
+      deliveryType: [], // 物流方式列表
+      expressCompany: [] // 物流公司列表
     }
   },
   created() {
     this.id = this.$route.query.id
     this.type = this.$route.query.type
+
     this.getOrderList()
+  },
+  mounted() {
+    this.axios
+      .get(`${this.baseUrl}/dictionary/detail/child/transportationType`)
+      .then(res => {
+        if (res.code === 200) {
+          this.deliveryType = res.data
+        }
+      })
+    this.axios
+      .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
+      .then(res => {
+        if (res.code === 200) {
+          this.expressCompany = res.data
+        }
+      })
+  },
+  filters: {
+    handleDelivery(val) {
+      return _this.deliveryType.find(item => item.value == val).text
+    },
+    handleexpressCom(val) {
+      return _this.expressCompany.find(item => item.value == val).text
+    }
   },
   methods: {
     getOrderList() {
