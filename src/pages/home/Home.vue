@@ -3,48 +3,48 @@
  -->
 
 <template>
-  <div class="content">
+  <div class="content" v-if="Object.keys(cordObj).length>0">
     <div class="check">
       <div class="noorder">
-        <p>280</p>
+        <p>{{cordObj.propNotNum}}</p>
         <p>
           自营未处理订单
           <i class="iconfont iconmoren question"></i>
         </p>
       </div>
       <div class="auditcheck">
-        <p>5,900</p>
+        <p>{{cordObj.supNotAuditNum}}</p>
         <p>商家入驻待审核</p>
       </div>
       <div class="storecheck">
-        <p>3,682</p>
+        <p>{{cordObj.shopNotAuditNum}}</p>
         <p>店铺待审核</p>
       </div>
       <div class="procheck">
-        <p>182,438</p>
+        <p>{{cordObj.prodNotAuditNum}}</p>
         <p>商品待审核</p>
       </div>
     </div>
     <div class="number_box">
       <div class="turnover">
-        <p>￥999,999,999.83</p>
+        <p>￥{{cordObj.tdDealMoneyNum}}</p>
         <p>今日交易额</p>
       </div>
       <div class="number">
         <div class="item">
-          <p>9,368,720</p>
+          <p>{{cordObj.tdUv}}</p>
           <p>今日访客数(VU)</p>
         </div>
         <div class="item">
-          <p>82,641</p>
+          <p>{{cordObj.tdAddOrderNum}}</p>
           <p>今日新增订单量</p>
         </div>
         <div class="item">
-          <p>3,286,403</p>
+          <p>{{cordObj.tdPv}}</p>
           <p>今日浏览量(PV)</p>
         </div>
         <div class="item">
-          <p>2,894</p>
+          <p>{{cordObj.tdAddWbuyNum}}</p>
           <p>
             今日新增求购量
             <i class="iconfont iconmoren question"></i>
@@ -54,19 +54,19 @@
     </div>
     <div class="check register">
       <div class="noorder">
-        <p>7,2489</p>
+        <p>{{cordObj.tdBuyerNum}}</p>
         <p>买家今日新增注册</p>
       </div>
       <div class="auditcheck">
-        <p>986,8054</p>
+        <p>{{cordObj.buyerNum}}</p>
         <p>买家注册总数</p>
       </div>
       <div class="storecheck">
-        <p>2,068</p>
+        <p>{{cordObj.tdSupNum}}</p>
         <p>商家今日新增注册</p>
       </div>
       <div class="procheck">
-        <p>326,849</p>
+        <p>{{cordObj.supNum}}</p>
         <p>商家入驻总数</p>
       </div>
     </div>
@@ -79,58 +79,17 @@ export default {
   data() {
     return {
       // 主要数据 --------------------------
-      cordObj: {},
-      firstList: [
-        {
-          span: 12,
-          key: 1,
-          label: '今日访客数（UV）',
-          value: 'todayUv',
-          fontSize: 36,
-          class: null,
-          fn: null,
-          url: null
-        },
-        {
-          span: 12,
-          key: 2,
-          label: '今日浏览量（PV）',
-          value: 'todayPv',
-          fontSize: 36,
-          class: null,
-          fn: null,
-          url: null
-        }
-      ],
-      secondList: [
-        {
-          span: 12,
-          key: 3,
-          label: '未读留言',
-          value: 'unRead',
-          fontSize: 36,
-          class: null,
-          fn: null,
-          url: '/msg'
-        },
-        {
-          span: 12,
-          key: 3,
-          label: '已发布招聘岗位',
-          value: 'jobNum',
-          fontSize: 36,
-          class: null,
-          fn: null,
-          url: '/job'
-        }
-      ]
+      cordObj: {}
     }
   },
   methods: {
     // 获取主数据
     getMainData() {
-      this.axios.get('/api/home').then(res => {
-        this.cordObj = res.data
+      this.axios.get(`${this.baseUrl}/public/home`).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.cordObj = res.data
+        }
       })
     },
     clickCard(fn, url) {

@@ -254,10 +254,17 @@ export default {
         })
     },
     getOrderLenList() {
-      // const statusArr = [{ status: "'STATUS0', 'STATUS2', 'STATUS6'" }]
-      // $dataTransform(this.addOrEditData, 'buttons');
+      const statusObj = {
+        statusArr: [
+          { status: 'STATUS0' },
+          { status: 'STATUS2' },
+          { status: 'STATUS3' },
+          { status: 'STATUS4' }
+        ]
+      }
+      console.log(this.$dataTransform(statusObj, 'statusArr'))
       this.axios
-        .get(`${this.baseUrl}/api/admin/goodsOrderCount`, this.$dataTransform({ statusArr: "'STATUS0', 'STATUS2', 'STATUS6'" }, 'status'))
+        .get(`${this.baseUrl}/api/admin/goodsOrderCount`,this.$dataTransform(statusObj, 'statusArr'))
         .then(res => {
           if (res.code == 200) {
             console.log(res)
