@@ -101,6 +101,31 @@ var router = new Router({
         title: '自营商品信息'
       }
     },
+    // 自营订单详情与电商订单详情
+    {
+      path: '/selfOrderInfo',
+      name: 'selfOrderInfo',
+      component: resolve => require(['@/pages/self/SelfOrderInfo'], resolve),
+      meta: {
+        title: '订单详情'
+      }
+    },
+    {
+      path: '/selfOrderRefund',
+      name: 'selfOrderRefund',
+      component: resolve => require(['@/pages/self/SelfOrderRefund'], resolve),
+      meta: {
+        title: '订单详情-退款操作'
+      }
+    },
+    {
+      path: '/orderBuyInfo',
+      name: 'orderBuyInfo',
+      component: resolve => require(['@/pages/order/OrderBuyInfo'], resolve),
+      meta: {
+        title: '求购订单详情'
+      }
+    },
   ]
 })
 

@@ -918,5 +918,31 @@ export default {
       str = str.match(eval('/' + part + '(\S*)/'))[1];
       return str
     }
+    /**
+		 * @description:  childrens
+		 * @param {String} data [分类数组]
+		 * @return: 
+		 */
+    Vue.prototype.$getCategory = function (data) {
+      if (data && Array.isArray(data.childrens)) {
+        // 递归让后台获取的不规范数据规范
+        // （childrens中无数据剔除，否则层级菜单组件最后一层为空无法选中）
+        const parse = array => {
+          array.map(item => {
+            if (Array.isArray(item.childrens)) {
+              if (item.childrens.length === 0) {
+                delete item.childrens
+              } else {
+                parse(item.childrens)
+              }
+            } else {
+              delete item.childrens
+            }
+          })
+        }
+        parse(data.childrens)
+      }
+      return data.childrens
+    }
   }
 }

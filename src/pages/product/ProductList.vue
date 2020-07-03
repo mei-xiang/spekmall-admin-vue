@@ -7,7 +7,16 @@
         <el-input v-model="searchForm.keyword" placeholder="请输入产品名称、供应商名称、编号搜索"></el-input>
       </el-form-item>
       <el-form-item label="产品类别：">
-        <el-input v-model="searchForm.categoryId"></el-input>
+        <el-cascader
+          key="productList"
+          ref="productListRef"
+          :options="categoryData"
+          v-model="searchForm.categoryId"
+          @change="categoryChange($event)"
+          :props="setCategory()"
+          filterable
+          clearable
+        ></el-cascader>
       </el-form-item>
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
@@ -146,6 +155,7 @@ export default {
       },
       total: null,
       productData: [], // 列表数据
+      categoryData: [], // 产品类别列表
       // 审核对话框数据
       isShowApprovalDialog: false,
       id: null // 当前数据id
@@ -153,6 +163,7 @@ export default {
   },
   created() {
     this.getApplyList()
+    this.getCategoryList()
   },
   methods: {
     getApplyList() {
@@ -197,6 +208,50 @@ export default {
       this.searchForm.page = val
       this.getApplyList()
     },
+    // 获取产品类别
+    getCategoryList() {
+      this.axios.get(`${this.baseUrl}/api/category/list`).then(res => {
+        console.log(res)
+        const resData = res.data
+
+        if (resData) {
+          // 递归让后台获取的不规范数据规范
+          // （childrens中无数据剔除，否则层级菜单组件最后一层为空无法选中）
+          const parse = array => {
+            array.map(item => {
+              if (Array.isArray(item.childrens)) {
+                if (item.childrens.length === 0) {
+                  delete item.childrens
+                } else {
+                  parse(item.childrens)
+                }
+              } else {
+                delete item.childrens
+              }
+            })
+          }
+          parse(resData)
+        }
+        this.categoryData = resData
+      })
+    },
+    // 分类 -------------------------------------------------------------------------
+    categoryChange(arr) {
+      // const node = this.$refs.productListRef.getCheckedNodes()
+      // this.$emit('categoryChange', arr, node)
+      if (arr.length > 0) {
+        this.searchForm.categoryId = arr[arr.length - 1]
+      }
+    },
+    setCategory(checkStrictly) {
+      return {
+        value: 'id',
+        children: 'childrens',
+        label: 'name',
+        checkStrictly: false
+      }
+    },
+
     handleDetail(index, row) {
       console.log(index, row)
       // 查看 type：1   审核 type：2   新增 type：3

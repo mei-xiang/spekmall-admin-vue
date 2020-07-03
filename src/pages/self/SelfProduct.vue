@@ -7,7 +7,16 @@
         <el-input v-model="searchForm.keyword" placeholder="请输入关键词"></el-input>
       </el-form-item>
       <el-form-item label="产品类别：">
-        <el-input v-model="searchForm.categoryId"></el-input>
+        <el-cascader
+          ref="selfProductRef"
+          key="selfProduct"
+          :options="categoryData"
+          v-model="searchForm.categoryId"
+          @change="categoryChange($event)"
+          :props="setCategory()"
+          filterable
+          clearable
+        ></el-cascader>
       </el-form-item>
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
@@ -38,19 +47,19 @@
           <span>{{ scope.row.status && scope.row.status.text }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="code" label="产品编号" width="120"></el-table-column>
-      <el-table-column prop="categoryName" label="产品类别（末级）" width="300"></el-table-column>
-      <el-table-column prop="title" label="产品中文名称" width="180" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="price" label="价格" width="130"></el-table-column>
-      <el-table-column label="是否主要产品" width="100">
+      <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别（末级）"></el-table-column>
+      <el-table-column prop="title" label="产品中文名称" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="price" label="价格" width="150"></el-table-column>
+      <el-table-column label="是否主要产品" width="120">
         <template slot-scope="scope">
           <span v-if="scope.row.hot">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>
-      <el-table-column prop="lastUpDate" label="最后发布日期" width="133"></el-table-column>
-      <el-table-column prop="lastModifyDate" label="最后编辑日期" width="133"></el-table-column>
-      <el-table-column label="管理产品">
+      <el-table-column prop="lastUpDate" label="最后发布日期" width="150"></el-table-column>
+      <el-table-column prop="lastModifyDate" label="最后编辑日期" width="150"></el-table-column>
+      <el-table-column label="管理产品" width="200">
         <template slot-scope="scope">
           <div v-if="scope.row.status.status==0">
             <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -110,12 +119,14 @@ export default {
       },
       total: null,
       productData: [], // 列表数据
+      categoryData: [], // 产品类别列表
       id: null, // 当前数据id
       type: '' // 查看 type：1   编辑 type：2   新增 type：3
     }
   },
   created() {
     this.getSelfProductList()
+    this.getCategoryList()
   },
   methods: {
     getSelfProductList() {
@@ -143,6 +154,49 @@ export default {
     handleCurrentChange(val) {
       this.searchForm.page = val
       this.getSelfProductList()
+    },
+    // 获取产品类别
+    getCategoryList() {
+      this.axios.get(`${this.baseUrl}/api/category/list`).then(res => {
+        console.log(res)
+        const resData = res.data
+
+        if (resData) {
+          // 递归让后台获取的不规范数据规范
+          // （childrens中无数据剔除，否则层级菜单组件最后一层为空无法选中）
+          const parse = array => {
+            array.map(item => {
+              if (Array.isArray(item.childrens)) {
+                if (item.childrens.length === 0) {
+                  delete item.childrens
+                } else {
+                  parse(item.childrens)
+                }
+              } else {
+                delete item.childrens
+              }
+            })
+          }
+          parse(resData)
+        }
+        this.categoryData = resData
+      })
+    },
+    // 分类 -------------------------------------------------------------------------
+    categoryChange(arr) {
+      // const node = this.$refs.selfProductRef.getCheckedNodes()
+      // this.$emit('categoryChange', arr, node)
+      if (arr.length > 0) {
+        this.searchForm.categoryId = arr[arr.length - 1]
+      }
+    },
+    setCategory(checkStrictly) {
+      return {
+        value: 'id',
+        children: 'childrens',
+        label: 'name',
+        checkStrictly: false
+      }
     },
 
     // 发布新产品

@@ -62,27 +62,14 @@
         <template slot-scope="scope">
           <el-image
             style="width: 170px; height: 28px;margin-top:5px"
-            :src="
-              'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-            "
-            :preview-src-list="[
-              'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-              'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-            ]"
+            :src="scope.row.businessLicense | imgFormat"
+            :preview-src-list="scope.row.businessLicense | imgFormatList"
           ></el-image>
         </template>
-        <!-- <template slot-scope="scope">
-          <el-image
-            style="width: 170px; height: 28px;margin-top:5px"
-            :src="scope.row.businessLicense | imgUrlFormat"
-            :preview-src-list="[]"
-          >
-          </el-image>
-        </template>-->
       </el-table-column>
       <el-table-column label="状态" width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.status.text }}</span>
+          <!-- <span>{{ scope.row.status.text }}</span> -->
         </template>
       </el-table-column>
       <el-table-column prop="createDate" label="注册时间" sortable></el-table-column>
@@ -153,8 +140,10 @@
 <script>
 import { getStore } from 'js/store'
 import axios from 'axios'
+let _this
 export default {
   data() {
+    _this = this
     const token = getStore({ name: 'access_token', type: 'string' })
     return {
       // 搜索表单
@@ -181,10 +170,19 @@ export default {
     this.getApplyList()
   },
   filters: {
-    imgUrlFormat(urlStr) {
+    imgFormat(urlStr) {
       if (!urlStr) urlStr = ''
       const srcList = urlStr.split(',')
-      return this.imgBaseUrl + srcList[0]
+      return _this.imgBaseUrl + srcList[0]
+    },
+    imgFormatList(urlStr) {
+      if (!urlStr) urlStr = ''
+      const srcList = urlStr.split(',')
+      const arr = []
+      srcList.forEach(item => {
+        arr.push(_this.imgBaseUrl + item)
+      })
+      return arr
     }
   },
   methods: {
