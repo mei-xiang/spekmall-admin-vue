@@ -79,13 +79,13 @@
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.status.index !== 1"
+            v-if="scope.row.status&&scope.row.status.index !== 1"
             @click="handleDetail(scope.$index, scope.row)"
           >查看</el-button>
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.status.index == 1"
+            v-if="scope.row.status&&scope.row.status.index == 1"
             @click="handleApproval(scope.$index, scope.row)"
           >审核</el-button>
         </template>

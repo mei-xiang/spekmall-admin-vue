@@ -48,7 +48,7 @@
           <el-col :span="6">
             <div class="grid-content bg-purple">商品信息</div>
           </el-col>
-          <el-col :span="1">
+          <el-col :span="2">
             <div class="grid-content bg-purple">数量</div>
           </el-col>
           <el-col :span="3">
@@ -66,66 +66,74 @@
           <el-col :span="3">
             <div class="grid-content bg-purple-light">报价总金额</div>
           </el-col>
-          <el-col :span="2">
+          <el-col :span="1">
             <div class="grid-content bg-purple-light">操作</div>
           </el-col>
         </el-row>
       </div>
-      <div class="item" v-for="(item1,index1) in orderData" :key="index1">
+      <div class="item" v-for="(item,index) in orderData" :key="index">
         <div class="item_hd">
           <el-row>
             <el-col :span="5">
-              <div class="grid-content bg-purple code">求购名称：{{item1.code}}</div>
+              <div class="grid-content bg-purple code">求购名称：{{item.code}}</div>
             </el-col>
             <el-col :span="4">
-              <div class="grid-content bg-purple code">订单编号：{{item1.code}}</div>
+              <div class="grid-content bg-purple code">订单编号：{{item.code}}</div>
             </el-col>
             <el-col :span="6">
-              <div class="grid-content bg-purple-light time">发布时间：{{item1.createDate}}</div>
+              <div class="grid-content bg-purple-light time">发布时间：{{item.createDate}}</div>
             </el-col>
             <el-col :span="6">
-              <div class="grid-content bg-purple-light time">截止时间：{{item1.createDate}}</div>
+              <div class="grid-content bg-purple-light time">截止时间：{{item.createDate}}</div>
             </el-col>
             <el-col :span="3">
               <div class="grid-content bg-purple-light detail">
-                <el-link type="primary" @click="orderDetail(item1.id)">订单详情</el-link>
+                <el-link type="primary" @click="orderDetail(item.id,item.status.status)">订单详情</el-link>
               </div>
             </el-col>
           </el-row>
         </div>
         <div class="item_bd">
           <el-row>
-            <div class="info" v-for="(item2,index2) in item1.godvList" :key="index2">
+            <div class="info">
               <el-col :span="6">
                 <div class="grid-content bg-purple avatar">
-                  <el-image style="width: 50px; height: 50px" :src="imgBaseUrl+item2.picture"></el-image>
-                  <span class="tit">{{item2.title}}</span>
+                  <el-image
+                    style="width: 50px; height: 50px"
+                    :src="imgBaseUrl+item.product.picture"
+                    v-if="item.product"
+                  ></el-image>
+                  <span class="tit" v-if="item.product">{{item.product.title}}</span>
                 </div>
               </el-col>
-              <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item2.price}}</div>
+              <el-col :span="2">
+                <div class="grid-content bg-purple" v-if="item.product">{{item.product.count}}</div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple">{{item2.num}}</div>
+                <div class="grid-content bg-purple-light" v-if="item.status">{{item.status.text}}</div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item1.totalPrice}}</div>
-              </el-col>
-              <el-col :span="3">
-                <!-- index2==0 表示只显示第一个列表数据 -->
-                <div class="grid-content bg-purple-light sure" v-if="index2==0">
-                  <!-- 状态为待确认，显示待确认，否则显示具体金额 -->
-                  <span v-if="item1.status.status==0">待确认</span>
-                  <span
-                    v-if="item1.status.status!=0&&item1.totalPriceComfirm"
-                  >¥{{item1.totalPriceComfirm}}</span>
+                <div class="grid-content bg-purple-light">
+                  <div class="grid-content bg-purple-light">{{item.fromUserName}}</div>
                 </div>
               </el-col>
               <el-col :span="3">
                 <div
+                  class="grid-content bg-purple-light sure"
+                  v-if="item.quotoList.length>0"
+                >{{item.quotoList[0].supplierName}}</div>
+              </el-col>
+              <el-col :span="2">
+                <div
                   class="grid-content bg-purple-light statu"
-                  v-if="index2==0"
-                >{{item1.status.text}}</div>
+                  v-if="item.quotoList.length>0"
+                >¥{{item.quotoList[0].price}}</div>
+              </el-col>
+              <el-col :span="3">
+                <div
+                  class="grid-content bg-purple-light statu"
+                  v-if="item.quotoList.length>0"
+                >¥{{item.quotoList[0].total}}</div>
               </el-col>
             </div>
           </el-row>
@@ -168,7 +176,8 @@ export default {
       total: null,
       orderData: [], // 订单列表数据
       statusLenList: [0, 0, 0, 0, 0], // 状态数量
-      activeName: '' // 当前标签页
+      activeName: '', // 当前标签页
+      type: '' // 详情类型
     }
   },
   created() {
@@ -226,8 +235,16 @@ export default {
       // this.getOrderList()
     },
     // 订单详情
-    orderDetail(id) {
-      this.$router.push({ path: '/orderBuyInfo', query: { id: id, type: 3 } })
+    orderDetail(id, status) {
+      if (status == 6 || status == 7) {
+        this.type = 1
+      } else {
+        this.type = 2
+      }
+      this.$router.push({
+        path: '/orderBuyInfo',
+        query: { id: id, type: this.type }
+      })
     }
   }
 }

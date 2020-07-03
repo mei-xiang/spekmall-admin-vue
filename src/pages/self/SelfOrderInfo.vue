@@ -1,5 +1,5 @@
 <template>
-  <!-- type：1自营订单详情  type：2电商订单详情 type：3求购订单详情-->
+  <!-- type：1自营订单详情  type：2电商订单详情 -->
   <div class="content" v-if="Object.keys(orderInfo).length > 0">
     <div class="box">
       <h2>订单详情</h2>

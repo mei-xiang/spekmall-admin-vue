@@ -55,13 +55,13 @@
             <div class="grid-content bg-purple-light">总金额</div>
           </el-col>
           <el-col :span="3">
-            <div class="grid-content bg-purple-light">确认金额</div>
+            <div class="grid-content bg-purple">确认金额</div>
           </el-col>
           <el-col :span="3">
             <div class="grid-content bg-purple-light">订单状态</div>
           </el-col>
           <el-col :span="3">
-            <div class="grid-content bg-purple-light">操作</div>
+            <div class="grid-content bg-purple">操作</div>
           </el-col>
         </el-row>
       </div>
@@ -75,7 +75,7 @@
               <div class="grid-content bg-purple-light time">下单时间：{{item1.createDate}}</div>
             </el-col>
             <el-col :span="6">
-              <div class="grid-content bg-purple user">买家用户：{{item1.buyerPersionName}}</div>
+              <div class="grid-content bg-purple user">买家用户：{{item1.buyerName}}</div>
             </el-col>
             <el-col :span="6">
               <div class="grid-content bg-purple-light detail">
@@ -240,6 +240,7 @@ export default {
     this.getOrderLenList()
   },
   methods: {
+    // 获取订单列表数据
     getOrderList() {
       this.axios
         .get(`${this.baseUrl}/api/admin/self/goodsOrderPage`, this.searchForm)
@@ -253,21 +254,26 @@ export default {
           }
         })
     },
+    // 获取订单状态数量
     getOrderLenList() {
       const statusObj = {
         statusArr: [
+          { status: 'STATUS0,STATUS2,STATUS6' },
           { status: 'STATUS0' },
           { status: 'STATUS2' },
           { status: 'STATUS3' },
           { status: 'STATUS4' }
-        ]
+        ],
+        ...this.searchForm
       }
-      console.log(this.$dataTransform(statusObj, 'statusArr'))
+      this.$dataTransform(statusObj, 'statusArr')
+      console.log(statusObj)
       this.axios
-        .get(`${this.baseUrl}/api/admin/goodsOrderCount`,this.$dataTransform(statusObj, 'statusArr'))
+        .get(`${this.baseUrl}/api/admin/self/goodsOrderCount`, statusObj)
         .then(res => {
           if (res.code == 200) {
             console.log(res)
+            this.statusLenList = res.data
           }
         })
     },
@@ -287,6 +293,7 @@ export default {
         return this.$message.warning('起始时间不能大于结束时间！')
       }
       this.getOrderList()
+      this.getOrderLenList()
     },
     handleSizeChange(val) {
       this.searchForm.size = val
@@ -302,10 +309,10 @@ export default {
       arr = this.activeName.split(',')
       console.log(arr)
       this.searchForm.status = arr
+      // 处理第一个
       if (this.activeName == 0) {
         this.searchForm.status = ''
       }
-      // todo---状态数量的接口
       this.getOrderList()
     },
     // 订单详情
@@ -320,22 +327,24 @@ export default {
         cancelButtonText: '取消',
         inputPattern: /^[0-9.]+$/,
         inputErrorMessage: '请输入订单价格'
-      }).then(({ value }) => {
-        this.axios
-          .put(`${this.baseUrl}/api/admin/update/totalPrice`, {
-            orderId: id,
-            totalPrice: value
-          })
-          .then(res => {
-            if (res.code === 200) {
-              this.$message({
-                type: 'success',
-                message: '修改成功'
-              })
-              this.getOrderList()
-            }
-          })
       })
+        .then(({ value }) => {
+          this.axios
+            .put(`${this.baseUrl}/api/admin/update/totalPrice`, {
+              orderId: id,
+              totalPrice: value
+            })
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  type: 'success',
+                  message: '修改成功'
+                })
+                this.getOrderList()
+              }
+            })
+        })
+        .catch(() => {})
     },
     // 取消订单
     handleClose(id) {
@@ -343,21 +352,23 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.axios
-          .put(`${this.baseUrl}/api/admin/cancel`, {
-            orderId: id
-          })
-          .then(res => {
-            if (res.code === 200) {
-              this.$message({
-                type: 'success',
-                message: '取消订单成功'
-              })
-              this.getOrderList()
-            }
-          })
       })
+        .then(() => {
+          this.axios
+            .put(`${this.baseUrl}/api/admin/cancel`, {
+              orderId: id
+            })
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  type: 'success',
+                  message: '取消订单成功'
+                })
+                this.getOrderList()
+              }
+            })
+        })
+        .catch(() => {})
     },
     // 显示物流信息对话框
     handlePost(id) {

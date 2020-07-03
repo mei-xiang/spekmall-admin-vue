@@ -19,7 +19,7 @@ export default {
   "productLabel": resolve => require(["@/pages/product/ProductLabel"], resolve), // 商品标签管理
   "productCategory": resolve => require(["@/pages/product/ProductCategory"], resolve), // 商品类别管理
 
-  "orderElec": resolve => require(["@/pages/order/OrderElec"], resolve), // 电商订单管理
+  "goodsOrder": resolve => require(["@/pages/order/GoodsOrder"], resolve), // 电商订单管理
   "orderBuy": resolve => require(["@/pages/order/OrderBuy"], resolve), // 求购订单管理
 
   "hotRecommend": resolve => require(["@/pages/hot/HotRecommend"], resolve), // 热门推荐管理
