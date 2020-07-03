@@ -1,458 +1,426 @@
-<!--
- * @Description: 系统账号管理
- -->
-
 <template>
-  <div class="content">
-    <div class="user">
-      <main-page
-        ref="mainPage"
-        :height="tableMaxH"
-        :hasSelection="false"
-        @clickBtn="clickBtn"
-        @buttonClick="buttonClick"
-        @switchChange="switchChange"
-      ></main-page>
+  <div class="newsListWrap content">
+    <div class="pageTitle">系统用户管理</div>
+    <el-row class="searchRow" style="text-align:right;">
+      <el-col>
+        <el-button
+          type="primary"
+          size="small"
+          style="margin-left: 20px;"
+          @click="handleAddUser"
+        >添加用户</el-button>
+      </el-col>
+    </el-row>
 
-      <!-- 新增，修改弹框 -->
-      <el-dialog
-        :title="dialogType === 0?'新增':'修改'"
-        v-dialogDrag
-        @close="closeDialog"
-        :visible.sync="isShowAddOrEdit"
+    <el-table :data="tableData" border style="width: 100%" height="560">
+      <el-table-column prop="avatar" label="头像" min-width="120">
+        <template slot-scope="{row}">
+          <el-image
+            style="width: 30px; height: 30px"
+            :src="row.avatar"
+            :preview-src-list="[row.avatar]"
+            fit="contain"
+          ></el-image>
+        </template>
+      </el-table-column>
+      <el-table-column label="昵称" min-width="120">
+        <template slot-scope="{row}">{{row.account.nickname}}</template>
+      </el-table-column>
+      <el-table-column prop="account" label="用户名" min-width="120">
+        <template slot-scope="{row}">{{row.account.username}}</template>
+      </el-table-column>
+      <el-table-column prop="nickname" label="角色(权限)" min-width="120"></el-table-column>
+      <el-table-column prop="status" label="状态" min-width="120">
+        <template slot-scope="{row}">{{row.account.status.text}}</template>
+      </el-table-column>
+      <el-table-column prop="registerDate" label="注册时间" min-width="120"></el-table-column>
+      <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="120">
+        <template slot-scope="{row}">{{row.account.loginDate}}</template>
+      </el-table-column>
+      <el-table-column label="操作" width="300">
+        <template slot-scope="scope">
+          <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
+          <el-button @click="handleResetPwd(scope.row)" type="text" size="small">重置密码</el-button>
+          <el-button
+            v-if="scope.row.account.status.status === 1"
+            type="text"
+            size="small"
+            @click="startAccount(scope.row)"
+          >启用</el-button>
+
+          <el-button
+            v-if="scope.row.account.status.status === 0"
+            type="text"
+            size="small"
+            @click="forbidAccount(scope.row)"
+          >停用</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-pagination
+      style="position: static; margin-top: 20px;"
+      @size-change="handleSizeChange"
+      @current-change="handlePageChange"
+      :current-page="pageData.page"
+      :page-sizes="[10, 20, 50]"
+      :page-size.sync="pageData.size"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="pageData.total"
+    ></el-pagination>
+    <!-- 新增用户列表 -->
+    <el-dialog
+      :title="isAddOrEdit? '修改用户' : '新增用户'"
+      :visible.sync="addUserModal"
+      width="40%"
+      @close="claoseAddUserModal"
+    >
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="100px"
+        class="demo-ruleForm"
       >
-        <span v-show="dialogType !== 2" class="label">头像：</span>
-        <el-upload
-          v-show="dialogType !== 2"
-          class="avatar-uploader"
-          :show-file-list="false"
-          action
-          :http-request="uploadImg"
-          :before-upload="beforeAvatarUpload"
-        >
-          <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>
-        <main-form
-          ref="mainForm"
-          :data="postData"
-          :form="formConfig"
-          :options="options"
-          :rules="addOrEditRules"
-        ></main-form>
-        <div slot="footer">
-          <el-button type="primary" @click="submit(dialogType)">确 定</el-button>
-          <el-button @click="closeAddOrEdit">取 消</el-button>
-        </div>
-      </el-dialog>
-    </div>
+        <el-row>
+          <el-col :span="7">
+            <el-form-item label="头像" prop="avatar">
+              <el-upload
+                class="avatar-uploader"
+                :action="uploadAdd"
+                :headers="uploadHeader"
+                :show-file-list="false"
+                :before-upload="beforeAvatarUpload"
+                :on-success="uploadSuccess"
+              >
+                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                <div
+                  slot="tip"
+                  class="el-upload__tip"
+                  style="width: 300px;"
+                >（尺寸：230×180、格式jpg\png、大小10M内)</div>
+              </el-upload>
+            </el-form-item>
+          </el-col>
+          <el-col :span="14">
+            <el-form-item label="用户名:" prop="username" >
+              <el-input v-model="ruleForm.username" :disabled="isAddOrEdit"></el-input>
+            </el-form-item>
+            <el-form-item label="密码:" prop="password" v-if="!isShowPwd">
+              <el-input type="password" v-model="ruleForm.password"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="角色权限:" prop="roleId">
+          <el-select v-model="ruleForm.roleId" placeholder="请选择角色权限">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="昵称:" palceholder="请输入昵称" prop="nickname">
+          <el-input v-model="ruleForm.nickname"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱:" palceholder="请输入邮箱">
+          <el-input v-model="ruleForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号:" palceholder="请输入手机号">
+          <el-input v-model="ruleForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addUserModal = false">取消</el-button>
+        <el-button type="primary" @click="submitAddUser">提交</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 修改密码弹窗 -->
+    <el-dialog title="修改密码" :visible.sync="modifyModal" width="40%" @close="claoseModifyModal">
+      <el-form :model="modifyPwd" ref="modifyPwd" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="用户名:">
+          <span>{{modifyPwd.username}}</span>
+        </el-form-item>
+        <!-- <el-form-item label="密码:" palceholder="请输入密码" prop="password">
+          <el-input type="password" v-model="modifyPwd.password"></el-input>
+        </el-form-item>-->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="modifyModal = false">取消</el-button>
+        <el-button type="primary" @click="submitPwd">提交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
+import { setStore, getStore, removeStore } from "js/store";
 export default {
-  name: "User",
-  // eslint-disable-next-line no-undef
-  mixins: [setLayoutHeight],
   data() {
+    const token = getStore({ name: "access_token", type: "string" });
+    let baseUrl = this.baseUrl;
     return {
-      mainPageData: {
-        ajaxData: {
-          type: "get",
-          url: "/api/users/managers",
-          params: null,
-          records: "data"
-        },
-        search: {
-          mainConfigData: [
-            {
-              label: "用户名",
-              key: "name",
-              type: 0,
-              width: 120
-            },
-            {
-              label: "昵称",
-              key: "nickname",
-              type: 0,
-              width: 120
-            }
-          ],
-          searchData: {
-            account: "",
-            nickname: ""
-          }
-        },
-        btnListData: [
-          {
-            label: "新增",
-            icon: "el-icon-circle-plus-outline",
-            gridSelectModel: 2,
-            fn: "addBtn",
-            permission: "user"
-          }
-        ],
-        theaderData: [
-          {
-            type: 13,
-            width: "50px",
-            hasSort: false,
-            isShow: true,
-            prop: "avatar",
-            label: "头像"
-          },
-          {
-            type: 0,
-            width: 0,
-            hasSort: false,
-            isShow: true,
-            prop: "name",
-            label: "用户名"
-          },
-          {
-            type: 0,
-            width: 0,
-            hasSort: false,
-            isShow: true,
-            prop: "nickname",
-            label: "昵称"
-          },
-          {
-            type: 0,
-            width: "110px",
-            hasSort: false,
-            isShow: true,
-            prop: "roleNameZh",
-            label: "权限"
-          },
-          {
-            type: 2,
-            width: "60px",
-            hasSort: false,
-            isShow: () => {
-              return this.$isPermission("user");
-            },
-            prop: "isEnable",
-            label: "启用状态"
-          },
-          {
-            type: 8,
-            width: "150px",
-            hasSort: false,
-            isShow: true,
-            prop: "createDate",
-            label: "创建时间"
-          },
-          {
-            type: 8,
-            width: "150px",
-            hasSort: false,
-            isShow: true,
-            prop: "loginDate",
-            label: "最后登录时间"
-          },
-          {
-            type: 1,
-            width: "180px",
-            hasSort: false,
-            isShow: () => {
-              return this.$isPermission("user");
-            },
-            btnList: [
-              {
-                label: "编辑",
-                fn: "editBtn"
-              },
-              {
-                label: "修改密码",
-                fn: "changePassword"
-              }
-            ],
-            label: "操作"
-          }
-        ]
-      },
-      postData: {
-        id: null,
-        avatar: "",
-        name: "",
-        password: "",
+      // table
+      tableData: [],
+      srcList: [],
+      addUserModal: false,
+      rolesList: [],
+      isShowPwd: false,
+      ruleForm: {
         nickname: "",
-        phone: "",
+        avatar: "",
+        roleId: "",
+        username: "",
+        password: "",
         email: "",
-        roleId: null
+        mobile: ""
       },
-      // 弹框相关
-      isShowAddOrEdit: false,
-      dialogType: 0,
-      imageUrl: "",
-      formConfig: [],
-      addOrEditRules: {
-        name: [
-          this.$rules.setRequired("请输入用户名"),
-          this.$rules.setCode(4, 18)
+      pageData: {
+        page: 1,
+        size: 10,
+        total: 0
+      },
+      rules: {
+        nickname: [{ required: true, message: "请输入昵称", trigger: "blur" }],
+        rights: [{ required: true, message: "请选择昵称", trigger: "change" }],
+        avatar: [{ required: true, message: "请上传头像", trigger: "change" }],
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" }
         ],
-        nickname: [
-          this.$rules.setRequired("请输入昵称"),
-          this.$rules.setLength(1, 20)
-        ],
-        roleId: [this.$rules.setRequired("请选择角色", "change")],
-        phone: [
-          { required: true, validator: this.$rules.checkPhone, trigger: "blur" }
-        ],
-        email: this.$rules.checkEmail(false),
-        password: [
-          this.$rules.setRequired("请输入密码"),
-          this.$rules.setPassword(6, 18)
+        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        roleId: [
+          { required: true, message: "请选择角色权限", trigger: "change" }
         ]
       },
-      options: {}
+      modifyModal: false,
+      modifyPwd: {},
+      // modifyPwdRules: {
+      //   password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+      // },
+      // wenjian
+      uploadAdd: baseUrl + "/file/upload",
+      uploadHeader: {
+        Authorization: "Bearer " + token
+      },
+      imageUrl: "",
+      isAddOrEdit: false // falase是新增， true 为edit
     };
   },
+  created() {
+    this.getRoleList();
+    this.getUerList();
+  },
   methods: {
-    clickBtn(fn) {
-      this[fn]();
+    // 发布新闻
+    handleAddUser() {
+      this.isAddOrEdit = false;
+      this.isShowPwd = false;
+      this.addUserModal = true;
     },
-    buttonClick(val, index, fn) {
-      this[fn](val, index);
+    getRoleList() {
+      this.axios.get("/api/role").then(res => {
+        this.rolesList = res.data.content.map(item => {
+          return {
+            value: item.id,
+            label: item.name
+          };
+        });
+        console.log(res);
+      });
     },
-    async addBtn() {
-      await this.getRoles();
-      this.dialogType = 0;
-      this.setFrom(this.dialogType);
-      this.isShowAddOrEdit = true;
-    },
-    switchChange(val, index) {
+    getUerList() {
       this.axios
-        .put("/api/users/enable", {
-          id: val.id,
-          isEnable: val.isEnable
-        })
+        .get(
+          `/api/manager/page?page=${this.pageData.page}&size=${this.pageData.size}`
+        )
         .then(res => {
-          this.$message.success(res.msg);
-          this.getList();
+          console.log(res, "role");
+          if (res.code == 200) {
+            this.tableData = res.data.content;
+            this.tableData = this.tableData.map(item => {
+              item.avatar = this.imgBaseUrl + item.avatar;
+
+              return item;
+            });
+
+            this.pageData.total = res.data.totalElements;
+          }
         });
     },
-    setPage() {
-      this.$refs.mainPage.setPageConfig(this.mainPageData);
+    resetForm(formName) {
+      this.$refs.ruleForm.resetFields();
     },
-    // 获取列表数据
-    getList() {
-      this.$refs.mainPage.getList();
+    handleAvatarSuccess() {},
+    // 修改密码
+    handleResetPwd(row) {
+      this.modifyModal = true;
+      this.modifyPwd.username = row.account.username;
     },
-    // 获取权限
-    getRoles() {
-      return new Promise((resolve, reject) => {
-        this.axios
-          .get("/api/sysRoles", {
-            pageSize: 9999999,
-            pageNum: 1
-          })
-          .then(res => {
-            const roles = res.data.records.map(item => {
-              return {
-                id: item.id,
-                label: item.nameZh
-              };
-            });
-            this.$set(this.options, "roles", roles);
-            resolve();
+    submitPwd() {
+      console.log(this.modifyPwd);
+      this.axios
+        // .post("/api/manager/password/reset", this.modifyModal,{String:"json"})
+        .post(`/api/manager/password/reset?username=${this.modifyPwd.username}`)
+        .then(res => {
+          console.log(res, "xiugai");
+          this.$message.success("密码修改成功");
+          this.modifyModal = false;
+          this.getUerList();
+        });
+    },
+    claoseModifyModal() {
+      this.$refs.modifyPwd.resetFields();
+    },
+    // 禁用
+
+    forbidAccount(row) {
+      this.axios
+        .post(
+          `/api/manager/disable/`,
+          { id: row.id, remarks: "" },
+          { String: "json" }
+        )
+        .then(res => {
+          this.$message.success("禁用成功");
+          this.getUerList();
+        });
+    },
+
+    // 启用
+    startAccount(row) {
+      this.axios.post(`/api/manager/enable/?id=${row.id}`).then(res => {
+        this.$message.success("启用成功");
+        this.getUerList();
+      });
+    },
+
+    // 新增用户
+
+    claoseAddUserModal() {
+      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.clearValidate();
+      (this.ruleForm = {
+        email: "",
+        mobile: ""
+      }),
+        (this.imageUrl = "");
+    },
+    // 新增用户
+    submitAddUser() {
+      let url = "/api/manager/apply";
+      if (this.isAddOrEdit) {
+        url = `/api/manager/update`;
+      }
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          let params = this.ruleForm;
+          params.userType = 1;
+          params.id = params.roleId;
+          this.axios.post(url, params, { String: "json" }).then(res => {
+            console.log(res, "add");
+            this.$message.success("增加成功");
+            this.getUerList();
+            this.$refs.ruleForm.resetFields();
+            this.imageUrl = "";
+            this.ruleForm = {
+              email: "",
+              mobile: ""
+            };
+            this.addUserModal = false;
           });
-      });
-    },
-    // 右侧按钮列表部分 -------------------------
-    setFrom(dialogType) {
-      this.formConfig = [
-        [
-          {
-            span: 24,
-            labelWidth: "100px",
-            list: [
-              {
-                type: "text",
-                label: "用户名：",
-                prop: "name",
-                readOnly: dialogType !== 0
-              },
-              {
-                type: "password",
-                label: "密码：",
-                prop: "password",
-                showPassword: true,
-                hidden: dialogType === 1
-              },
-              {
-                type: "select",
-                label: "角色：",
-                prop: "roleId",
-                hidden: dialogType === 2,
-                optionCode: "roles"
-              },
-              {
-                type: "text",
-                label: "昵称：",
-                prop: "nickname",
-                hidden: dialogType === 2
-              },
-              {
-                type: "text",
-                label: "手机：",
-                prop: "phone",
-                hidden: dialogType === 2
-              },
-              {
-                type: "text",
-                label: "邮箱：",
-                prop: "email",
-                hidden: dialogType === 2
-              }
-            ]
-          }
-        ]
-      ];
-    },
-    uploadImg(data) {
-      this.axios.upload([data.file]).then(res => {
-        this.postData.avatar = res.data;
-        this.imageUrl = URL.createObjectURL(data.file);
-      });
-    },
-    getDataById(data) {
-      return new Promise((resolve, reject) => {
-        this.axios
-          .get(`/api/users/${data.id}`)
-          .then(res => {
-            resolve(res);
-          })
-          .catch(err => {
-            reject(err);
-          });
-      });
-    },
-    async editBtn(data) {
-      await this.getRoles();
-      this.getDataById(data).then(res => {
-        for (const key in this.postData) {
-          if (res.data.hasOwnProperty(key)) {
-            this.postData[key] = res.data[key];
-          }
+        } else {
+          console.log("error submit!!");
+          return false;
         }
-        this.imageUrl = this.$imageSrc(res.data.avatar);
-        this.dialogType = 1;
-        this.setFrom(this.dialogType);
-        this.isShowAddOrEdit = true;
       });
     },
-    changePassword(data) {
-      this.getDataById(data).then(res => {
-        this.postData.id = res.data.id;
-        this.postData.name = res.data.name;
-        this.dialogType = 2;
-        this.setFrom(this.dialogType);
-        this.isShowAddOrEdit = true;
-      });
+
+    // 编辑操作
+    handleEdit(item) {
+      this.isAddOrEdit = true;
+      this.isShowPwd = true;
+      this.addUserModal = true;
+      (this.ruleForm = {
+        avatar: item.account.avatar,
+        roleId: item.roleId,
+        nickname: item.account.nickname,
+        username: item.account.username,
+        password: item.account.password,
+        email: item.email,
+        mobile: item.mobile,
+        id: item.id
+      }),
+        (this.imageUrl = this.imgBaseUrl + item.account.avatar);
+      alert(item.id);
     },
+    // 文件上传前的钩子函数，用于对文件类型进行校验
     beforeAvatarUpload(file) {
       const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isLt2M = file.size / 1024 / 1024 < 10;
 
       if (!isJPG) {
         this.$message.error("上传头像图片只能是 JPG 或者 PNG 格式!");
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
+        this.$message.error("上传头像图片大小不能超过 10MB!");
       }
       return isJPG && isLt2M;
     },
-    // 提交保存数据
-    submit(dialogType) {
-      let fn = "";
-      let url = "";
-      switch (dialogType) {
-        case 0:
-          fn = "post";
-          url = "/api/users";
-          break;
-        case 1:
-          fn = "put";
-          url = `/api/users/${this.postData.id}`;
-          break;
-        case 2:
-          fn = "put";
-          url = "/api/users/password/manage";
-          break;
-        default:
-          break;
-      }
-      this.$refs["mainForm"].validate(data => {
-        if (dialogType === 2) {
-          data = {
-            name: data.name,
-            newPwd: data.password
-          };
-        } else {
-          // 新增修改的时候验证头像
-          if (this.$dataIsNull(data.avatar)) {
-            this.$message.warning("请上传头像");
-            return;
-          }
-        }
-        this.axios[fn](url, data).then(res => {
-          this.$message.success(res.msg);
-          this.closeAddOrEdit();
-          this.getList();
-        });
-      });
+    uploadSuccess(res, file, fileList) {
+      this.ruleForm.avatar = res.data;
+      console.log(this.ruleForm.avatar, 888);
+      this.imageUrl = this.imgBaseUrl + res.data;
     },
-    closeAddOrEdit() {
-      this.isShowAddOrEdit = false;
+    handlePageChange(val) {
+      this.pageData.page = val;
+      this.getUerList;
     },
-    closeDialog() {
-      this.imageUrl = null;
-      // 关闭弹框初始化数据
-      this.postData = this.$options.data.call(this).postData;
-      this.$nextTick(() => {
-        this.$refs.mainForm.clearValidate();
-      });
+    handleSizeChange(val) {
+      this.pageData.size = val
     }
-  },
-  mounted() {
-    this.setPage();
   }
 };
 </script>
 
-<style scoped lang="stylus">
-.label {
+<style lang="stylus" scoped>
+/deep/ .el-dialog {
+  width: 600px !important;
+}
+
+.pageTitle {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.searchRow {
+  margin-bottom: 10px;
+}
+
+// /deep/ .el-table .el-table__row td {
+// padding: 0;
+// }
+// 解决element Ui 表格错位
+/deep/ .el-table th.gutter {
+  display: table-cell !important;
+}
+
+// 图片上传样式
+/deep/ .avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
   position: relative;
-  top: 57px;
-  left: 35px;
-
-  &:before {
-    content: '*';
-    color: #F56C6C;
-    margin-right: 4px;
-  }
+  overflow: hidden;
 }
 
->>>.avatar-uploader {
-  text-align: center;
-
-  .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-  }
+/deep/ .avatar-uploader .el-upload:hover {
+  border-color: #409eff;
 }
 
-.avatar-uploader .el-upload:hover {
-  border-color: #409EFF;
-}
-
-.avatar-uploader-icon {
+/deep/ .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
   width: 100px;
@@ -461,7 +429,7 @@ export default {
   text-align: center;
 }
 
-.avatar {
+/deep/ .avatar {
   width: 100px;
   height: 100px;
   display: block;

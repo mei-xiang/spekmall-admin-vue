@@ -1,6 +1,6 @@
 <template>
-  <div class="banner-wrap">
-    <div class="pageTitle">banner管理</div>
+  <div class="banner-wrap content">
+    <div class="pageTitle">权限设置</div>
     <div class="addBtn">
       <el-button type="primary" @click="addBanner">新增Banner</el-button>
     </div>
