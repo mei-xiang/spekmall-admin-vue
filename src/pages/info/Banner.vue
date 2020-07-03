@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     信息管理
   </div>
 </template>

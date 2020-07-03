@@ -88,18 +88,12 @@
 
     <!-- 查看对话框 -->
     <el-dialog :visible.sync="isShowDialog" title="查看">
-      <el-form
-        :model="lookBuyerForm"
-        ref="lookBuyerRef"
-        label-width="100px"
-        class="demo-ruleForm"
-        center
-      >
+      <el-form :model="lookBuyerForm" ref="lookBuyerRef" label-width="80px" class="demo-ruleForm">
         <el-form-item label="姓名">
           <el-input v-model="lookBuyerForm.name"></el-input>
         </el-form-item>
         <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.mobile"></el-input>
+          <el-input v-model="lookBuyerForm.telephone"></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
           <el-input v-model="lookBuyerForm.email"></el-input>
@@ -188,16 +182,11 @@ export default {
     handleDetail(index, row) {
       console.log(index, row)
       this.isShowDialog = true
-      this.axios
-        .get(`${this.baseUrl}/api/buyer/info`, {
-          id: row.id,
-          token: this.$token
-        })
-        .then(res => {
-          console.log(res)
-          if (res.code != 200) return
-          this.lookBuyerForm = res.data
-        })
+      this.axios.get(`${this.baseUrl}/api/buyer/${row.id}/info`).then(res => {
+        console.log(res)
+        if (res.code != 200) return
+        this.lookBuyerForm = res.data
+      })
     },
     // 禁用
     handleStop(index, row) {

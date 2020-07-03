@@ -416,6 +416,9 @@ a:hover {
 }
 
 /* 自营订单管理 */
+.order {
+  min-width: 1150px;
+}
 .el-tabs--border-card > .el-tabs__content {
   padding: 0;
 }
@@ -448,12 +451,23 @@ a:hover {
 .order .user {
 }
 .order .detail {
+  padding-left: 25px;
 }
 .order .item_bd {
-  height: 140px;
+  /* height: 140px; */
+  position: relative;
   padding: 20px;
+  padding-right: 0;
   box-sizing: border-box;
   color: #515151;
+}
+
+.order .item_bd .info {
+  height: 50px;
+  margin-bottom: 10px;
+}
+.order .item_bd .info div {
+  height: 50px;
 }
 .order .avatar {
   display: flex;
@@ -463,6 +477,19 @@ a:hover {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* position: absolute;
+  top: 0;
+  right: 9.45%; */
+}
+.order .item_bd .sure {
+  /* position: absolute;
+  top: 0;
+  right: 34.2%; */
+}
+.order .item_bd .statu {
+  /* position: absolute;
+  top: 0;
+  right: 20.75%; */
 }
 .order .handle span {
   margin-bottom: 10px;

@@ -35,11 +35,11 @@
 
     <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="全部订单" name></el-tab-pane>
-      <el-tab-pane label="待处理(8)" name></el-tab-pane>
-      <el-tab-pane label="待卖家确认(0)" name></el-tab-pane>
-      <el-tab-pane label="待发货(0)" name></el-tab-pane>
-      <el-tab-pane label="待收货(0)" name></el-tab-pane>
-      <el-tab-pane label="已完成(0)" name></el-tab-pane>
+      <el-tab-pane :label="'待处理'+'('+statusLenList[0]+')'" name="STATUS0,STATUS2,STATUS6"></el-tab-pane>
+      <el-tab-pane :label="'待卖家确认'+'('+statusLenList[1]+')'" name="STATUS0"></el-tab-pane>
+      <el-tab-pane :label="'待发货'+'('+statusLenList[2]+')'" name="STATUS2"></el-tab-pane>
+      <el-tab-pane :label="'待收货'+'('+statusLenList[3]+')'" name="STATUS3"></el-tab-pane>
+      <el-tab-pane :label="'已完成'+'('+statusLenList[4]+')'" name="STATUS4"></el-tab-pane>
       <div class="order_title">
         <el-row>
           <el-col :span="6">
@@ -65,156 +65,71 @@
           </el-col>
         </el-row>
       </div>
-      <div class="item">
+      <div class="item" v-for="(item1,index1) in orderData" :key="index1">
         <div class="item_hd">
           <el-row>
             <el-col :span="6">
-              <div class="grid-content bg-purple code">订单编号：SO15893606901730</div>
+              <div class="grid-content bg-purple code">订单编号：{{item1.code}}</div>
             </el-col>
             <el-col :span="6">
-              <div class="grid-content bg-purple-light time">下单时间：2020-5-15 16:33:12</div>
+              <div class="grid-content bg-purple-light time">下单时间：{{item1.createDate}}</div>
             </el-col>
             <el-col :span="6">
-              <div class="grid-content bg-purple user">买家用户：linzehao123</div>
+              <div class="grid-content bg-purple user">买家用户：{{item1.buyerPersionName}}</div>
             </el-col>
             <el-col :span="6">
               <div class="grid-content bg-purple-light detail">
-                <el-link type="primary">订单详情</el-link>
+                <el-link type="primary" @click="orderDetail(item1.id)">订单详情</el-link>
               </div>
             </el-col>
           </el-row>
         </div>
         <div class="item_bd">
           <el-row>
-            <el-col :span="6">
-              <div class="grid-content bg-purple avatar">
-                <el-image style="width: 50px; height: 50px" :src="url"></el-image>
-                <span class="tit">Raxwell 直柄麻花钻，2mm，10支Raxwell 直柄麻花钻，2mm，10支Raxwell 直柄麻花钻，2mm，10支</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">¥17500</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple">1</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">¥17500</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">待确认</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">待商家确认</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light handle">
-                <span>修改价格</span>
-                <span>取消订单</span>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-      </div>
-      <div class="item">
-        <div class="item_hd">
-          <el-row>
-            <el-col :span="6">
-              <div class="grid-content bg-purple code">订单编号：SO15893606901730</div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content bg-purple-light time">下单时间：2020-5-15 16:33:12</div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content bg-purple user">买家用户：linzehao123</div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content bg-purple-light detail">
-                <el-link type="primary">订单详情</el-link>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="item_bd">
-          <el-row>
-            <el-col :span="6">
-              <div class="grid-content bg-purple avatar">
-                <el-image style="width: 50px; height: 50px" :src="url"></el-image>
-                <span>Raxwell 直柄麻花钻，2mm，10支</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">¥17500</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple">1</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">¥17500</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">待确认</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">待商家确认</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light handle">
-                <span>修改价格</span>
-                <span>取消订单</span>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-      </div>
-      <div class="item">
-        <div class="item_hd">
-          <el-row>
-            <el-col :span="6">
-              <div class="grid-content bg-purple code">订单编号：SO15893606901730</div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content bg-purple-light time">下单时间：2020-5-15 16:33:12</div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content bg-purple user">买家用户：linzehao123</div>
-            </el-col>
-            <el-col :span="6">
-              <div class="grid-content bg-purple-light detail">
-                <el-link type="primary">订单详情</el-link>
-              </div>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="item_bd">
-          <el-row>
-            <el-col :span="6">
-              <div class="grid-content bg-purple avatar">
-                <el-image style="width: 50px; height: 50px" :src="url"></el-image>
-                <span>Raxwell 直柄麻花钻，2mm，10支</span>
-              </div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">¥17500</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple">1</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">¥17500</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">待确认</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light">待商家确认</div>
-            </el-col>
-            <el-col :span="3">
-              <div class="grid-content bg-purple-light handle">
-                <span>修改价格</span>
-                <span>取消订单</span>
-              </div>
-            </el-col>
+            <div class="info" v-for="(item2,index2) in item1.godvList" :key="index2">
+              <el-col :span="6">
+                <div class="grid-content bg-purple avatar">
+                  <el-image style="width: 50px; height: 50px" :src="imgBaseUrl+item2.picture"></el-image>
+                  <span class="tit">{{item2.title}}</span>
+                </div>
+              </el-col>
+              <el-col :span="3">
+                <div class="grid-content bg-purple-light">¥{{item2.price}}</div>
+              </el-col>
+              <el-col :span="3">
+                <div class="grid-content bg-purple">{{item2.num}}</div>
+              </el-col>
+              <el-col :span="3">
+                <div class="grid-content bg-purple-light">¥{{item1.totalPrice}}</div>
+              </el-col>
+              <el-col :span="3">
+                <div class="grid-content bg-purple-light sure" v-if="index2==0">
+                  <!-- 状态为待确认，显示待确认，否则显示具体金额 -->
+                  <span v-if="item1.status.status==0">待确认</span>
+                  <span
+                    v-if="item1.status.status!=0&&item1.totalPriceComfirm"
+                  >¥{{item1.totalPriceComfirm}}</span>
+                </div>
+              </el-col>
+              <el-col :span="3">
+                <div
+                  class="grid-content bg-purple-light statu"
+                  v-if="index2==0"
+                >{{item1.status.text}}</div>
+              </el-col>
+              <el-col :span="3">
+                <!-- index2==0 表示只显示第一个列表数据 -->
+                <div class="grid-content bg-purple-light handle" v-if="index2==0">
+                  <span @click="handleEditPrice(item1.id)" v-if="item1.status.status==0">修改价格</span>
+                  <span @click="handleClose(item1.id)" v-if="item1.status.status==0">取消订单</span>
+                  <span @click="handlePost(item1.id)" v-if="item1.status.status==2">填写物流信息</span>
+                  <span @click="handleRefund(item1.id)" v-if="item1.status.status==6">
+                    <span style="display:block">退款确认</span>
+                    <span style="display:block;color:#999;transform:translateX(-13px)">请在48小时内处理</span>
+                  </span>
+                </div>
+              </el-col>
+            </div>
           </el-row>
         </div>
       </div>
@@ -230,12 +145,53 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+
+    <!-- 物流信息对话框 -->
+    <el-dialog :visible.sync="isShowPostDialog" title="物流信息">
+      <el-form
+        :model="postForm"
+        ref="postRef"
+        :rules="postRules"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="物流方式：" prop="deliveryType">
+          <el-select v-model="postForm.deliveryType" placeholder="请选择">
+            <el-option
+              v-for="item in deliveryType"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="物流公司：" prop="expressCompany">
+          <el-select v-model="postForm.expressCompany" placeholder="请选择">
+            <el-option
+              v-for="item in expressCompany"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="运输单号：" prop="expressNovar">
+          <el-input v-model="postForm.expressNovar"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer">
+        <el-button type="primary" @click="addPost">确 定</el-button>
+        <el-button @click="isShowPostDialog = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getStore } from 'js/store'
 import axios from 'axios'
+import Qs from 'qs'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
@@ -252,15 +208,36 @@ export default {
         size: 20
       },
       total: null,
-      orderData: [], // 订单数据
-      activeName: '',
+      orderData: [], // 订单列表数据
+      statusLenList: [0, 0, 0, 0, 0], // 状态数量
+      activeName: '', // 当前标签页
       id: null, // 当前id
-      url:
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+      isShowPostDialog: false, // 物流信息对话框显示于隐藏
+      // 物流信息
+      postForm: {
+        deliveryType: '',
+        expressCompany: '',
+        expressNovar: ''
+      },
+      // 物流信息校验规则
+      postRules: {
+        deliveryType: [
+          { required: true, message: '请选择物流方式', trigger: 'change' }
+        ],
+        expressCompany: [
+          { required: true, message: '请选择物流公司', trigger: 'change' }
+        ],
+        expressNovar: [
+          { required: true, message: '请输入物流单号', trigger: 'blur' }
+        ]
+      },
+      deliveryType: [], // 物流方式列表
+      expressCompany: [] // 物流公司列表
     }
   },
   created() {
     this.getOrderList()
+    this.getOrderLenList()
   },
   methods: {
     getOrderList() {
@@ -273,6 +250,17 @@ export default {
             this.searchForm.page = res.data.number
             this.searchForm.size = res.data.size
             this.total = res.data.totalElements
+          }
+        })
+    },
+    getOrderLenList() {
+      // const statusArr = [{ status: "'STATUS0', 'STATUS2', 'STATUS6'" }]
+      // $dataTransform(this.addOrEditData, 'buttons');
+      this.axios
+        .get(`${this.baseUrl}/api/admin/goodsOrderCount`, this.$dataTransform({ statusArr: "'STATUS0', 'STATUS2', 'STATUS6'" }, 'status'))
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
           }
         })
     },
@@ -301,8 +289,94 @@ export default {
       this.searchForm.page = val
       this.getOrderList()
     },
+    // 标签页切换
     handleClick(tab, event) {
-      console.log(tab, event)
+      let arr = []
+      arr = this.activeName.split(',')
+      console.log(arr)
+      this.searchForm.status = arr
+      if (this.activeName == 0) {
+        this.searchForm.status = ''
+      }
+      // todo---状态数量的接口
+      this.getOrderList()
+    },
+    // 订单详情
+    orderDetail(id) {
+      // type:1 自营订单详情  type:2 电商订单详情
+      this.$router.push({ path: '/selfOrderInfo', query: { id: id, type: 1 } })
+    },
+    // 修改价格
+    handleEditPrice(id) {
+      this.$prompt('修改订单价格：', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /^[0-9.]+$/,
+        inputErrorMessage: '请输入订单价格'
+      }).then(({ value }) => {
+        this.axios
+          .put(`${this.baseUrl}/api/admin/update/totalPrice`, {
+            orderId: id,
+            totalPrice: value
+          })
+          .then(res => {
+            if (res.code === 200) {
+              this.$message({
+                type: 'success',
+                message: '修改成功'
+              })
+              this.getOrderList()
+            }
+          })
+      })
+    },
+    // 取消订单
+    handleClose(id) {
+      this.$confirm('是否取消订单？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.axios
+          .put(`${this.baseUrl}/api/admin/cancel`, {
+            orderId: id
+          })
+          .then(res => {
+            if (res.code === 200) {
+              this.$message({
+                type: 'success',
+                message: '取消订单成功'
+              })
+              this.getOrderList()
+            }
+          })
+      })
+    },
+    // 显示物流信息对话框
+    handlePost(id) {
+      this.isShowPostDialog = true
+      this.id = id
+    },
+    // 添加物流信息
+    addPost() {
+      this.axios
+        .put(`${this.baseUrl}/api/admin/add/express`, {
+          ...this.postForm,
+          orderId: this.id
+        })
+        .then(res => {
+          if (res.code === 200) {
+            this.$message({
+              type: 'success',
+              message: '添加成功'
+            })
+            this.getOrderList()
+          }
+        })
+    },
+    // 退款确认
+    handleRefund(id) {
+      this.$router.push({ path: '/selfOrderRefund', query: { id: id } })
     }
   }
 }

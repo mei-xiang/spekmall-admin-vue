@@ -142,7 +142,7 @@ export default {
         .get(`${this.baseUrl}/api/supplier/shop/${this.$route.query.id}/info`)
         .then(res => {
           console.log(res)
-          const data = res.data.data
+          const data = res.data
           if (res.code == 200) {
             this.shopObj = data
             this.radio = data.company.validity

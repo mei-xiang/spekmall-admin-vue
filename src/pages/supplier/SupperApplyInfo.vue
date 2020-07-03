@@ -129,9 +129,14 @@ export default {
   created() {
     // 查看 type：1   审核 type：2   新增 type：3
     this.type = this.$route.query.type
-    if (this.type == 2 || this.type == 1) {
+    if (this.type == 1) {
       this.getApplyList()
       this.readonly = true
+    }
+    if (this.type == 2) {
+      this.getApplyList()
+      this.readonly = true
+      this.supperRules = {}
     }
   },
   methods: {
@@ -150,7 +155,9 @@ export default {
             this.statusText = res.data.status.text
 
             // 展示图片处理
-            const srcList = this.supperForm.businessLicense.split(',')
+            const srcList = this.supperForm.businessLicense
+              ? this.supperForm.businessLicense.split(',')
+              : []
             this.url = this.imgBaseUrl + srcList[0]
             srcList.forEach(item => {
               this.srcList.push(this.imgBaseUrl + item)
@@ -212,61 +219,67 @@ export default {
     },
     // 审核通过  todo---status 审核通过状态值
     approvePass() {
-      this.$confirm('审核通过确认', '', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          const _this = this
-          this.approvePassOrNoPass(
-            {
-              id: this.$route.query.id,
-              status: 'AUDIT_PASS'
-            },
-            function(res) {
-              if (res.code == 200) {
-                _this.$message({
-                  type: 'success',
-                  message: '审核成功!'
-                })
-                _this.$router.push('/supplierApply')
-              }
-            }
-          )
+      this.$refs.supperRef.validate(valid => {
+        if (!valid) return
+        this.$confirm('审核通过确认', '', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
-        .catch(() => {})
+          .then(() => {
+            const _this = this
+            this.approvePassOrNoPass(
+              {
+                id: this.$route.query.id,
+                status: 'AUDIT_PASS'
+              },
+              function(res) {
+                if (res.code == 200) {
+                  _this.$message({
+                    type: 'success',
+                    message: '审核成功!'
+                  })
+                  _this.$router.push('/supplierApply')
+                }
+              }
+            )
+          })
+          .catch(() => {})
+      })
     },
     // 审核不通过  todo---校验未添加
     approveNoPass() {
-      this.$prompt('', '审核不通过确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputType: 'textarea',
-        inputPlaceholder: '请输入不通过原因',
-        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
-        inputErrorMessage: '请输入不通过原因'
-      })
-        .then(({ value }) => {
-          const _this = this
-          this.approvePassOrNoPass(
-            {
-              id: this.$route.query.id,
-              status: 'AUDIT_FAIL',
-              remarks: value
-            },
-            function(res) {
-              if (res.code == 200) {
-                _this.$message({
-                  type: 'success',
-                  message: '审核成功!'
-                })
-                _this.$router.push('/supplierApply')
-              }
-            }
-          )
+      this.$refs.supperRef.validate(valid => {
+        if (!valid) return
+        this.$prompt('', '审核不通过确认', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputType: 'textarea',
+          inputPlaceholder: '请输入不通过原因',
+          inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+          inputErrorMessage: '请输入不通过原因'
         })
-        .catch(() => {})
+          .then(({ value }) => {
+            const _this = this
+            this.approvePassOrNoPass(
+              {
+                id: this.$route.query.id,
+                status: 'AUDIT_FAIL',
+                remarks: value
+              },
+              function(res) {
+                if (res.code == 200) {
+                  _this.$message({
+                    type: 'success',
+                    message: '审核成功!'
+                  })
+                  _this.$router.push('/supplierApply')
+                }
+              }
+            )
+          })
+          .catch(() => {})
+      })
     }
   }
 }

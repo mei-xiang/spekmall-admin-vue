@@ -180,7 +180,7 @@ export default {
           })
           // 获取第一个分类的数据
           if (this.hasCategory.length > 0) {
-            this.getProductById(this.hasCategory[0].id)
+            this.getProductById(this.hasCategory[0].categoryId)
             this.firstCategoryId = this.hasCategory[0].categoryId
             this.categoryId = this.hasCategory[0].id
           }
@@ -330,19 +330,19 @@ export default {
         ids.push(item.productId)
       })
       console.log({
-        categoryId: this.categoryId,
+        categoryId: this.firstCategoryId,
         productIds: ids
       })
       this.axios
         .post(
-          `${this.baseUrl}/api/hotCategoryProduct/apply?categoryId=${this.categoryId}&productIds=${ids}`
+          `${this.baseUrl}/api/hotCategoryProduct/apply?categoryId=${this.firstCategoryId}&productIds=${ids}`
         )
         .then(res => {
           console.log(res)
           if (res.code == 200) {
             console.log(res)
             this.isShowHotProductDialog = false
-            this.getProductById(this.categoryId)
+            this.getProductById(this.firstCategoryId)
           }
           if (res.code == 500) {
             this.$message.warning(res.message)
@@ -356,7 +356,7 @@ export default {
       this.firstCategoryId = this.hasCategory[
         this.activeCategory - 0
       ].categoryId
-      this.getProductById(this.categoryId)
+      this.getProductById(this.firstCategoryId)
     },
     // 删除产品数据
     delChildCategoryPro(index, row) {
@@ -369,7 +369,7 @@ export default {
           console.log(res)
           if (res.code == 200) {
             this.$message.success(res.message)
-            this.getProductById(this.categoryId)
+            this.getProductById(this.firstCategoryId)
           }
         })
     }
