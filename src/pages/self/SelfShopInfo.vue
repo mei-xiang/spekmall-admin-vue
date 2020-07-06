@@ -377,23 +377,25 @@ export default {
           const data = res.data
           if (res.code == 200) {
             // 解析数据
-            this.selfForm.name = data.company.name
-            this.selfForm.creditCode = data.company.creditCode
-            this.selfForm.province = data.company.province
-            this.selfForm.provinceId = data.company.provinceId
-            this.selfForm.city = data.company.city
-            this.selfForm.cityId = data.company.cityId
-            this.selfForm.address = data.company.address
-            this.selfForm.industry = data.company.industry
-            this.selfForm.companyDesc = data.company.companyDesc
+            this.selfForm.name = data.shop.shopCompany.name
+            this.selfForm.creditCode = data.shop.shopCompany.creditCode
+            this.selfForm.province = data.shop.shopCompany.province
+            this.selfForm.provinceId = data.shop.shopCompany.provinceId
+            this.selfForm.city = data.shop.shopCompany.city
+            this.selfForm.cityId = data.shop.shopCompany.cityId
+            this.selfForm.address = data.shop.shopCompany.address
+            this.selfForm.industry = data.shop.shopCompany.industry
+            this.selfForm.companyDesc = data.shop.shopCompany.companyDesc
             this.selfForm.majorPorducts = data.majorPorducts
-            this.selfForm.establishmentDate = data.company.establishmentDate
-            this.selfForm.registeredCapital = data.company.registeredCapital
+            this.selfForm.establishmentDate =
+              data.shop.shopCompany.establishmentDate
+            this.selfForm.registeredCapital =
+              data.shop.shopCompany.registeredCapital
             this.selfForm.introduction = data.shop.introduction || ''
 
             // 显示省市
-            this.provincesVal = data.company.province
-            this.cityVal = data.company.city
+            this.provincesVal = data.shop.shopCompany.province
+            this.cityVal = data.shop.shopCompany.city
 
             // 图片解析
             this.selfForm.logo = this.$getArrayByStr(data.shop.logo)
@@ -598,7 +600,7 @@ export default {
       const _this = this
       this.saveOrApprove(this.selfForm, function(res) {
         if (res.code == 200) {
-          console.log('保存了')
+          _this.$router.push('/selfShop')
         }
         if (res.code == 500) {
           _this.$message.warning(res.message)
@@ -610,7 +612,7 @@ export default {
       const _this = this
       this.saveOrApprove(this.selfForm, function(res) {
         if (res.code == 200) {
-          console.log('审核了')
+          _this.$router.push('/selfShop')
         }
         if (res.code == 500) {
           _this.$message.warning(res.message)

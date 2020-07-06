@@ -256,7 +256,6 @@ export default {
       if (this.activeName == 0) {
         this.searchForm.status = ''
       }
-      // todo---状态数量的接口
       this.getOrderList()
     },
     // 订单详情

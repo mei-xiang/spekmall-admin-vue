@@ -18,23 +18,23 @@
       <div class="info">
         <div class="item">
           <span>公司名称</span>
-          <span>{{ shopObj.company.name }}</span>
+          <span>{{ shopObj.shop.shopCompany.name }}</span>
         </div>
         <div class="item">
           <span>统一信用代码</span>
-          <span>{{ shopObj.company.creditCode }}</span>
+          <span>{{ shopObj.shop.shopCompany.creditCode }}</span>
         </div>
         <div class="item">
           <span>地址</span>
-          <span>{{ shopObj.company.address }}</span>
+          <span>{{ shopObj.shop.shopCompany.address }}</span>
         </div>
         <div class="item">
           <span>行业</span>
-          <span>{{ shopObj.company.industry }}</span>
+          <span>{{ shopObj.shop.shopCompany.industry }}</span>
         </div>
         <div class="item">
           <span>公司简介</span>
-          <span>{{ shopObj.company.companyDesc }}</span>
+          <span>{{ shopObj.shop.shopCompany.companyDesc }}</span>
         </div>
         <div class="item">
           <span>主营产品</span>
@@ -42,11 +42,11 @@
         </div>
         <div class="item">
           <span>公司成立时间</span>
-          <span>{{ shopObj.company.establishmentDate }}</span>
+          <span>{{ shopObj.shop.shopCompany.establishmentDate }}</span>
         </div>
         <div class="item">
           <span>注册资金</span>
-          <span>{{ shopObj.company.registeredCapital }}万元</span>
+          <span>{{ shopObj.shop.shopCompany.registeredCapital }}万元</span>
         </div>
       </div>
     </div>
@@ -96,7 +96,7 @@
       <div class="info">
         <div class="item">
           <span>公司详情介绍</span>
-          <span></span>
+          <span v-html="shopObj.shop.introduction"></span>
         </div>
       </div>
     </div>
@@ -145,7 +145,7 @@ export default {
           const data = res.data
           if (res.code == 200) {
             this.shopObj = data
-            this.radio = data.company.validity
+            this.radio = data.shop.shopValidity
 
             // 图片解析
             this.logo = this.$getArrayByStr(data.shop.logo)

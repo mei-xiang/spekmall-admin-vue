@@ -44,7 +44,7 @@
       <el-table-column prop="mobile" label="手机" width="190"></el-table-column>
       <el-table-column prop label="地区" width="190">
         <template slot-scope="scope">
-          <span>{{ scope.row.company.province }}{{ scope.row.company.city }}</span>
+          <span v-if="scope.row.shop.shopCompany">{{ scope.row.shop.shopCompany.province }}{{ scope.row.shop.shopCompany.city }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="name" label="是否金牌供应商">
@@ -67,7 +67,7 @@
             size="mini"
             type="text"
             @click="handleApproval(scope.$index, scope.row)"
-            v-if="scope.row.shop.shopStatus.ndex == 1"
+            v-if="scope.row.shop.shopStatus.index == 1"
           >审核</el-button>
         </template>
       </el-table-column>
