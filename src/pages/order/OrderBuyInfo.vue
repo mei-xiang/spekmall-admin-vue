@@ -24,7 +24,7 @@
             <span>{{orderInfo.title}}</span>
           </div>
           <div class="item">
-            <span>发布时间 :</span>
+            <span>发布时间：</span>
             <span>{{orderInfo.createDate}}</span>
           </div>
           <div class="item">
@@ -32,15 +32,15 @@
             <span>{{orderInfo.expireDate}}</span>
           </div>
           <div class="item">
-            <span>采购人 :</span>
+            <span>采购人：</span>
             <span>{{orderInfo.fromUserName}}</span>
           </div>
           <div class="item">
-            <span>发布地点 :</span>
+            <span>发布地点：</span>
             <span>{{orderInfo.publishAddress}}</span>
           </div>
           <div class="item">
-            <span>报价方式： :</span>
+            <span>报价方式：</span>
             <span>{{orderInfo.totalPriceComfirm}}</span>
           </div>
         </div>

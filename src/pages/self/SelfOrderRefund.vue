@@ -42,17 +42,17 @@
         </div>
         <div class="item">
           <span>申请时间：</span>
-          <span v-if="orderInfo.orView">{{orderInfo.orView.createDate}}</span>
+          <span v-if="orderInfo.orView">{{orderInfo.orView. createDate}}</span>
         </div>
         <div class="item">
           <span>退款进度：</span>
-          <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView.status.text}}</span>
+          <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView. status.text}}</span>
         </div>
         <div class="item">
           <span>退款操作：</span>
           <el-radio v-model="status" label="STATUS7" @change="changeOrviewSta">同意退款</el-radio>
           <el-radio v-model="status" label="STATUS8" @change="changeOrviewSta">拒绝退款</el-radio>
-          <span style="color:#FF4400">请在{{hr}}:{{min}}:{{sec}}内完成操作</span>
+          <span style="color:#FF4400">请在{{hours}}:{{minutes}}:{{seconds}}内完成操作</span>
         </div>
         <div class="item" v-if="isShowInput">
           <span>说明：</span>
@@ -155,9 +155,9 @@ export default {
       refuseReason: '',
       isShowInput: false, // 是否显示拒绝输入框
       id: null,
-      hr: '48', // 时
-      min: '00', //分
-      sec: '00', // 秒
+      hours: '', // 时
+      minutes: '', //分
+      seconds: '', // 秒
       _interval: null
     }
   },
@@ -188,23 +188,40 @@ export default {
         this.isShowInput = false
       }
     },
+    // 时间倒计时
     countdown() {
-      // let time = 24 * 60 * 60 * 1000
-      // const that = this
-      // this._interval = setInterval(function() {
-      //   if (time <= 0) {
-      //     clearInterval(that._interval)
-      //   }
-      //   console.log(time)
-      //   let hr = parseInt((time / 1000 / 60 / 60) % 24)
-      //   let min = parseInt((time / 1000 / 60) % 60)
-      //   let sec = parseInt((time / 1000) % 60)
-      //   that.hr = hr > 9 ? hr : '0' + hr
-      //   that.min = min > 9 ? min : '0' + min
-      //   that.sec = sec > 9 ? sec : '0' + sec
-      //   // console.log(that.hr, that.min, that.sec)
-      //   time--
-      // }, 1000)
+      const _this = this
+      if (this.orderInfo.orView) {
+        let endTime =
+          new Date(this.orderInfo.orView.createDate).getTime() +
+          2 * 24 * 60 * 60 * 1000
+        let startTime = new Date(this.orderInfo.orView.createDate).getTime()
+        let time = (endTime - startTime) / 1000 // 获取天、时、分、秒
+        let hours = ''
+        let minutes = ''
+        let seconds = ''
+        _this._interval = setInterval(function() {
+          if (time <= 0) {
+            clearInterval(_this._interval)
+            _this.hours = '00'
+            _this.minutes = '00'
+            _this.seconds = '00'
+          }
+          let hours = parseInt((time % (60 * 60 * 48)) / 3600)
+          let minutes = parseInt(((time % (60 * 60 * 24)) % 3600) / 60)
+          let seconds = parseInt(((time % (60 * 60 * 24)) % 3600) % 60)
+
+          _this.hours = hours > 9 ? hours : '0' + hours
+          _this.minutes = minutes > 9 ? minutes : '0' + minutes
+          _this.seconds = seconds > 9 ? seconds : '0' + seconds
+          // console.log(_this.hours, _this.minutes, _this.seconds)
+          time--
+        }, 1000)
+      } else {
+        _this.hours = '00'
+        _this.minutes = '00'
+        _this.seconds = '00'
+      }
     },
     // 退款
     refund() {

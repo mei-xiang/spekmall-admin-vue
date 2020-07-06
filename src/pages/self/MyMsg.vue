@@ -2,6 +2,12 @@
   <!-- 我的消息 -->
   <div class="content">
     <!-- 搜索区域 -->
+    <h1>
+      我的消息
+      <span>（</span>
+      <span style="color:#FF0052">4</span>
+      <span>封未读）</span>
+    </h1>
     <el-form :inline="true" :model="searchForm" class="searchForm">
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
@@ -20,7 +26,7 @@
       <!-- <el-table-column type="index" label="序号" fixed></el-table-column> -->
       <el-table-column prop="code" label="消息分类" width="150"></el-table-column>
       <el-table-column prop="telephone" label="内容详情" width="150"></el-table-column>
-      <el-table-column prop="registerDate" label="时间" sortable></el-table-column>
+      <el-table-column prop="registerDate" label="时间"></el-table-column>
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看详情</el-button>
@@ -132,4 +138,3 @@ export default {
 </script>
 
 <style scopde></style>
-

@@ -38,11 +38,11 @@
 
     <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="全部订单" name></el-tab-pane>
-      <el-tab-pane :label="'待买家确认'+'('+statusLenList[0]+')'" name></el-tab-pane>
-      <el-tab-pane :label="'待商家接单'+'('+statusLenList[1]+')'" name></el-tab-pane>
-      <el-tab-pane :label="'待付款'+'('+statusLenList[2]+')'" name></el-tab-pane>
-      <el-tab-pane :label="'待发货('+'('+statusLenList[3]+')'" name></el-tab-pane>
-      <el-tab-pane :label="'已完成'+'('+statusLenList[4]+')'" name></el-tab-pane>
+      <el-tab-pane :label="'待买家确认'+'('+statusLenList[0]+')'" name="STATUS1"></el-tab-pane>
+      <el-tab-pane :label="'待商家接单'+'('+statusLenList[1]+')'" name="STATUS2"></el-tab-pane>
+      <el-tab-pane :label="'待付款'+'('+statusLenList[2]+')'" name="STATUS3,STATUS5"></el-tab-pane>
+      <el-tab-pane :label="'待发货('+'('+statusLenList[3]+')'" name="STATUS6"></el-tab-pane>
+      <el-tab-pane :label="'已完成'+'('+statusLenList[4]+')'" name="STATUS8"></el-tab-pane>
       <div class="order_title">
         <el-row>
           <el-col :span="6">
@@ -182,6 +182,7 @@ export default {
   },
   created() {
     this.getOrderList()
+    this.getOrderLenList()
   },
   methods: {
     getOrderList() {
@@ -194,6 +195,29 @@ export default {
             this.searchForm.page = res.data.number
             this.searchForm.size = res.data.size
             this.total = res.data.totalElements
+          }
+        })
+    },
+    // 获取订单状态数量
+    getOrderLenList() {
+      const statusObj = {
+        statusArr: [
+          { status: 'STATUS1' },
+          { status: 'STATUS2' },
+          { status: 'STATUS3,STATUS5' },
+          { status: 'STATUS6' },
+          { status: 'STATUS8' }
+        ],
+        ...this.searchForm
+      }
+      this.$dataTransform(statusObj, 'statusArr')
+      console.log(statusObj)
+      this.axios
+        .get(`${this.baseUrl}/api/admin/demandOrderCount`, statusObj)
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
+            this.statusLenList = res.data
           }
         })
     },
@@ -213,6 +237,7 @@ export default {
         return this.$message.warning('起始时间不能大于结束时间！')
       }
       this.getOrderList()
+      this.getOrderLenList()
     },
     handleSizeChange(val) {
       this.searchForm.size = val
@@ -224,15 +249,15 @@ export default {
     },
     // 标签页切换
     handleClick(tab, event) {
-      // let arr = []
-      // arr = this.activeName.split(',')
-      // console.log(arr)
-      // this.searchForm.status = arr
-      // if (this.activeName == 0) {
-      //   this.searchForm.status = ''
-      // }
-      // // todo---状态数量的接口
-      // this.getOrderList()
+      let arr = []
+      arr = this.activeName.split(',')
+      console.log(arr)
+      this.searchForm.status = arr
+      if (this.activeName == 0) {
+        this.searchForm.status = ''
+      }
+      // todo---状态数量的接口
+      this.getOrderList()
     },
     // 订单详情
     orderDetail(id, status) {

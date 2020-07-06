@@ -577,10 +577,16 @@ export default {
         if (!valid) return
         if (this.selfForm.city == '' || this.selfForm.city == null)
           return this.$message.warning('请选择省市')
+        const shopObj = {
+          banners: bannerList,
+          ...this.selfForm
+        }
+        this.$dataTransform(shopObj, 'banners')
+        console.log(shopObj)
         this.axios
-          .post(`${this.baseUrl}/api/supplier/shop/self/info`, obj)
+          .post(`${this.baseUrl}/api/supplier/shop/self/info`, shopObj)
           // .post(
-          //   `${this.baseUrl}/api/supplier/shop/self/info?name=${this.selfForm.name}&creditCode=${this.selfForm.creditCode}&province=${this.selfForm.province}&provinceId=${this.selfForm.provinceId}&city=${this.selfForm.city}&cityId=${this.selfForm.cityId}&address=${this.selfForm.address}&industry=${this.selfForm.industry}&companyDesc=${this.selfForm.companyDesc}&majorPorducts=${this.selfForm.majorPorducts}&establishmentDate=${this.selfForm.establishmentDate}&registeredCapital=${this.selfForm.registeredCapital}&introduction=${this.selfForm.introduction}&status=${this.selfForm.status}&logo=${this.selfForm.logo}&signboard=${this.selfForm.signboard}&banners=${this.selfForm.banners}&images=${this.selfForm.images}`
+          //   `${this.baseUrl}/api/supplier/shop/self/info?name=${this.selfForm.name}&creditCode=${this.selfForm.creditCode}&province=${this.selfForm.province}&provinceId=${this.selfForm.provinceId}&city=${this.selfForm.city}&cityId=${this.selfForm.cityId}&address=${this.selfForm.address}&industry=${this.selfForm.industry}&companyDesc=${this.selfForm.companyDesc}&majorPorducts=${this.selfForm.majorPorducts}&establishmentDate=${this.selfForm.establishmentDate}&registeredCapital=${this.selfForm.registeredCapital}&introduction=${this.selfForm.introduction}&status=${this.selfForm.status}&logo=${this.selfForm.logo}&signboard=${this.selfForm.signboard}&images=${this.selfForm.images}`
           // )
           .then(res => {
             callback && callback(res)
