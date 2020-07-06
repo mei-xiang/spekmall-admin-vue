@@ -408,7 +408,7 @@ export default {
   },
   watch: {
     'selfProductForm.specsList': function(val, oldval) {
-      if (val.length > 20) {
+      if (val && val.length > 20) {
         val.splice(20, 1)
         this.$message.warning('产品规格限20个')
       }
@@ -658,7 +658,10 @@ export default {
           return this.$message.warning('产品规格不能为空')
         }
         // 数据类型转换
-        this.selfProductForm.categoryId = this.selfProductForm.categoryId.toString()
+        // this.selfProductForm.categoryId = this.selfProductForm.categoryId.toString()
+        this.selfProductForm.categoryId = this.selfProductForm.categoryId[
+          this.selfProductForm.categoryId.length - 1
+        ]
         this.selfProductForm.payModels = this.selfProductForm.payModels.toString()
         this.selfProductForm.shippingTypes = this.selfProductForm.shippingTypes.toString()
         const specsList = []
@@ -684,11 +687,10 @@ export default {
     },
     save() {
       this.selfProductForm.status = 0 // 草稿
-      this.saveOrApprove()
       console.log(this.selfProductForm)
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
-          _this.$touter.push('/SelfProduct')
+          _this.$router.push('/selfProduct')
         }
         if (res.code == 500) {
           _this.$message.warning(res.message)
@@ -697,11 +699,10 @@ export default {
     },
     approve() {
       this.selfProductForm.status = 1 // 审核
-      this.saveOrApprove()
       console.log(this.selfProductForm)
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
-          _this.$touter.push('/SelfProduct')
+          _this.$router.push('/selfProduct')
         }
         if (res.code == 500) {
           _this.$message.warning(res.message)
