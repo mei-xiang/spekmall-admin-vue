@@ -66,8 +66,8 @@
                 @change="countryChange"
               >
                 <el-option
-                  v-for="item in country"
-                  :key="item.value"
+                  v-for="(item,index) in country"
+                  :key="index"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
@@ -79,8 +79,8 @@
                 :disabled="disabledPro"
               >
                 <el-option
-                  v-for="item in provinces"
-                  :key="item.value"
+                  v-for="(item,index) in provinces"
+                  :key="index"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
@@ -92,8 +92,8 @@
                 :disabled="disabledPro"
               >
                 <el-option
-                  v-for="item in cities"
-                  :key="item.value"
+                  v-for="(item,index) in cities"
+                  :key="index"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
@@ -128,8 +128,8 @@
             <el-form-item label="产品标签" prop="tagsId" v-if="type==2||type==3">
               <el-select v-model="selfProductForm.tagsId" multiple placeholder="请选择产品标签">
                 <el-option
-                  v-for="item in optionsTag"
-                  :key="item.value"
+                  v-for="(item,index) in optionsTag"
+                  :key="index"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
@@ -429,16 +429,26 @@ export default {
             for (let key in this.selfProductForm) {
               this.selfProductForm[key] = res.data[key]
             }
-            this.selfProductForm.tagsId = res.data.tags
-            this.selfProductForm.isMainProduct = res.data.mainProduct
+            // 查看或编辑 type：3
+            if (
+              (this.type == 2 || this.type == 3) &&
+              res.data.tags.length > 0
+            ) {
+              const arr = []
+              // 解析显示产品标签
+              res.data.tags.forEach(item => {
+                arr.push(item.id)
+              })
+              this.selfProductForm.tagsId = arr
+            }
+
             if (!this.selfProductForm.countryId) {
               this.selfProductForm.countryId = 1
             }
             // 解析显示产品类别
-            // this.selfProductForm.categoryId = res.data.categoryName.split(' > ')
             this.categoryView = res.data.categoryView
 
-            // 获取产品id [1,111,1111]
+            // 获取产品id return [1,111,1111]
             const arr = []
             if (
               Object.keys(this.categoryView).length > 0 &&
@@ -459,6 +469,8 @@ export default {
             }
             this.selfProductForm.categoryId = arr
             console.log(this.selfProductForm.categoryId)
+
+            this.selfProductForm.specsList = res.data.specs
 
             // 编辑时图片展示
             this.selfProductForm.images.forEach(item => {
@@ -657,8 +669,8 @@ export default {
         ) {
           return this.$message.warning('产品规格不能为空')
         }
+
         // 数据类型转换
-        // this.selfProductForm.categoryId = this.selfProductForm.categoryId.toString()
         this.selfProductForm.categoryId = this.selfProductForm.categoryId[
           this.selfProductForm.categoryId.length - 1
         ]
@@ -687,7 +699,6 @@ export default {
     },
     save() {
       this.selfProductForm.status = 0 // 草稿
-      console.log(this.selfProductForm)
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
           _this.$router.push('/selfProduct')
@@ -699,7 +710,6 @@ export default {
     },
     approve() {
       this.selfProductForm.status = 1 // 审核
-      console.log(this.selfProductForm)
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
           _this.$router.push('/selfProduct')

@@ -2,8 +2,8 @@
 <template>
   <!--  v-if="Object.keys(orderInfo).length > 0" -->
   <div class="content">
-    <!-- type：1 -->
-    <div>
+    <!-- 不为待发货与待收货状态 type：1 -->
+    <div v-if="type==1">
       <div class="box">
         <h2>订单详情</h2>
         <div class="info">
@@ -76,14 +76,21 @@
             <el-table-column prop="price" label="单价" width="180"></el-table-column>
             <el-table-column prop="freight" label="总运费" width="180"></el-table-column>
             <el-table-column prop="total" label="报价总金额"></el-table-column>
-            <el-table-column label="操作"></el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span
+                  style="margin-left: 10px"
+                  v-if="orderInfo.status"
+                >{{ scope.row.confirm==true&&orderInfo.status.status==2?'已接单':'' }}{{ scope.row.confirm==true&&orderInfo.status.status==3?'已确认':'' }}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
     </div>
 
     <!-- 待发货与待收货状态 type：2-->
-    <div>
+    <div v-if="type==2">
       <div class="box">
         <h2>订单详情</h2>
         <div class="info">
@@ -109,7 +116,7 @@
           </div>
           <div class="item">
             <span>最后确认金额：</span>
-            <span>¥{{orderInfo.totalPriceComfirm}}</span>
+            <span v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
           </div>
           <div class="item" v-if="type==1">
             <span>操作：</span>
@@ -215,12 +222,32 @@ export default {
   created() {
     this.id = this.$route.query.id
     this.type = this.$route.query.type
-    this.getOrderList()
+    if (this.type == 1) {
+      this.getOrderList()
+    }
+    if (this.type == 2) {
+      this.getOrderSendList()
+    }
   },
   methods: {
+    // 获取不为待发货与待收货状态数据
     getOrderList() {
       this.axios
         .get(`${this.baseUrl}/api/admin/demandOrderDetails?demandId=${this.id}`)
+        .then(res => {
+          console.log(res)
+          const data = res.data
+          if (res.code == 200) {
+            this.orderInfo = data
+          }
+        })
+    },
+    // 获取待发货与待收货状态数据
+    getOrderSendList() {
+      this.axios
+        .get(
+          `${this.baseUrl}/api/admin/demandPayOrderDetails?demandId=${this.id}`
+        )
         .then(res => {
           console.log(res)
           const data = res.data

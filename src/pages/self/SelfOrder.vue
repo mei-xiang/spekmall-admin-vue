@@ -317,8 +317,7 @@ export default {
     },
     // 订单详情
     orderDetail(id) {
-      // type:1 自营订单详情  type:2 电商订单详情
-      this.$router.push({ path: '/selfOrderInfo', query: { id: id, type: 1 } })
+      this.$router.push({ path: '/selfOrderInfo', query: { id: id } })
     },
     // 修改价格
     handleEditPrice(id) {

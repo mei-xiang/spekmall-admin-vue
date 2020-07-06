@@ -261,9 +261,9 @@ export default {
     // 订单详情
     orderDetail(id, status) {
       if (status == 6 || status == 7) {
-        this.type = 1
-      } else {
         this.type = 2
+      } else {
+        this.type = 1
       }
       this.$router.push({
         path: '/orderBuyInfo',

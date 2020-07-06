@@ -14,7 +14,7 @@
         </div>
         <div class="item">
           <span>交易金额：</span>
-          <span>¥{{orderInfo.totalPrice}}</span>
+          <span v-if="orderInfo.totalPrice">¥{{orderInfo.totalPrice}}</span>
         </div>
         <div class="item">
           <span>下单时间：</span>
@@ -26,7 +26,7 @@
         </div>
         <div class="item">
           <span>最后确认金额：</span>
-          <span style="color:#FF4400">¥{{orderInfo.totalPriceComfirm}}</span>
+          <span style="color:#FF4400" v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
         </div>
         <div class="item">
           <span>退款原因：</span>
@@ -166,7 +166,7 @@ export default {
     this.getOrderList()
   },
   mounted() {
-    this.countdown()
+    // this.countdown()
   },
   methods: {
     getOrderList() {

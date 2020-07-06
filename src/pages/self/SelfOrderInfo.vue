@@ -1,5 +1,4 @@
 <template>
-  <!-- type：1自营订单详情  type：2电商订单详情 -->
   <div class="content" v-if="Object.keys(orderInfo).length > 0">
     <div class="box">
       <h2>订单详情</h2>
@@ -28,9 +27,23 @@
           <span>最后确认金额：</span>
           <span v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
         </div>
-        <div class="item" v-if="type==1">
-          <span>操作：</span>
-          <el-button type="primary" @click="handleEditPrice">修改金额</el-button>
+        <div class="item">
+          <template v-if="orderInfo.status">
+            <span v-if="orderInfo.status.status==0">操作：</span>
+            <el-button
+              type="primary"
+              @click="handleEditPrice"
+              v-if="orderInfo.status.status==0"
+            >修改金额</el-button>
+          </template>
+          <template v-if="orderInfo.status">
+            <span v-if="orderInfo.status.status==2">操作：</span>
+            <el-button
+              type="primary"
+              @click="handlePostInfo"
+              v-if="orderInfo.status.status==2"
+            >填写物流信息</el-button>
+          </template>
         </div>
       </div>
     </div>
@@ -113,6 +126,46 @@
         </div>
       </div>
     </div>
+
+    <!-- 物流信息对话框 -->
+    <el-dialog :visible.sync="isShowPostDialog" title="物流信息" @close="handleDiaClose">
+      <el-form
+        :model="orderForm"
+        ref="orderInfoRef"
+        :rules="orderRules"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="物流方式：" prop="deliveryType">
+          <el-select v-model="orderForm.deliveryType" placeholder="请选择">
+            <el-option
+              v-for="item in deliveryType"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="物流公司：" prop="expressCompany">
+          <el-select v-model="orderForm.expressCompany" placeholder="请选择">
+            <el-option
+              v-for="item in expressCompany"
+              :key="item.value"
+              :label="item.text"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="运输单号：" prop="expressNovar">
+          <el-input v-model="orderForm.expressNovar"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer">
+        <el-button type="primary" @click="addPostInfo">确 定</el-button>
+        <el-button @click="isShowPostDialog = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -126,16 +179,50 @@ export default {
     return {
       orderInfo: {}, // 店铺数据
       id: null,
-      type: '', // 1自营订单详情 2电商订单详情
+      deliveryType: [], // 物流方式列表
+      expressCompany: [], // 物流公司列表
+      // 物流信息
+      orderForm: {
+        deliveryType: '',
+        expressCompany: '',
+        expressNovar: ''
+      },
+      isShowPostDialog: false, // 物流信息对话框显示于隐藏
+      // 物流信息校验规则
+      orderRules: {
+        deliveryType: [
+          { required: true, message: '请选择物流方式', trigger: 'change' }
+        ],
+        expressCompany: [
+          { required: true, message: '请选择物流公司', trigger: 'change' }
+        ],
+        expressNovar: [
+          { required: true, message: '请输入物流单号', trigger: 'blur' }
+        ]
+      },
       deliveryType: [], // 物流方式列表
       expressCompany: [] // 物流公司列表
     }
   },
   created() {
     this.id = this.$route.query.id
-    this.type = this.$route.query.type
-
     this.getOrderList()
+    // 获取物流方式
+    this.axios
+      .get(`${this.baseUrl}/dictionary/detail/child/transportationType`)
+      .then(res => {
+        if (res.code === 200) {
+          this.deliveryType = res.data
+        }
+      })
+    // 获取公司列表
+    this.axios
+      .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
+      .then(res => {
+        if (res.code === 200) {
+          this.expressCompany = res.data
+        }
+      })
   },
   mounted() {
     this.axios
@@ -196,6 +283,37 @@ export default {
             }
           })
       })
+    },
+    handlePostInfo() {
+      this.isShowPostDialog = true
+    },
+    // 添加物流信息
+    addPostInfo() {
+      this.$refs.orderInfoRef.validate(valid => {
+        if (!valid) return false
+        this.axios
+          .put(`${this.baseUrl}/api/admin/add/express`, {
+            ...this.orderForm,
+            orderId: this.id
+          })
+          .then(res => {
+            if (res.code === 200) {
+              this.$message({
+                type: 'success',
+                message: '添加成功'
+              })
+              this.isShowPostDialog = false
+              this.getOrderList()
+            }
+          })
+      })
+    },
+    // 物流信息对话框关闭数据重置
+    handleDiaClose() {
+      for (let key in this.orderForm) {
+        this.orderForm[key] = ''
+      }
+      this.$refs.orderInfoRef.resetFields()
     },
     // 返回
     close() {
