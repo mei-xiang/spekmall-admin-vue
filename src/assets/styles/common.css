@@ -500,3 +500,8 @@ a:hover {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.el-badge__content {
+  position: absolute !important;
+  top: -22px !important;
+  right: -3px !important;
+}

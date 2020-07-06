@@ -217,7 +217,7 @@ export default {
           }
         })
     },
-    // 审核通过  todo---status 审核通过状态值
+    // 审核通过
     approvePass() {
       this.$refs.supperRef.validate(valid => {
         if (!valid) return
@@ -247,7 +247,7 @@ export default {
           .catch(() => {})
       })
     },
-    // 审核不通过  todo---校验未添加
+    // 审核不通过
     approveNoPass() {
       this.$refs.supperRef.validate(valid => {
         if (!valid) return

@@ -15,13 +15,14 @@
     <!-- 右侧图标列表 -->
     <ul class="right-list clearfix">
       <li class="list-item hover icon-text user" v-popover:user-popover>
-        <span class="mes_box"><i class="iconfont iconxiaoxi message"></i></span>
+        <span class="mes_box">
+          <el-badge :value="12" class="item">
+            <!-- <el-button size="small">评论</el-button> -->
+            <i class="iconfont iconxiaoxi message"></i>
+          </el-badge>
+        </span>
         <!-- <img class="userImg" :src="userInfo.avatar" /> -->
-        <img
-          src="../../../../src/assets/images/avatar.png"
-          alt=""
-          class="userImg"
-        />
+        <img src="../../../../src/assets/images/avatar.png" alt class="userImg" />
         <!-- {{ userInfo.nickname }} -->
       </li>
     </ul>
@@ -44,16 +45,16 @@
 </template>
 
 <script type="text/ecmascript-6">
-import { mapMutations, mapGetters } from "vuex";
+import { mapMutations, mapGetters } from 'vuex'
 // import TopTheme from "../Theme";
-import HeaderMenu from "./HeaderMenu";
+import HeaderMenu from './HeaderMenu'
 import { removeStore, getStore } from 'js/store'
 export default {
-  name: "Header",
+  name: 'Header',
   data() {
     return {
-      imgSrc: "/static/image/icon_top_head_user.png",
-      labelWidth: "130px",
+      imgSrc: '/static/image/icon_top_head_user.png',
+      labelWidth: '130px',
       isShowPasswordDialog: false,
       passwordData: {
         password: null,
@@ -62,20 +63,29 @@ export default {
       },
       passwordRules: {
         password: [
-          this.$rules.setRequired("请输入原密码"),
+          this.$rules.setRequired('请输入原密码'),
           this.$rules.setPassword(6, 20)
         ],
-        pass: this.$rules.setNewPassword(this, "passwordForm", "passwordData", "newPassword"),
-        newPassword: this.$rules.setConfirmPassword(this, "passwordData", "pass")
+        pass: this.$rules.setNewPassword(
+          this,
+          'passwordForm',
+          'passwordData',
+          'newPassword'
+        ),
+        newPassword: this.$rules.setConfirmPassword(
+          this,
+          'passwordData',
+          'pass'
+        )
       },
-      bgCOlor: "",
-      searchKeyWords: ""
-    };
+      bgCOlor: '',
+      searchKeyWords: ''
+    }
   },
   // eslint-disable-next-line vue/no-unused-components
   components: { HeaderMenu },
   methods: {
-    ...mapMutations(["OPEN_SIDEBAR"]),
+    ...mapMutations(['OPEN_SIDEBAR']),
     toUserSetting() {
       this.$router.push({
         path: '/userSetting'
@@ -88,58 +98,63 @@ export default {
     },
     // 密码修改部分 --------------------------
     showPasswordDialog() {
-      this.isShowPasswordDialog = true;
+      this.isShowPasswordDialog = true
     },
     passwordSubmit() {
-      this.$refs["passwordForm"].validate((valid) => {
+      this.$refs['passwordForm'].validate(valid => {
         if (valid) {
-          this.axios.post("/api/oauth-service/user/resetpassword", this.passwordData).then((res) => {
-            // tenantService.auditBatch(this.addOrEditData).then((res) => {
-            // eslint-disable-next-line eqeqeq
-            if (res.statusCode == 200) {
-              this.$message({
-                type: "success",
-                message: "提交成功"
-              });
-              this.isShowPasswordDialog = false;
-            }
-          })
+          this.axios
+            .post('/api/oauth-service/user/resetpassword', this.passwordData)
+            .then(res => {
+              // tenantService.auditBatch(this.addOrEditData).then((res) => {
+              // eslint-disable-next-line eqeqeq
+              if (res.statusCode == 200) {
+                this.$message({
+                  type: 'success',
+                  message: '提交成功'
+                })
+                this.isShowPasswordDialog = false
+              }
+            })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     closePasswordDialog() {
-      this.passwordData = this.$options.data.call(this).passwordData;
+      this.passwordData = this.$options.data.call(this).passwordData
       this.$nextTick(() => {
-        this.$refs.passwordForm.clearValidate();
+        this.$refs.passwordForm.clearValidate()
       })
     },
     // 登出部分 --------------------------
     logout() {
       const reset = () => {
-        removeStore({ name: 'access_token' });
-        removeStore({ name: 'userInfo' });
+        removeStore({ name: 'access_token' })
+        removeStore({ name: 'userInfo' })
         this.$router.push({
           path: '/login',
           query: {
             redirect: this.$router.currentRoute.fullPath
           }
-        });
+        })
       }
-      let token = getStore({ name: 'access_token', type: "string" });
-      this.axios.get("/api/api/logout", {
-        Authorization: token
-      }).then((res) => {
-        this.$socket.close();
-        this.$message({
-          message: '退出成功',
-          type: 'success'
-        });
-        reset();
-      }).catch((res) => {
-        reset();
-      });
+      let token = getStore({ name: 'access_token', type: 'string' })
+      this.axios
+        .get('/api/api/logout', {
+          Authorization: token
+        })
+        .then(res => {
+          this.$socket.close()
+          this.$message({
+            message: '退出成功',
+            type: 'success'
+          })
+          reset()
+        })
+        .catch(res => {
+          reset()
+        })
     }
     // handleSelect(key, keyPath, value) {
     // var tabs = value.$el.innerHTML;
@@ -149,216 +164,267 @@ export default {
     // }
   },
   computed: {
-    ...mapGetters(["theme", "userInfo"])
+    ...mapGetters(['theme', 'userInfo'])
   },
   mounted() {
-    this.bgCOlor = this.theme;
+    this.bgCOlor = this.theme
   },
   watch: {
     theme() {
-      this.bgCOlor = this.theme;
+      this.bgCOlor = this.theme
     }
   }
-
-};
+}
 </script>
 
 <style scoped lang="stylus">
-$height = 50px
-$maxWidth = 1180px
+$height = 50px;
+$maxWidth = 1180px;
 
-.header
-  position relative
-  .sidebar
-    display inline-block
-    float left
-    padding 0 10px
-    line-height 80px
-    font-size 26px
-    color #1989FA
-    cursor pointer
+.header {
+  position: relative;
 
-  .logo
-    float left
-    margin-top 25px
-    margin-left 15px
-    width 472px
-    height 28px
-    background url('../../../assets/images/logo_title.png') 0 0 no-repeat
-    background-size cover
+  .sidebar {
+    display: inline-block;
+    float: left;
+    padding: 0 10px;
+    line-height: 80px;
+    font-size: 26px;
+    color: #1989FA;
+    cursor: pointer;
+  }
 
-  .system-name
-    float left
-    padding 0 20px
-    width 420px
-    height $height
-    line-height $height
-    font-size 16px
-    color #fff
+  .logo {
+    float: left;
+    margin-top: 25px;
+    margin-left: 15px;
+    width: 472px;
+    height: 28px;
+    background: url('../../../assets/images/logo_title.png') 0 0 no-repeat;
+    background-size: cover;
+  }
 
-  .top-theme
-    position absolute
-    top 14px
-    right 0
+  .system-name {
+    float: left;
+    padding: 0 20px;
+    width: 420px;
+    height: $height;
+    line-height: $height;
+    font-size: 16px;
+    color: #fff;
+  }
 
-  .right-list
-    float right
-    margin-right 35px
-    margin-top 17px
-    .mes_box
-      display inline-block
-      width 40px
-      height 40px
-      background-color skyblue
-      margin-top 5px
-      border-radius 50%
-      text-align center
-      position relative
-    .message
-      position absolute
-      font-size 18px!important
+  .top-theme {
+    position: absolute;
+    top: 14px;
+    right: 0;
+  }
+
+  .right-list {
+    float: right;
+    margin-right: 35px;
+    margin-top: 17px;
+
+    .mes_box {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      background-color: skyblue;
+      margin-top: 5px;
+      border-radius: 50%;
+      text-align: center;
+      position: relative;
+    }
+
+    .message {
+      position: absolute;
+      font-size: 18px !important;
       top: -4px;
       right: 7px;
-      cursor pointer
-    .message:hover
-      color: #1989FA
-    @media (max-width: $maxWidth)
-      padding-right 10px
+      cursor: pointer;
+      position: absolute;
+      top: -30px;
+      left: -15px;
+    }
 
-    .list-item
-      float left
-      height $height
-      color #fff
-      cursor pointer
+    .message:hover {
+      color: #1989FA;
+    }
 
-      i
-        font-size 24px
+    @media (max-width: $maxWidth) {
+      padding-right: 10px;
+    }
 
-      .icon-wrap
-        position relative
-        top 18px
-        left 0
-        width 32px
-        height 32px
+    .list-item {
+      float: left;
+      height: $height;
+      color: #fff;
+      cursor: pointer;
 
-        >>>.el-badge__content.is-fixed
-          right 20px
-          height 14px
-          line-height 14px
-          padding 0 4px
-          border none
+      i {
+        font-size: 24px;
+      }
 
-    .hover
-      &:hover
-        background-color #1989fa
-    .icon-item
-      width $height
-      text-align center
+      .icon-wrap {
+        position: relative;
+        top: 18px;
+        left: 0;
+        width: 32px;
+        height: 32px;
 
-    >>>.el-color-picker
-      margin 10px 0 0 10px
+        >>>.el-badge__content.is-fixed {
+          right: 20px;
+          height: 14px;
+          line-height: 14px;
+          padding: 0 4px;
+          border: none;
+        }
+      }
+    }
 
-    .icon-text
-      line-height $height
-      padding 0 10px
+    .hover {
+      &:hover {
+        background-color: #1989fa;
+      }
+    }
 
-      i
-        float left
-        line-height $height
-        padding 0 5px
+    .icon-item {
+      width: $height;
+      text-align: center;
+    }
 
-      .userImg
-        display block
-        float right
-        margin 5px 3px 0 0
-        width 40px
-        height 40px
-        border-radius 50%
+    >>>.el-color-picker {
+      margin: 10px 0 0 10px;
+    }
+
+    .icon-text {
+      line-height: $height;
+      padding: 0 10px;
+
+      i {
+        float: left;
+        line-height: $height;
+        padding: 0 5px;
+      }
+
+      .userImg {
+        display: block;
+        float: right;
+        margin: 5px 3px 0 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         margin-left: 30px;
+      }
+    }
 
-    .input-wrap
-      padding 13px 30px 0 0
-      width 200px
+    .input-wrap {
+      padding: 13px 30px 0 0;
+      width: 200px;
 
-      @media (max-width: $maxWidth)
-        padding-right 10px
-        width 120px
+      @media (max-width: $maxWidth) {
+        padding-right: 10px;
+        width: 120px;
+      }
 
-      >>>.el-input__inner
-        height 34px
-        line-height 34px
-        border-radius 4px
-        border none
-        background-color rgba(255, 255, 255, 0.3)
-        color #fff
+      >>>.el-input__inner {
+        height: 34px;
+        line-height: 34px;
+        border-radius: 4px;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.3);
+        color: #fff;
+      }
 
-      >>>.el-input__suffix
-        top -3px
+      >>>.el-input__suffix {
+        top: -3px;
+      }
+    }
+  }
+}
 
-.top-nav
-  float left
-  mix-width 240px
 
->>>.el-menu.el-menu--horizontal
-  border 0
+.top-nav {
+  float: left;
+  mix-width: 240px;
+}
 
->>>.el-menu--horizontal>.el-menu-item, >>>.el-menu--horizontal>.el-submenu .el-submenu__title
-  height $height
-  line-height $height
+>>>.el-menu.el-menu--horizontal {
+  border: 0;
+}
 
-.el-icon-more-outline
-  color #fff
-  font-size 30px
-  margin 15px 20px
+>>>.el-menu--horizontal>.el-menu-item, >>>.el-menu--horizontal>.el-submenu .el-submenu__title {
+  height: $height;
+  line-height: $height;
+}
 
-.system-wrap
-  width 500px
-  height 300px
-  background-color #333
+.el-icon-more-outline {
+  color: #fff;
+  font-size: 30px;
+  margin: 15px 20px;
+}
 
-.user-control
-  overflow hidden
+.system-wrap {
+  width: 500px;
+  height: 300px;
+  background-color: #333;
+}
 
-  li
-    padding-left 30px
-    height 40px
-    line-height 40px
-    cursor pointer
-    border-bottom 1px solid #ccc
+.user-control {
+  overflow: hidden;
 
-    &:hover
-      background-color #ccc
+  li {
+    padding-left: 30px;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
 
-.feedback-control
-  li
-    position relative
-    height 80px
-    cursor pointer
+    &:hover {
+      background-color: #ccc;
+    }
+  }
+}
 
-    &:hover
-      background-color #ccc
+.feedback-control {
+  li {
+    position: relative;
+    height: 80px;
+    cursor: pointer;
 
-    i
-      position absolute
-      top 18px
-      left 15px
+    &:hover {
+      background-color: #ccc;
+    }
 
-    .icon-jiqiren
-      font-size 24px
+    i {
+      position: absolute;
+      top: 18px;
+      left: 15px;
+    }
 
-    .icon-duihuakuang
-      font-size 32px
+    .icon-jiqiren {
+      font-size: 24px;
+    }
 
-    div
-      padding 20px 0 0 60px
+    .icon-duihuakuang {
+      font-size: 32px;
+    }
 
-      h5
-        height 20px
-        line-height 20px
-        color #000
+    div {
+      padding: 20px 0 0 60px;
 
-      span
-        height 20px
-        line-height 20px
-        color #999
+      h5 {
+        height: 20px;
+        line-height: 20px;
+        color: #000;
+      }
+
+      span {
+        height: 20px;
+        line-height: 20px;
+        color: #999;
+      }
+    }
+  }
+}
 </style>

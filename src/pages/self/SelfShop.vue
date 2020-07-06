@@ -8,13 +8,8 @@
     </div>
     <el-table :data="selfData" border style="width: 90%;" v-if="isOwnShop">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="supplierCompanyOutput.name" label="店铺名称" width="190"></el-table-column>
-      <el-table-column
-        prop="supplierCompanyOutput.establishmentDate"
-        label="店铺成立时间"
-        width="190"
-        show-overflow-tooltip
-      ></el-table-column>
+      <el-table-column prop="name" label="店铺名称" width="190"></el-table-column>
+      <el-table-column prop="createDate" label="店铺成立时间" width="190" show-overflow-tooltip></el-table-column>
       <el-table-column label="供应商类型" width="190">
         <template slot-scope="scope">
           <span>{{ scope.row.selfSupport?'自营':'非自营' }}</span>
@@ -22,7 +17,9 @@
       </el-table-column>
       <el-table-column label="店铺状态" width="190">
         <template slot-scope="scope">
-          <span>{{scope.row.supplierShopOutput.shopStatus.text }}</span>
+          <span
+            v-if="scope.row.supplierShopOutput"
+          >{{scope.row.supplierShopOutput.shopStatus.text }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="supplierShopOutput.remarks" label="信息" width="190"></el-table-column>
@@ -55,6 +52,8 @@ export default {
           this.selfData = res.data.content
           if (res.data.content.length > 0) {
             this.isOwnShop = true
+          } else {
+            this.isOwnShop = false
           }
         }
       })

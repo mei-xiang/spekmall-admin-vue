@@ -139,7 +139,7 @@
             <i class="select">*</i> 产品规格
           </span>
           <!-- 表格区域 -->
-          <el-table :data="productObj.specsList" border style="width: 300px;display:inline-block">
+          <el-table :data="productObj.specs" border style="width: 300px;display:inline-block">
             <el-table-column align="center" prop="specsName" label="名称"></el-table-column>
             <el-table-column align="center" prop="specsParam" label="参数" width="150"></el-table-column>
           </el-table>
@@ -148,7 +148,7 @@
           <span style="width:150px;">
             <i class="select">*</i> 产品详情
           </span>
-          <span style="flex:1">{{ productObj.introduction }}</span>
+          <span style="flex:1" v-html="productObj.introduction"></span>
         </div>
       </div>
     </div>

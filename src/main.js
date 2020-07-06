@@ -40,22 +40,6 @@ Vue.prototype.imgBaseUrl = `${baseUrl.development.apiUrl}/file/white/download?fi
 Vue.config.productionTip = false;
 Vue.use(SliderVerificationCode);
 
-// 格式化图片地址  return str
-Vue.filter("imgUrlFormat", function (urlStr) {
-  if (!urlStr) urlStr = ''
-  const srcList = urlStr.split(",");
-  return Vue.imgBaseUrl + srcList[0]
-})
-// 格式化图片地址  return strList
-Vue.filter("imgUrlListFormat", function (urlStr) {
-  if (!urlStr) urlStr = ''
-  const srcList = urlStr.split(",");
-  srcList.forEach(item => {
-    item = Vue.imgBaseUrl + item;
-  });
-  return srcList;
-})
-
 //核心库扩展，把代理加入核心变量中，方便其他模块调用
 window.core = window.core || {};
 window.core.http = axios_;

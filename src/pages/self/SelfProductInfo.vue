@@ -309,7 +309,7 @@ export default {
         city: '', // 城市
         minimumOrderingQuantity: '', // 最小起订量
         price: '', // 价格
-        bargain: null, // 议价 teur/false
+        bargain: false, // 议价 teur/false
         unit: '', // 单位
         isMainProduct: '', // 是否主要产品 true/false
         tagsId: [], // 产品标签id
@@ -408,7 +408,7 @@ export default {
   },
   watch: {
     'selfProductForm.specsList': function(val, oldval) {
-      if (val.length > 20) {
+      if (val && val.length > 20) {
         val.splice(20, 1)
         this.$message.warning('产品规格限20个')
       }
@@ -652,19 +652,34 @@ export default {
         if (!valid) return
         if (
           this.selfProductForm.specsList.length == 0 ||
-          (this.selfProductForm.specsList[0].specsName &&
-            this.selfProductForm.specsList[0].specsParam &&
-            this.selfProductForm.specsList[0].specsName == '') ||
+          this.selfProductForm.specsList[0].specsName == '' ||
           this.selfProductForm.specsList[0].specsParam == ''
         ) {
           return this.$message.warning('产品规格不能为空')
         }
         // 数据类型转换
-        this.selfProductForm.categoryId = this.selfProductForm.categoryId.toString()
+        // this.selfProductForm.categoryId = this.selfProductForm.categoryId.toString()
+        this.selfProductForm.categoryId = this.selfProductForm.categoryId[
+          this.selfProductForm.categoryId.length - 1
+        ]
         this.selfProductForm.payModels = this.selfProductForm.payModels.toString()
         this.selfProductForm.shippingTypes = this.selfProductForm.shippingTypes.toString()
+        const specsList = []
+        this.selfProductForm.specsList.forEach(item => {
+          specsList.push({
+            specsName: item.specsName,
+            specsList: item.specsList
+          })
+        })
+        const productObj = {
+          specsList: specsList,
+          ...this.selfProductForm
+        }
+        this.$dataTransform(productObj, 'specsList')
+        console.log(productObj)
+        console.log(this.selfProductForm)
         this.axios
-          .post(`${this.baseUrl}/api/product/self/save`, obj)
+          .post(`${this.baseUrl}/api/product/self/save`, productObj)
           .then(res => {
             callback && callback(res)
           })
@@ -672,11 +687,10 @@ export default {
     },
     save() {
       this.selfProductForm.status = 0 // 草稿
-      this.saveOrApprove()
       console.log(this.selfProductForm)
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
-          console.log('保存了')
+          _this.$router.push('/selfProduct')
         }
         if (res.code == 500) {
           _this.$message.warning(res.message)
@@ -685,11 +699,10 @@ export default {
     },
     approve() {
       this.selfProductForm.status = 1 // 审核
-      this.saveOrApprove()
       console.log(this.selfProductForm)
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
-          console.log('审核了')
+          _this.$router.push('/selfProduct')
         }
         if (res.code == 500) {
           _this.$message.warning(res.message)

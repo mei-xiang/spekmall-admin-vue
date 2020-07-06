@@ -38,8 +38,8 @@
 
     <el-tabs type="border-card" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="全部订单" name></el-tab-pane>
-      <el-tab-pane :label="'待处理'+'('+statusLenList[0]+')'" name="STATUS0,STATUS2,STATUS6"></el-tab-pane>
-      <el-tab-pane :label="'待卖家确认'+'('+statusLenList[1]+')'" name="STATUS0"></el-tab-pane>
+      <el-tab-pane :label="'待卖家确认'+'('+statusLenList[0]+')'" name="STATUS0"></el-tab-pane>
+      <el-tab-pane :label="'待付款'+'('+statusLenList[1]+')'" name="STATUS1"></el-tab-pane>
       <el-tab-pane :label="'待发货'+'('+statusLenList[2]+')'" name="STATUS2"></el-tab-pane>
       <el-tab-pane :label="'待收货'+'('+statusLenList[3]+')'" name="STATUS3"></el-tab-pane>
       <el-tab-pane :label="'已完成'+'('+statusLenList[4]+')'" name="STATUS4"></el-tab-pane>
@@ -100,13 +100,16 @@
                 </div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item2.price}}</div>
+                <div class="grid-content bg-purple-light" v-if="item2.price">¥{{item2.price}}</div>
               </el-col>
               <el-col :span="3">
                 <div class="grid-content bg-purple">{{item2.num}}</div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item1.totalPrice}}</div>
+                <div
+                  class="grid-content bg-purple-light"
+                  v-if="item1.totalPrice"
+                >¥{{item1.totalPrice}}</div>
               </el-col>
               <el-col :span="3">
                 <!-- index2==0 表示只显示第一个列表数据 -->
@@ -170,6 +173,7 @@ export default {
   },
   created() {
     this.getOrderList()
+    this.getOrderLenList()
   },
   methods: {
     getOrderList() {
@@ -182,6 +186,29 @@ export default {
             this.searchForm.page = res.data.number
             this.searchForm.size = res.data.size
             this.total = res.data.totalElements
+          }
+        })
+    },
+    // 获取订单状态数量
+    getOrderLenList() {
+      const statusObj = {
+        statusArr: [
+          { status: 'STATUS0' },
+          { status: 'STATUS1' },
+          { status: 'STATUS2' },
+          { status: 'STATUS3' },
+          { status: 'STATUS4' }
+        ],
+        ...this.searchForm
+      }
+      this.$dataTransform(statusObj, 'statusArr')
+      console.log(statusObj)
+      this.axios
+        .get(`${this.baseUrl}/api/admin/goodsOrderCount`, statusObj)
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
+            this.statusLenList = res.data
           }
         })
     },

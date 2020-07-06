@@ -27,11 +27,13 @@
         </div>
         <div class="item">
           <span>公司名称</span>
-          <span>{{ memberObj.supplierCompanyOutput.name }}</span>
+          <span v-if="memberObj.supplierCompanyOutput">{{ memberObj.supplierCompanyOutput.name }}</span>
         </div>
         <div class="item">
           <span>主营行业</span>
-          <span>{{ memberObj.supplierCompanyOutput.industry }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.industry }}</span>
         </div>
         <div class="item">
           <span>主营产品</span>
@@ -39,19 +41,25 @@
         </div>
         <div class="item">
           <span>地址</span>
-          <span>{{ memberObj.supplierCompanyOutput.address }}</span>
+          <span v-if="memberObj.supplierCompanyOutput">{{ memberObj.supplierCompanyOutput.address }}</span>
         </div>
         <div class="item">
           <span>成立时间</span>
-          <span>{{ memberObj.supplierCompanyOutput.establishmentDate }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.establishmentDate }}</span>
         </div>
         <div class="item">
           <span>注册资金</span>
-          <span>{{ memberObj.supplierCompanyOutput.registeredCapital }}万元</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.registeredCapital }}万元</span>
         </div>
         <div class="item">
           <span>公司简介</span>
-          <span>{{ memberObj.supplierCompanyOutput.companyDesc }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.companyDesc }}</span>
         </div>
         <div class="item">
           <span>店铺地址</span>
@@ -100,18 +108,20 @@
       <div class="info">
         <div class="item">
           <span>公司全称</span>
-          <span>{{ memberObj.supplierCompanyOutput.name }}</span>
+          <span v-if="memberObj.supplierCompanyOutput">{{ memberObj.supplierCompanyOutput.name }}</span>
         </div>
         <div class="item">
           <span>社会统一信用代码</span>
-          <span>{{ memberObj.supplierCompanyOutput.creditCode }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.creditCode }}</span>
         </div>
         <div class="item">
           <span>营业执照（三证合一）</span>
           <!-- 空数组的话不渲染图片，可以添加一个占位符图 -->
           <el-image
             style="width: 100px; height: 100px"
-            v-for="(item, index) in businessLicense"
+            v-for="(item, index) in businessLicense||[]"
             :key="index"
             :src="imgBaseUrl + item"
             :preview-src-list="[imgBaseUrl + item]"
@@ -119,11 +129,15 @@
         </div>
         <div class="item">
           <span>法人代表姓名</span>
-          <span>{{ memberObj.supplierCompanyOutput.legalPersonName }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.legalPersonName }}</span>
         </div>
         <div class="item">
           <span>法人代表身份证号</span>
-          <span>{{ memberObj.supplierCompanyOutput.legalPersonCardNo }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput"
+          >{{ memberObj.supplierCompanyOutput.legalPersonCardNo }}</span>
         </div>
         <div class="item">
           <span>法人代表身份证</span>
@@ -165,12 +179,16 @@ export default {
           console.log(res)
           if (res.code == 200) {
             this.memberObj = res.data
-            this.businessLicense = this.$getArrayByStr(
-              res.data.supplierCompanyOutput.businessLicense
-            )
-            this.legalPersonCardPicture = this.$getArrayByStr(
-              res.data.supplierCompanyOutput.legalPersonCardPicture
-            )
+            if (res.data.supplierCompanyOutput) {
+              this.businessLicense = this.$getArrayByStr(
+                res.data.supplierCompanyOutput.businessLicense
+              )
+            }
+            if (res.data.supplierCompanyOutput) {
+              this.legalPersonCardPicture = this.$getArrayByStr(
+                res.data.supplierCompanyOutput.legalPersonCardPicture
+              )
+            }
           }
         })
     }

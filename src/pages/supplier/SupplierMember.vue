@@ -49,7 +49,7 @@
       <el-table-column prop="mobile" label="手机" width="180"></el-table-column>
       <el-table-column prop label="地区" width="180">
         <template slot-scope="scope">
-          <span>
+          <span v-if="scope.row.supplierCompanyOutput">
             {{ scope.row.supplierCompanyOutput.province
             }}{{ scope.row.supplierCompanyOutput.city }}
           </span>
@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column label="状态" width="150">
         <template slot-scope="scope">
-          <span>{{ scope.row.status.text }}</span>
+          <span v-if="scope.row.account">{{ scope.row.account.status.text }}</span>
         </template>
       </el-table-column>
       <el-table-column label="金牌供应商" width="110">
@@ -80,30 +80,32 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleStop(scope.$index, scope.row)"
-            v-if="scope.row.account.status.status == 0"
-          >停用</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleStart(scope.$index, scope.row)"
-            v-if="scope.row.account.status.status == 1"
-          >启用</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleCancelGold(scope.$index, scope.row)"
-            v-if="scope.row.account.status.status == 0 && scope.row.vip == 1"
-          >取消金牌</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleBecomeGold(scope.$index, scope.row)"
-            v-if="scope.row.account.status.status == 0 && scope.row.vip == 0"
-          >成为金牌</el-button>
+          <template v-if="scope.row.account">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleStop(scope.$index, scope.row)"
+              v-if="scope.row.account.status.status == 0"
+            >停用</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleStart(scope.$index, scope.row)"
+              v-if="scope.row.account.status.status == 1"
+            >启用</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleCancelGold(scope.$index, scope.row)"
+              v-if="scope.row.account.status.status == 0 && scope.row.vip == 1"
+            >取消金牌</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleBecomeGold(scope.$index, scope.row)"
+              v-if="scope.row.account.status.status == 0 && scope.row.vip == 0"
+            >成为金牌</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
