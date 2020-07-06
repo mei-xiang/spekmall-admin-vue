@@ -29,7 +29,7 @@
       <el-table-column prop="account" label="用户名" min-width="120">
         <template slot-scope="{row}">{{row.account.username}}</template>
       </el-table-column>
-      <el-table-column prop="nickname" label="角色(权限)" min-width="120"></el-table-column>
+      <el-table-column prop="roleName" label="角色(权限)" min-width="120"></el-table-column>
       <el-table-column prop="status" label="状态" min-width="120">
         <template slot-scope="{row}">{{row.account.status.text}}</template>
       </el-table-column>
@@ -59,7 +59,6 @@
     </el-table>
 
     <el-pagination
-      style="position: static; margin-top: 20px;"
       @size-change="handleSizeChange"
       @current-change="handlePageChange"
       :current-page="pageData.page"
@@ -104,7 +103,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="14">
-            <el-form-item label="用户名:" prop="username" >
+            <el-form-item label="用户名:" prop="username">
               <el-input v-model="ruleForm.username" :disabled="isAddOrEdit"></el-input>
             </el-form-item>
             <el-form-item label="密码:" prop="password" v-if="!isShowPwd">
@@ -228,7 +227,6 @@ export default {
             label: item.name
           };
         });
-        console.log(res);
       });
     },
     getUerList() {
@@ -237,7 +235,6 @@ export default {
           `/api/manager/page?page=${this.pageData.page}&size=${this.pageData.size}`
         )
         .then(res => {
-          console.log(res, "role");
           if (res.code == 200) {
             this.tableData = res.data.content;
             this.tableData = this.tableData.map(item => {
@@ -260,12 +257,10 @@ export default {
       this.modifyPwd.username = row.account.username;
     },
     submitPwd() {
-      console.log(this.modifyPwd);
       this.axios
         // .post("/api/manager/password/reset", this.modifyModal,{String:"json"})
         .post(`/api/manager/password/reset?username=${this.modifyPwd.username}`)
         .then(res => {
-          console.log(res, "xiugai");
           this.$message.success("密码修改成功");
           this.modifyModal = false;
           this.getUerList();
@@ -302,11 +297,7 @@ export default {
     claoseAddUserModal() {
       this.$refs.ruleForm.resetFields();
       this.$refs.ruleForm.clearValidate();
-      (this.ruleForm = {
-        email: "",
-        mobile: ""
-      }),
-        (this.imageUrl = "");
+      this.imageUrl = "";
     },
     // 新增用户
     submitAddUser() {
@@ -318,9 +309,7 @@ export default {
         if (valid) {
           let params = this.ruleForm;
           params.userType = 1;
-          params.id = params.roleId;
           this.axios.post(url, params, { String: "json" }).then(res => {
-            console.log(res, "add");
             this.$message.success("增加成功");
             this.getUerList();
             this.$refs.ruleForm.resetFields();
@@ -332,7 +321,6 @@ export default {
             this.addUserModal = false;
           });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -343,18 +331,20 @@ export default {
       this.isAddOrEdit = true;
       this.isShowPwd = true;
       this.addUserModal = true;
-      (this.ruleForm = {
-        avatar: item.account.avatar,
-        roleId: item.roleId,
-        nickname: item.account.nickname,
-        username: item.account.username,
-        password: item.account.password,
-        email: item.email,
-        mobile: item.mobile,
-        id: item.id
-      }),
-        (this.imageUrl = this.imgBaseUrl + item.account.avatar);
-      alert(item.id);
+      this.axios.get(`/api/manager/${item.id}`).then(res => {
+        let resData = res.data;
+        this.ruleForm = {
+          avatar: resData.account.avatar,
+          roleId: resData.roleId,
+          nickname: resData.account.nickname,
+          username: resData.account.username,
+          password: resData.account.password,
+          email: resData.email,
+          mobile: resData.mobile,
+          id: resData.id
+        };
+        this.imageUrl = this.imgBaseUrl + item.account.avatar;
+      });
     },
     // 文件上传前的钩子函数，用于对文件类型进行校验
     beforeAvatarUpload(file) {
@@ -371,15 +361,15 @@ export default {
     },
     uploadSuccess(res, file, fileList) {
       this.ruleForm.avatar = res.data;
-      console.log(this.ruleForm.avatar, 888);
       this.imageUrl = this.imgBaseUrl + res.data;
     },
     handlePageChange(val) {
       this.pageData.page = val;
-      this.getUerList;
+      this.getUerList();
     },
     handleSizeChange(val) {
-      this.pageData.size = val
+      this.pageData.size = val;
+      this.getUerList();
     }
   }
 };

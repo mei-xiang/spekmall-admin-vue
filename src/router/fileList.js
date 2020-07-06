@@ -34,4 +34,5 @@ export default {
   "systemUser": resolve => require(["@/pages/system/SystemUser"], resolve), // 系统用户管理
   "systemRole": resolve => require(["@/pages/system/SystemRole"], resolve), // 系统角色管理
   "systemMenu": resolve => require(["@/pages/system/SystemMenu"], resolve), // 系统菜单管理
+  "systemDict": resolve => require(["@/pages/system/SystemDict"], resolve), // 数据字典
 };
