@@ -13,7 +13,7 @@
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="showAddBrand"
-        >新增</el-button>
+        >添加品牌</el-button>
         <el-button
           type="button"
           class="el-button el-button--default el-button--mini"
@@ -115,17 +115,12 @@
 
     <!-- 首页品牌管理对话框 -->
     <el-dialog :visible.sync="isShowHomeBrandDialog" title="首页品牌管理" @close="handleHomeBrandClose">
-      <div style="padding:20px">
-        <el-upload
-          :action="uploadUrl"
-          list-type="picture-card"
-          :file-list="fileList"
-          :on-success="handleSuccess"
-          :on-remove="handleRemove"
-          :before-upload="beforeAvatarUpload"
-        >
-          <i class="el-icon-plus"></i>
-        </el-upload>
+      <div class="homeBrandBox">
+        <div class="addHomeBrand" @click="isShowAddHomeBrand=true">点击添加</div>
+        <div v-for="(item,index) in homeBrandList" :key="index" class="item">
+          <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
+          <span class="del" @click="delHomeBrand(item.id)">删除</span>
+        </div>
       </div>
     </el-dialog>
   </div>
@@ -150,11 +145,12 @@ export default {
       id: '', // 当前数据id
       type: '', // 新增-修改标识
       isShowBrandDialog: false, // 控制对话框的显示与隐藏
+      // 对话框表单数据
       brandForm: {
         brandName: '',
         brandImg: '',
         hot: ''
-      }, // 对话框表单数据
+      },
       brandRules: {
         brandName: [
           { required: true, message: '品牌名称不能为空', trigger: 'blur' }
@@ -167,7 +163,9 @@ export default {
         ]
       },
       uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
-      isShowHomeBrandDialog: false // 控制首页品牌管理对话框
+      isShowHomeBrandDialog: false, // 控制首页品牌管理对话框
+      homeBrandList: [], // 首页品牌列表
+      isShowAddHomeBrand: false
     }
   },
   created() {
@@ -338,16 +336,36 @@ export default {
       }
       return isLt2M
     },
-    showHomeBrand() {
-      this.isShowHomeBrandDialog = true
+
+    /**  首页品牌管理 */
+    getHomeBrandList() {
       this.axios
         .get(`${this.baseUrl}/api/brand/showhome`, {
           page: 1,
           size: 10
         })
         .then(res => {
+          console.log(res)
           if (res.code === 200) {
-            console.log(res)
+            this.homeBrandList = res.data.content
+          }
+        })
+    },
+    // 获取首页品牌列表
+    showHomeBrand() {
+      this.isShowHomeBrandDialog = true
+      this.getHomeBrandList()
+    },
+    // 添加首页品牌
+    addHomeBrand() {},
+    // 删除首页品牌
+    delHomeBrand(id) {
+      console.log(id)
+      this.axios
+        .put(`${this.baseUrl}/api/brand/del/showhome?id=${id}`)
+        .then(res => {
+          if (res.code === 200) {
+            this.getHomeBrandList()
           }
         })
     },
@@ -362,6 +380,28 @@ export default {
   overflow: scroll;
 }
 .el-dialog {
-  width: 450px !important;
+  min-width: 950px !important;
+}
+.homeBrandBox {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.addHomeBrand {
+  width: 148px;
+  height: 148px;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 148px;
+  cursor: pointer;
+}
+.item {
+  position: relative;
+}
+.del {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: pointer;
 }
 </style>

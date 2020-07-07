@@ -103,17 +103,17 @@ var router = new Router({
     },
     // 自营订单详情与电商订单详情
     {
-      path: '/selfOrderInfo',
-      name: 'selfOrderInfo',
-      component: resolve => require(['@/pages/self/SelfOrderInfo'], resolve),
+      path: '/orderInfo',
+      name: 'orderInfo',
+      component: resolve => require(['@/pages/self/OrderInfo'], resolve),
       meta: {
         title: '订单详情'
       }
     },
     {
-      path: '/selfOrderRefund',
-      name: 'selfOrderRefund',
-      component: resolve => require(['@/pages/self/SelfOrderRefund'], resolve),
+      path: '/orderRefund',
+      name: 'orderRefund',
+      component: resolve => require(['@/pages/self/OrderRefund'], resolve),
       meta: {
         title: '订单详情-退款操作'
       }

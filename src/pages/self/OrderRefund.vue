@@ -26,7 +26,10 @@
         </div>
         <div class="item">
           <span>最后确认金额：</span>
-          <span style="color:#FF4400" v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
+          <span
+            style="color:#FF4400"
+            v-if="orderInfo.totalPriceComfirm"
+          >¥{{orderInfo.totalPriceComfirm}}</span>
         </div>
         <div class="item">
           <span>退款原因：</span>
@@ -48,7 +51,7 @@
           <span>退款进度：</span>
           <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView. status.text}}</span>
         </div>
-        <div class="item">
+        <div class="item" v-if="type==1">
           <span>退款操作：</span>
           <el-radio v-model="status" label="STATUS7" @change="changeOrviewSta">同意退款</el-radio>
           <el-radio v-model="status" label="STATUS8" @change="changeOrviewSta">拒绝退款</el-radio>
@@ -58,7 +61,7 @@
           <span>说明：</span>
           <el-input v-model="refuseReason" placeholder="请输入内容" class="explain"></el-input>
         </div>
-        <div class="item">
+        <div class="item" v-if="type==1">
           <span>操作：</span>
           <el-button type="primary" @click="refund">确认提交</el-button>
         </div>
@@ -152,9 +155,11 @@ export default {
     return {
       orderInfo: {}, // 店铺数据
       status: '',
+      type: '', // 1自营订单详情 2电商订单详情
       refuseReason: '',
       isShowInput: false, // 是否显示拒绝输入框
       id: null,
+      type: '', // 1自营订单详情 2电商订单详情
       hours: '', // 时
       minutes: '', //分
       seconds: '', // 秒
@@ -163,6 +168,7 @@ export default {
   },
   created() {
     this.id = this.$route.query.id
+    this.type = this.$route.query.type
     this.getOrderList()
   },
   mounted() {

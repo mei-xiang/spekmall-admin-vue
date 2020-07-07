@@ -79,7 +79,7 @@
             </el-col>
             <el-col :span="6">
               <div class="grid-content bg-purple-light detail">
-                <el-link type="primary" @click="orderDetail(item1.id)">订单详情</el-link>
+                <el-link type="primary" @click="orderDetail(item1.id,item1.status.status)">订单详情</el-link>
               </div>
             </el-col>
           </el-row>
@@ -316,8 +316,20 @@ export default {
       this.getOrderList()
     },
     // 订单详情
-    orderDetail(id) {
-      this.$router.push({ path: '/selfOrderInfo', query: { id: id } })
+    orderDetail(id, status) {
+      // type:1 自营订单详情  type:2 电商订单详情
+      console.log(status)
+      if (status == 6) {
+        this.$router.push({
+          path: '/orderRefund',
+          query: { id: id, type: 1 }
+        })
+      } else {
+        this.$router.push({
+          path: '/orderInfo',
+          query: { id: id, type: 1 }
+        })
+      }
     },
     // 修改价格
     handleEditPrice(id) {

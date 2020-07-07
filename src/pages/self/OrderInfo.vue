@@ -27,7 +27,7 @@
           <span>最后确认金额：</span>
           <span v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
         </div>
-        <div class="item">
+        <div class="item" v-if="type==1">
           <template v-if="orderInfo.status">
             <span v-if="orderInfo.status.status==0">操作：</span>
             <el-button
@@ -179,6 +179,7 @@ export default {
     return {
       orderInfo: {}, // 店铺数据
       id: null,
+      type: '', // 1自营订单详情 2电商订单详情
       deliveryType: [], // 物流方式列表
       expressCompany: [], // 物流公司列表
       // 物流信息
@@ -206,6 +207,7 @@ export default {
   },
   created() {
     this.id = this.$route.query.id
+    this.type = this.$route.query.type
     this.getOrderList()
     // 获取物流方式
     this.axios
@@ -215,6 +217,7 @@ export default {
           this.deliveryType = res.data
         }
       })
+      .catch(err => {})
     // 获取公司列表
     this.axios
       .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
@@ -223,6 +226,7 @@ export default {
           this.expressCompany = res.data
         }
       })
+      .catch(err => {})
   },
   mounted() {
     this.axios
@@ -303,7 +307,8 @@ export default {
                 message: '添加成功'
               })
               this.isShowPostDialog = false
-              this.getOrderList()
+              // this.getOrderList()
+              this.$router.push('/selfOrder')
             }
           })
       })

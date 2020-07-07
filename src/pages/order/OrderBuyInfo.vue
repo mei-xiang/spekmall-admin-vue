@@ -8,7 +8,7 @@
         <h2>订单详情</h2>
         <div class="info">
           <div class="item">
-            <el-steps :space="200" :active="1" finish-status="success">
+            <el-steps :space="200" :active="activeName" finish-status="success">
               <el-step title="发起求购"></el-step>
               <el-step title="卖家报价"></el-step>
               <el-step title="选择卖家提交意向"></el-step>
@@ -216,7 +216,8 @@ export default {
     return {
       orderInfo: {}, // 店铺数据
       id: null,
-      type: '' // 1自营订单详情 2电商订单详情
+      type: '', // 1自营订单详情 2电商订单详情
+      activeName: null
     }
   },
   created() {
@@ -239,6 +240,29 @@ export default {
           const data = res.data
           if (res.code == 200) {
             this.orderInfo = data
+            // 步骤条的高亮
+            const status = data.status.status
+            switch (status) {
+              case 0:
+                this.activeName = 1
+                break
+
+              case 1:
+                this.activeName = 2
+                break
+
+              case 2:
+                this.activeName = 3
+                break
+
+              case 3:
+                this.activeName = 4
+                break
+
+              default:
+                this.activeName = null
+                break
+            }
           }
         })
     },

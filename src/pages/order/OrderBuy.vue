@@ -75,7 +75,7 @@
         <div class="item_hd">
           <el-row>
             <el-col :span="5">
-              <div class="grid-content bg-purple code">求购名称：{{item.code}}</div>
+              <div class="grid-content bg-purple code">求购名称：{{item.title}}</div>
             </el-col>
             <el-col :span="4">
               <div class="grid-content bg-purple code">订单编号：{{item.code}}</div>

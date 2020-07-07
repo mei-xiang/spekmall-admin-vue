@@ -109,7 +109,8 @@
             margin-bottom: 10px;
           "
         >
-          <span>拖拽排列顺序</span>
+          <!-- todo---拖拽 -->
+          <!-- <span>拖拽排列顺序</span> -->
           <el-button
             type="button"
             class="el-button el-button--default el-button--mini"
