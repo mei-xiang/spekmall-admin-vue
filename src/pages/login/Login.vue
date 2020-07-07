@@ -128,7 +128,7 @@ export default {
           })
           removeStore({ name: 'access_token' })
           axios
-            .post('http://192.168.212.13:8010/public/login', {
+            .post(`${this.BaseUrl}/public/login`, {
               username: this.ruleForm.username,
               password: this.ruleForm.password
             })
