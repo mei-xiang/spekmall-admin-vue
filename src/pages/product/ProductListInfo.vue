@@ -181,7 +181,7 @@ export default {
   methods: {
     getProductList() {
       this.axios
-        .get(`${this.baseUrl}/api/product/info`, {
+        .get(`/api/product/info`, {
           productId: this.$route.query.id
         })
         .then(res => {
@@ -196,7 +196,7 @@ export default {
       this.$router.push('/productList')
     },
     approvePassOrNoPass(obj, callback) {
-      this.axios.put(`${this.baseUrl}/api/product/audit`, obj).then(res => {
+      this.axios.put(`/api/product/audit`, obj).then(res => {
         console.log(res)
         if (res.code === 200) {
           callback && callback(res)

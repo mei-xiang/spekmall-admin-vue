@@ -211,7 +211,7 @@ export default {
     this.getOrderList()
     // 获取物流方式
     this.axios
-      .get(`${this.baseUrl}/dictionary/detail/child/transportationType`)
+      .get(`/dictionary/detail/child/transportationType`)
       .then(res => {
         if (res.code === 200) {
           this.deliveryType = res.data
@@ -220,7 +220,7 @@ export default {
       .catch(err => {})
     // 获取公司列表
     this.axios
-      .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
+      .get(`/dictionary/detail/child/logistics`)
       .then(res => {
         if (res.code === 200) {
           this.expressCompany = res.data
@@ -230,14 +230,14 @@ export default {
   },
   mounted() {
     this.axios
-      .get(`${this.baseUrl}/dictionary/detail/child/transportationType`)
+      .get(`/dictionary/detail/child/transportationType`)
       .then(res => {
         if (res.code === 200) {
           this.deliveryType = res.data
         }
       })
     this.axios
-      .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
+      .get(`/dictionary/detail/child/logistics`)
       .then(res => {
         if (res.code === 200) {
           this.expressCompany = res.data
@@ -255,7 +255,7 @@ export default {
   methods: {
     getOrderList() {
       this.axios
-        .get(`${this.baseUrl}/api/admin/goodsOrderDetails?orderId=${this.id}`)
+        .get(`/api/admin/goodsOrderDetails?orderId=${this.id}`)
         .then(res => {
           console.log(res)
           const data = res.data
@@ -273,7 +273,7 @@ export default {
         inputErrorMessage: '请输入订单价格'
       }).then(({ value }) => {
         this.axios
-          .put(`${this.baseUrl}/api/admin/update/totalPrice`, {
+          .put(`/api/admin/update/totalPrice`, {
             orderId: this.id,
             totalPrice: value
           })
@@ -296,7 +296,7 @@ export default {
       this.$refs.orderInfoRef.validate(valid => {
         if (!valid) return false
         this.axios
-          .put(`${this.baseUrl}/api/admin/add/express`, {
+          .put(`/api/admin/add/express`, {
             ...this.orderForm,
             orderId: this.id
           })

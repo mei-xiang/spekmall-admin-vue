@@ -131,7 +131,7 @@ export default {
   methods: {
     getSelfProductList() {
       this.axios
-        .get(`${this.baseUrl}/api/product/self/search`, this.searchForm)
+        .get(`/api/product/self/search`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -157,7 +157,7 @@ export default {
     },
     // 获取产品类别
     getCategoryList() {
-      this.axios.get(`${this.baseUrl}/api/category/list`).then(res => {
+      this.axios.get(`/api/category/list`).then(res => {
         console.log(res)
         const resData = res.data
 
@@ -232,7 +232,7 @@ export default {
       })
         .then(() => {
           this.axios
-            .put(`${this.baseUrl}/api/product/self/lower`, {
+            .put(`/api/product/self/lower`, {
               productId: row.id
             })
             .then(res => {
@@ -257,7 +257,7 @@ export default {
       })
         .then(() => {
           this.axios
-            .del(`${this.baseUrl}/api/product/self/del`, {
+            .del(`/api/product/self/del`, {
               productId: row.id
             })
             .then(res => {
@@ -276,7 +276,7 @@ export default {
     handleApproval(index, row) {
       console.log(index, row)
       this.axios
-        .put(`${this.baseUrl}/api/product/self/toAudit`, {
+        .put(`/api/product/self/toAudit`, {
           productId: row.id
         })
         .then(res => {

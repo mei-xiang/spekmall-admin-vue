@@ -172,7 +172,7 @@ export default {
   methods: {
     getProductList() {
       this.axios
-        .get(`${this.baseUrl}/api/supplier/id/info`, {
+        .get(`/api/supplier/id/info`, {
           id: this.$route.query.id
         })
         .then(res => {

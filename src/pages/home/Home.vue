@@ -85,7 +85,7 @@ export default {
   methods: {
     // 获取主数据
     getMainData() {
-      this.axios.get(`${this.baseUrl}/public/home`).then(res => {
+      this.axios.get(`/public/home`).then(res => {
         console.log(res)
         if (res.code == 200) {
           this.cordObj = res.data

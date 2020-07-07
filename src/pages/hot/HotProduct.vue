@@ -151,7 +151,7 @@ export default {
   methods: {
     // 获取所有分类
     getAllCategoryList() {
-      this.axios.get(`${this.baseUrl}/api/category/list`).then(res => {
+      this.axios.get(`/api/category/list`).then(res => {
         console.log(res)
         if (res.code == 200) {
           res.data.forEach(item => {
@@ -167,7 +167,7 @@ export default {
     // 获取已添加的分类
     getHasCategoryList() {
       this.hasCategory = []
-      this.axios.get(`${this.baseUrl}/api/hotCategory/list`).then(res => {
+      this.axios.get(`/api/hotCategory/list`).then(res => {
         console.log(res)
         if (res.code == 200) {
           res.data.forEach(item => {
@@ -190,7 +190,7 @@ export default {
     // 根据分类id获取产品数据
     getProductById(id) {
       this.axios
-        .get(`${this.baseUrl}/api/hotCategoryProduct/list?categoryId=${id}`)
+        .get(`/api/hotCategoryProduct/list?categoryId=${id}`)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -205,7 +205,7 @@ export default {
         return item.value == this.categoryVal
       }).id
       this.axios
-        .post(`${this.baseUrl}/api/hotCategory/apply`, {
+        .post(`/api/hotCategory/apply`, {
           categoryId: this.firstCategoryId,
           categoryName: this.categoryVal
         })
@@ -223,7 +223,7 @@ export default {
     delHotCategory() {
       console.log(this.categoryId)
       this.axios
-        .del(`${this.baseUrl}/api/hotCategory/delete`, {
+        .del(`/api/hotCategory/delete`, {
           id: this.categoryId
         })
         .then(res => {
@@ -236,7 +236,7 @@ export default {
     // 上移
     moveUpCategory() {
       this.axios
-        .post(`${this.baseUrl}/api/hotCategory/moveUp?id=${this.categoryId}`)
+        .post(`/api/hotCategory/moveUp?id=${this.categoryId}`)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -256,7 +256,7 @@ export default {
     // 下移
     moveDownCategory() {
       this.axios
-        .post(`${this.baseUrl}/api/hotCategory/moveDown?id=${this.categoryId}`)
+        .post(`/api/hotCategory/moveDown?id=${this.categoryId}`)
         .then(res => {
           if (res.code == 200) {
             console.log(res)
@@ -285,7 +285,7 @@ export default {
         categoryId: this.firstCategoryId
       })
       this.axios
-        .get(`${this.baseUrl}/api/category/products/page`, {
+        .get(`/api/category/products/page`, {
           ...this.searchHotForm,
           categoryId: this.firstCategoryId
         })
@@ -335,7 +335,7 @@ export default {
       })
       this.axios
         .post(
-          `${this.baseUrl}/api/hotCategoryProduct/apply?categoryId=${this.firstCategoryId}&productIds=${ids}`
+          `/api/hotCategoryProduct/apply?categoryId=${this.firstCategoryId}&productIds=${ids}`
         )
         .then(res => {
           console.log(res)
@@ -362,7 +362,7 @@ export default {
     delChildCategoryPro(index, row) {
       console.log(index, row)
       this.axios
-        .del(`${this.baseUrl}/api/hotCategoryProduct/delete`, {
+        .del(`/api/hotCategoryProduct/delete`, {
           id: row.id
         })
         .then(res => {

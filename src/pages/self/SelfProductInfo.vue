@@ -420,7 +420,7 @@ export default {
   methods: {
     getProductList() {
       this.axios
-        .get(`${this.baseUrl}/api/product/info`, {
+        .get(`/api/product/info`, {
           productId: this.$route.query.id
         })
         .then(res => {
@@ -483,7 +483,7 @@ export default {
     },
     // 获取产品类别
     getCategoryList() {
-      this.axios.get(`${this.baseUrl}/api/category/list`).then(res => {
+      this.axios.get(`/api/category/list`).then(res => {
         console.log(res)
         const resData = res.data
 
@@ -524,7 +524,7 @@ export default {
 
     // 获取国家
     getCountryList() {
-      this.axios.get(`${this.baseUrl}/public/countries`).then(res => {
+      this.axios.get(`/public/countries`).then(res => {
         res.data.forEach(item => {
           this.country.push({
             label: item.nameZh,
@@ -535,7 +535,7 @@ export default {
     },
     // 获取所有省份
     getProvinces() {
-      this.axios.get(`${this.baseUrl}/public/address/provinces`).then(res => {
+      this.axios.get(`/public/address/provinces`).then(res => {
         console.log(res)
         res.data.forEach(item => {
           this.provinces.push({
@@ -551,7 +551,7 @@ export default {
       this.cities = []
       this.axios
         .get(
-          `${this.baseUrl}/public/address/cities/provinces?provincesid=${provinceId}`
+          `/public/address/cities/provinces?provincesid=${provinceId}`
         )
         .then(res => {
           console.log(res)
@@ -596,7 +596,7 @@ export default {
 
     // 获取标签多选列表
     getTagList() {
-      this.axios.get(`${this.baseUrl}/api/tag/list`).then(res => {
+      this.axios.get(`/api/tag/list`).then(res => {
         if (res.code != 200) return false
         res.data.forEach(item => {
           this.optionsTag.push({
@@ -691,7 +691,7 @@ export default {
         console.log(productObj)
         console.log(this.selfProductForm)
         this.axios
-          .post(`${this.baseUrl}/api/product/self/save`, productObj)
+          .post(`/api/product/self/save`, productObj)
           .then(res => {
             callback && callback(res)
           })

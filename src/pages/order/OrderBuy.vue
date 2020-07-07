@@ -187,7 +187,7 @@ export default {
   methods: {
     getOrderList() {
       this.axios
-        .get(`${this.baseUrl}/api/admin/demandOrderPage`, this.searchForm)
+        .get(`/api/admin/demandOrderPage`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -213,7 +213,7 @@ export default {
       this.$dataTransform(statusObj, 'statusArr')
       console.log(statusObj)
       this.axios
-        .get(`${this.baseUrl}/api/admin/demandOrderCount`, statusObj)
+        .get(`/api/admin/demandOrderCount`, statusObj)
         .then(res => {
           if (res.code == 200) {
             console.log(res)

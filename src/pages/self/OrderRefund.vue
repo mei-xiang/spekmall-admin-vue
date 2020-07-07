@@ -177,7 +177,7 @@ export default {
   methods: {
     getOrderList() {
       this.axios
-        .get(`${this.baseUrl}/api/admin/goodsOrderDetails?orderId=${this.id}`)
+        .get(`/api/admin/goodsOrderDetails?orderId=${this.id}`)
         .then(res => {
           console.log(res)
           const data = res.data
@@ -232,7 +232,7 @@ export default {
     // 退款
     refund() {
       this.axios
-        .put(`${this.baseUrl}/api/admin/refund`, {
+        .put(`/api/admin/refund`, {
           orderId: this.id,
           status: this.status,
           refuseReason: this.refuseReason

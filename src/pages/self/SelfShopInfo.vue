@@ -371,7 +371,7 @@ export default {
   methods: {
     getSelfShopList() {
       this.axios
-        .get(`${this.baseUrl}/api/supplier/shop/${this.$route.query.id}/info`)
+        .get(`/api/supplier/shop/${this.$route.query.id}/info`)
         .then(res => {
           console.log(res)
           const data = res.data
@@ -424,7 +424,7 @@ export default {
     },
     // 获取所有省份
     getProvinces() {
-      this.axios.get(`${this.baseUrl}/public/address/provinces`).then(res => {
+      this.axios.get(`/public/address/provinces`).then(res => {
         console.log(res)
         res.data.forEach(item => {
           this.provinces.push({
@@ -440,7 +440,7 @@ export default {
       this.cities = []
       this.axios
         .get(
-          `${this.baseUrl}/public/address/cities/provinces?provincesid=${provinceId}`
+          `/public/address/cities/provinces?provincesid=${provinceId}`
         )
         .then(res => {
           console.log(res)
@@ -586,9 +586,9 @@ export default {
         this.$dataTransform(shopObj, 'banners')
         console.log(shopObj)
         this.axios
-          .post(`${this.baseUrl}/api/supplier/shop/self/info`, shopObj)
+          .post(`/api/supplier/shop/self/info`, shopObj)
           // .post(
-          //   `${this.baseUrl}/api/supplier/shop/self/info?name=${this.selfForm.name}&creditCode=${this.selfForm.creditCode}&province=${this.selfForm.province}&provinceId=${this.selfForm.provinceId}&city=${this.selfForm.city}&cityId=${this.selfForm.cityId}&address=${this.selfForm.address}&industry=${this.selfForm.industry}&companyDesc=${this.selfForm.companyDesc}&majorPorducts=${this.selfForm.majorPorducts}&establishmentDate=${this.selfForm.establishmentDate}&registeredCapital=${this.selfForm.registeredCapital}&introduction=${this.selfForm.introduction}&status=${this.selfForm.status}&logo=${this.selfForm.logo}&signboard=${this.selfForm.signboard}&images=${this.selfForm.images}`
+          //   `/api/supplier/shop/self/info?name=${this.selfForm.name}&creditCode=${this.selfForm.creditCode}&province=${this.selfForm.province}&provinceId=${this.selfForm.provinceId}&city=${this.selfForm.city}&cityId=${this.selfForm.cityId}&address=${this.selfForm.address}&industry=${this.selfForm.industry}&companyDesc=${this.selfForm.companyDesc}&majorPorducts=${this.selfForm.majorPorducts}&establishmentDate=${this.selfForm.establishmentDate}&registeredCapital=${this.selfForm.registeredCapital}&introduction=${this.selfForm.introduction}&status=${this.selfForm.status}&logo=${this.selfForm.logo}&signboard=${this.selfForm.signboard}&images=${this.selfForm.images}`
           // )
           .then(res => {
             callback && callback(res)

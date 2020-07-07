@@ -142,7 +142,7 @@ export default {
   methods: {
     getApplyList() {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/register/detail`, {
+        .post(`/api/supplier/register/detail`, {
           id: this.$route.query.id
         })
         .then(res => {
@@ -190,7 +190,7 @@ export default {
         this.supperForm.businessLicense = businessLicense.join(',')
         console.log(this.supperForm)
         this.axios
-          .post(`${this.baseUrl}/api/supplier/register/apply`, this.supperForm)
+          .post(`/api/supplier/register/apply`, this.supperForm)
           .then(res => {
             console.log(res)
             if (res.code !== 200) {
@@ -209,7 +209,7 @@ export default {
     },
     approvePassOrNoPass(obj, callback) {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/register/audit`, obj)
+        .post(`/api/supplier/register/audit`, obj)
         .then(res => {
           console.log(res)
           if (res.code === 200) {

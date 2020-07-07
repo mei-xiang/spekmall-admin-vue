@@ -243,7 +243,7 @@ export default {
     // 获取订单列表数据
     getOrderList() {
       this.axios
-        .get(`${this.baseUrl}/api/admin/self/goodsOrderPage`, this.searchForm)
+        .get(`/api/admin/self/goodsOrderPage`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -269,7 +269,7 @@ export default {
       this.$dataTransform(statusObj, 'statusArr')
       console.log(statusObj)
       this.axios
-        .get(`${this.baseUrl}/api/admin/self/goodsOrderCount`, statusObj)
+        .get(`/api/admin/self/goodsOrderCount`, statusObj)
         .then(res => {
           if (res.code == 200) {
             console.log(res)
@@ -341,7 +341,7 @@ export default {
       })
         .then(({ value }) => {
           this.axios
-            .put(`${this.baseUrl}/api/admin/update/totalPrice`, {
+            .put(`/api/admin/update/totalPrice`, {
               orderId: id,
               totalPrice: value
             })
@@ -366,7 +366,7 @@ export default {
       })
         .then(() => {
           this.axios
-            .put(`${this.baseUrl}/api/admin/cancel`, {
+            .put(`/api/admin/cancel`, {
               orderId: id
             })
             .then(res => {
@@ -386,14 +386,14 @@ export default {
       this.isShowPostDialog = true
       this.id = id
       this.axios
-        .get(`${this.baseUrl}/dictionary/detail/child/transportationType`)
+        .get(`/dictionary/detail/child/transportationType`)
         .then(res => {
           if (res.code === 200) {
             this.deliveryType = res.data
           }
         })
       this.axios
-        .get(`${this.baseUrl}/dictionary/detail/child/logistics`)
+        .get(`/dictionary/detail/child/logistics`)
         .then(res => {
           if (res.code === 200) {
             this.expressCompany = res.data
@@ -412,7 +412,7 @@ export default {
       this.$refs.postRef.validate(valid => {
         if (!valid) return false
         this.axios
-          .put(`${this.baseUrl}/api/admin/add/express`, {
+          .put(`/api/admin/add/express`, {
             ...this.postForm,
             orderId: this.id
           })

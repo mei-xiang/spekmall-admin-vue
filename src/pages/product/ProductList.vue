@@ -168,7 +168,7 @@ export default {
   methods: {
     getApplyList() {
       this.axios
-        .get(`${this.baseUrl}/api/product/search`, this.searchForm)
+        .get(`/api/product/search`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -210,7 +210,7 @@ export default {
     },
     // 获取产品类别
     getCategoryList() {
-      this.axios.get(`${this.baseUrl}/api/category/list`).then(res => {
+      this.axios.get(`/api/category/list`).then(res => {
         console.log(res)
         const resData = res.data
 
@@ -275,7 +275,7 @@ export default {
       })
     },
     handleLike(obj, callback) {
-      this.axios.put(`${this.baseUrl}/api/product/like`, obj).then(res => {
+      this.axios.put(`/api/product/like`, obj).then(res => {
         if (res.code === 200) {
           callback && callback(res)
         }
@@ -312,7 +312,7 @@ export default {
       )
     },
     approvePassOrNoPass(obj, callback) {
-      this.axios.put(`${this.baseUrl}/api/product/audit`, obj).then(res => {
+      this.axios.put(`/api/product/audit`, obj).then(res => {
         console.log(res)
         if (res.code === 200) {
           callback && callback(res)

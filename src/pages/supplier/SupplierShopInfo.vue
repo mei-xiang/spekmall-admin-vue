@@ -139,7 +139,7 @@ export default {
   methods: {
     getProductList() {
       this.axios
-        .get(`${this.baseUrl}/api/supplier/shop/${this.$route.query.id}/info`)
+        .get(`/api/supplier/shop/${this.$route.query.id}/info`)
         .then(res => {
           console.log(res)
           const data = res.data
@@ -159,7 +159,7 @@ export default {
     },
     approvePassOrNoPass(obj, callback) {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/shop/audit`, obj)
+        .post(`/api/supplier/shop/audit`, obj)
         .then(res => {
           console.log(res)
           if (res.code === 200) {

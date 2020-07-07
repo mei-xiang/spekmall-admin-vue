@@ -143,7 +143,7 @@ export default {
   methods: {
     getBuyerList() {
       this.axios
-        .get(`${this.baseUrl}/api/buyer/search`, this.searchForm)
+        .get(`/api/buyer/search`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -182,7 +182,7 @@ export default {
     handleDetail(index, row) {
       console.log(index, row)
       this.isShowDialog = true
-      this.axios.get(`${this.baseUrl}/api/buyer/${row.id}/info`).then(res => {
+      this.axios.get(`/api/buyer/${row.id}/info`).then(res => {
         console.log(res)
         if (res.code != 200) return
         this.lookBuyerForm = res.data
@@ -197,7 +197,7 @@ export default {
       })
         .then(() => {
           this.axios
-            .post(`${this.baseUrl}/api/buyer/disable`, {
+            .post(`/api/buyer/disable`, {
               id: row.id,
               token: this.$token
             })
@@ -223,7 +223,7 @@ export default {
       })
         .then(() => {
           this.axios
-            .post(`${this.baseUrl}/api/buyer/enable`, {
+            .post(`/api/buyer/enable`, {
               id: row.id,
               token: this.$token
             })

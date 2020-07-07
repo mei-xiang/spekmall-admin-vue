@@ -154,7 +154,7 @@ export default {
   },
   methods: {
     getRoleList() {
-      this.axios.get(`${this.baseUrl}/api/role?size=100`).then(res => {
+      this.axios.get(`/api/role?size=100`).then(res => {
         console.log(res, "role");
         if (res.code == 200) {
           this.labelData = res.data.content;

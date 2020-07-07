@@ -234,7 +234,7 @@ export default {
     // 获取不为待发货与待收货状态数据
     getOrderList() {
       this.axios
-        .get(`${this.baseUrl}/api/admin/demandOrderDetails?demandId=${this.id}`)
+        .get(`/api/admin/demandOrderDetails?demandId=${this.id}`)
         .then(res => {
           console.log(res)
           const data = res.data
@@ -270,7 +270,7 @@ export default {
     getOrderSendList() {
       this.axios
         .get(
-          `${this.baseUrl}/api/admin/demandPayOrderDetails?demandId=${this.id}`
+          `/api/admin/demandPayOrderDetails?demandId=${this.id}`
         )
         .then(res => {
           console.log(res)

@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     getShopList() {
-      this.axios.post(`${this.baseUrl}/api/supplier/self/search`).then(res => {
+      this.axios.post(`/api/supplier/self/search`).then(res => {
         console.log(res)
         if (res.code == 200) {
           this.selfData = res.data.content

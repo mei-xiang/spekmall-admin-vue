@@ -35,7 +35,6 @@ import components from './components/components.js'; //全局组件注册
 
 Vue.prototype.axios = axios_; // 挂载到Vue实例上面
 Vue.prototype.store = store; // 挂载到Vue实例上面
-Vue.prototype.baseUrl = baseUrl.development.apiUrl; // 请求基本地址
 Vue.prototype.imgBaseUrl = `${baseUrl.development.apiUrl}/file/white/download?filePath=` // 图片拼接部分
 Vue.config.productionTip = false;
 Vue.use(SliderVerificationCode);

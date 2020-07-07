@@ -190,7 +190,7 @@ export default {
   methods: {
     getApplyList() {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/search`, this.searchForm)
+        .post(`/api/supplier/search`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
@@ -254,7 +254,7 @@ export default {
         .then(({ value }) => {
           console.log(value)
           this.axios
-            .post(`${this.baseUrl}/api/supplier/disable`, {
+            .post(`/api/supplier/disable`, {
               id: row.id,
               status: 'DISABLED',
               remarks: value
@@ -282,7 +282,7 @@ export default {
       })
         .then(() => {
           this.axios
-            .post(`${this.baseUrl}/api/supplier/enable`, {
+            .post(`/api/supplier/enable`, {
               id: row.id
             })
             .then(res => {
@@ -317,7 +317,7 @@ export default {
       })
         .then(({ value }) => {
           this.axios
-            .put(`${this.baseUrl}/api/supplier/vip`, {
+            .put(`/api/supplier/vip`, {
               id: row.id,
               vip: false,
               remarks: value
@@ -344,7 +344,7 @@ export default {
         return this.$message.warning('起始时间不能大于结束时间！')
       }
       this.axios
-        .put(`${this.baseUrl}/api/supplier/vip`, {
+        .put(`/api/supplier/vip`, {
           id: this.id,
           vip: true,
           vipDate: this.glodForm.dates[0],

@@ -189,7 +189,7 @@ export default {
     // /api/supplier/register/search
     getApplyList() {
       this.axios
-        .post(`${this.baseUrl}/api/supplier/register/search`, this.searchForm)
+        .post(`/api/supplier/register/search`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {

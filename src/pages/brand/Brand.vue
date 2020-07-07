@@ -114,13 +114,55 @@
     </el-dialog>
 
     <!-- 首页品牌管理对话框 -->
-    <el-dialog :visible.sync="isShowHomeBrandDialog" title="首页品牌管理" @close="handleHomeBrandClose">
+    <el-dialog :visible.sync="isShowHomeBrandDia" title="首页品牌管理">
       <div class="homeBrandBox">
-        <div class="addHomeBrand" @click="isShowAddHomeBrand=true">点击添加</div>
+        <div class="addHomeBrand" @click="showHomeAddBrand">点击添加</div>
         <div v-for="(item,index) in homeBrandList" :key="index" class="item">
           <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
           <span class="del" @click="delHomeBrand(item.id)">删除</span>
         </div>
+      </div>
+    </el-dialog>
+
+    <!-- 首页品牌热门品牌对话框 -->
+    <el-dialog :visible.sync="isShowHotBrandListDia" title="热门品牌" @close="handleHotDiaClose">
+      <div>
+        <el-form :inline="true" :model="searchHotForm" class="searchForm">
+          <el-form-item label>
+            <el-input v-model="searchHotForm.keyword" placeholder="请输入产品名称、供应商名称搜索"></el-input>
+          </el-form-item>
+          <el-form-item label>
+            <el-input v-model="searchHotForm.keyword" placeholder="请输入产品名称、供应商名称搜索"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button class="query" icon="el-icon-search" @click="hotquery" size="mini">查询</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table
+          :data="hotData"
+          highlight-current-row
+          @current-change="handleCurrentChange"
+          ref="singleTableRef"
+        >
+          <el-table-column type="selection" width="55"></el-table-column>
+          <el-table-column prop="code" label="品牌编号" width="150"></el-table-column>
+          <el-table-column prop="title" label="品牌名称" width="190" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="title" label="图片" show-overflow-tooltip></el-table-column>
+        </el-table>
+        <el-pagination
+          style="position: static; margin-top: 20px;"
+          @size-change="handleHotSizeChange"
+          @current-change="handleHotCurrentChange"
+          :current-page="searchHotForm.page + 1"
+          :page-sizes="[10, 20, 50]"
+          :page-size.sync="searchHotForm.size"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="hotTotal"
+        ></el-pagination>
+      </div>
+      <div slot="footer">
+        <el-button type="primary" @click="addHomeBrand">确 定</el-button>
+        <el-button @click="isShowHotBrandListDia = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -163,9 +205,20 @@ export default {
         ]
       },
       uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
-      isShowHomeBrandDialog: false, // 控制首页品牌管理对话框
+      isShowHomeBrandDia: false, // 控制首页品牌管理对话框
       homeBrandList: [], // 首页品牌列表
-      isShowAddHomeBrand: false
+      isShowHotBrandListDia: false, // 控制热门首页品牌对话框的显示与隐藏
+      // 热门品牌搜索表单
+      searchHotForm: {
+        keyword: '',
+        isHot: false,
+        showIndex: false,
+        page: 0,
+        size: 10
+      },
+      hotTotal: null, // 热门品牌总数
+      hotData: [], // 热门品牌列表数据
+      checkedVal: {} // 热门多选数据
     }
   },
   created() {
@@ -179,8 +232,9 @@ export default {
     }
   },
   methods: {
+    // 获取品牌列表
     getBrandList() {
-      this.axios.get(`${this.baseUrl}/api/brand`, this.searchForm).then(res => {
+      this.axios.get(`/api/brand`, this.searchForm).then(res => {
         if (res.code == 200) {
           this.brandData = res.data.content
           this.searchForm.page = res.data.number
@@ -188,6 +242,34 @@ export default {
           this.total = res.data.totalElements
         }
       })
+    },
+    // 获取首页品牌列表
+    getHomeBrandList() {
+      this.axios
+        .get(`/api/brand/showhome`, {
+          page: 1,
+          size: 10
+        })
+        .then(res => {
+          console.log(res)
+          if (res.code === 200) {
+            this.homeBrandList = res.data.content
+          }
+        })
+    },
+    // 获取热门品牌数据
+    getHotList() {
+      this.axios
+        .get(`/api/brand/hot`, this.searchHotForm)
+        .then(res => {
+          if (res.code == 200) {
+            console.log(res)
+            this.hotData = res.data.content
+            this.searchHotForm.page = res.data.number
+            this.searchHotForm.size = res.data.size
+            this.hotTotal = res.data.totalElements
+          }
+        })
     },
     // 查询
     query() {
@@ -213,7 +295,7 @@ export default {
       this.type = 1
       this.id = row.id
       this.axios
-        .get(`${this.baseUrl}/api/brand/info`, { id: row.id })
+        .get(`/api/brand/info`, { id: row.id })
         .then(res => {
           if (res.code == 200) {
             for (let key in this.brandForm) {
@@ -231,7 +313,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          axios.delete(`${this.baseUrl}/api/brand?id=${row.id}`).then(res => {
+          axios.delete(`/api/brand?id=${row.id}`).then(res => {
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -242,7 +324,7 @@ export default {
         .catch(() => {})
     },
     handleHot(obj, callback) {
-      this.axios.put(`${this.baseUrl}/api/brand/sethot`, obj).then(res => {
+      this.axios.put(`/api/brand/sethot`, obj).then(res => {
         if (res.code === 200) {
           callback && callback(res)
         }
@@ -280,7 +362,7 @@ export default {
         if (!valid) return false
         if (this.type == 1) {
           this.axios
-            .put(`${this.baseUrl}/api/brand`, {
+            .put(`/api/brand`, {
               ...this.brandForm,
               id: this.id
             })
@@ -293,7 +375,7 @@ export default {
         }
         if (this.type == 2) {
           this.axios
-            .post(`${this.baseUrl}/api/brand`, this.brandForm)
+            .post(`/api/brand`, this.brandForm)
             .then(res => {
               if (res.code === 200) {
                 this.isShowBrandDialog = false
@@ -338,38 +420,77 @@ export default {
     },
 
     /**  首页品牌管理 */
-    getHomeBrandList() {
-      this.axios
-        .get(`${this.baseUrl}/api/brand/showhome`, {
-          page: 1,
-          size: 10
-        })
-        .then(res => {
-          console.log(res)
-          if (res.code === 200) {
-            this.homeBrandList = res.data.content
-          }
-        })
-    },
+
     // 获取首页品牌列表
     showHomeBrand() {
-      this.isShowHomeBrandDialog = true
+      this.isShowHomeBrandDia = true
       this.getHomeBrandList()
     },
-    // 添加首页品牌
-    addHomeBrand() {},
     // 删除首页品牌
     delHomeBrand(id) {
       console.log(id)
       this.axios
-        .put(`${this.baseUrl}/api/brand/del/showhome?id=${id}`)
+        .put(`/api/brand/del/showhome?id=${id}`)
         .then(res => {
           if (res.code === 200) {
             this.getHomeBrandList()
           }
         })
     },
-    handleHomeBrandClose() {}
+    // 显示热门品牌对话框
+    showHomeAddBrand() {
+      this.isShowHotBrandListDia = true
+      this.getHotList()
+    },
+    // 添加首页品牌
+    addHomeBrand() {
+      // if (this.type == 'hot') {
+      //   const ids = []
+      //   this.checkedVal.forEach(item => {
+      //     ids.push(item.id)
+      //   })
+      //   axios
+      //     .post(`/hot/product/isHot?ids=${ids}&isHot=true`)
+      //     .then(res => {
+      //       console.log(res)
+      //       if (res.status == 200) {
+      //         this.$message({
+      //           type: 'success',
+      //           message: '添加成功!'
+      //         })
+      //         this.isShowHotBrandListDia = false
+      //         this.getRecommentList()
+      //       }
+      //     })
+      // }
+      // if (this.type == 'home') {
+      //   this.isShowHomeDialog = true
+      // }
+    },
+    // 热门品牌分页操作
+    hotquery() {
+      this.searchHotForm.page = 0
+      this.getHotList()
+    },
+    handleCurrentChange(val) {
+      console.log(val)
+      // this.checkedVal = val
+    },
+    handleHotDiaClose() {
+      // 重置操作
+      this.checkedVal = {} // 清空热门选中数据
+      this.$refs.singleTableRef.setCurrentRow() // 重置选中状态
+      this.searchHotForm.page = 0 // 重置分页
+      this.searchHotForm.keyword = ''
+    },
+    handleHotSizeChange(val) {
+      this.searchHotForm.size = val
+      this.getHotList()
+    },
+    handleHotCurrentChange(val) {
+      this.searchHotForm.page = val
+      this.getHotList()
+    }
   }
 }
 </script>

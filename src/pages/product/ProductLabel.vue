@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     getLabelList() {
-      this.axios.get(`${this.baseUrl}/api/tag/list`).then(res => {
+      this.axios.get(`/api/tag/list`).then(res => {
         console.log(res)
         if (res.code == 200) {
           this.labelData = res.data
@@ -146,7 +146,7 @@ export default {
       this.id = row.id
       this.isShowDialog = true
       this.type = 1
-      this.axios.get(`${this.baseUrl}/api/tag/${this.id}`).then(res => {
+      this.axios.get(`/api/tag/${this.id}`).then(res => {
         if (res.code == 200) {
           console.log(res)
           this.labelForm.name = res.data.name
@@ -158,7 +158,7 @@ export default {
     },
     // 删除
     handleDelete(index, row) {
-      this.axios.get(`${this.baseUrl}/api/tag/use/${row.id}`).then(res => {
+      this.axios.get(`/api/tag/use/${row.id}`).then(res => {
         console.log(res)
         if (res.code == 200) {
           if (res.data !== 0) {
@@ -179,7 +179,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          axios.delete(`${this.baseUrl}/api/tag/${id}`).then(res => {
+          axios.delete(`/api/tag/${id}`).then(res => {
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -221,7 +221,7 @@ export default {
         if (this.type == 1) {
           console.log({ ...this.labelForm, id: this.id })
           this.axios
-            .post(`${this.baseUrl}/api/tag/update`, {
+            .post(`/api/tag/update`, {
               ...this.labelForm,
               id: this.id
             })
@@ -235,7 +235,7 @@ export default {
         }
         if (this.type == 2) {
           this.axios
-            .post(`${this.baseUrl}/api/tag/add`, this.labelForm)
+            .post(`/api/tag/add`, this.labelForm)
             .then(res => {
               console.log(res)
               if (res.code == 200) {

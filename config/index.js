@@ -13,8 +13,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        // target: 'http://192.168.1.108:9527', // 测试
-        target: 'http://192.168.212.13:8010', // 测试
+        // target: 'http://192.168.212.63:8010', // 测试
+        target: 'http://192.168.212.13:8010',
         changeOrigin: true, // 跨域
         pathRewrite: {
           '^/api': ''

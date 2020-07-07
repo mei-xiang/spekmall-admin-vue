@@ -112,7 +112,7 @@ export default {
   methods: {
     getShopList() {
       this.axios
-        .get(`${this.baseUrl}/api/supplier/shop/search`, this.searchForm)
+        .get(`/api/supplier/shop/search`, this.searchForm)
         .then(res => {
           console.log(res)
           if (res.code == 200) {

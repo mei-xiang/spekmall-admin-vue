@@ -258,7 +258,7 @@ export default {
     },
     getRecommentList() {
       this.axios
-        .get(`${this.baseUrl}/hot/product`, this.searchForm)
+        .get(`/hot/product`, this.searchForm)
         .then(res => {
           if (res.code == 200) {
             console.log(res)
@@ -272,7 +272,7 @@ export default {
     // 获取热门商品数据
     getHotList() {
       this.axios
-        .get(`${this.baseUrl}/hot/product`, this.searchHotForm)
+        .get(`/hot/product`, this.searchHotForm)
         .then(res => {
           if (res.code == 200) {
             console.log(res)
@@ -286,7 +286,7 @@ export default {
     // 获取首页首页展示数据
     getHomeList() {
       this.axios
-        .get(`${this.baseUrl}/hot/product`, this.searchHomeForm)
+        .get(`/hot/product`, this.searchHomeForm)
         .then(res => {
           if (res.code == 200) {
             console.log(res)
@@ -332,7 +332,7 @@ export default {
         .then(() => {
           axios
             .post(
-              `${this.baseUrl}/hot/product/isHot?ids=${[row.id]}&isHot=false`
+              `/hot/product/isHot?ids=${[row.id]}&isHot=false`
             )
             .then(res => {
               this.$message({
@@ -379,7 +379,7 @@ export default {
           ids.push(item.id)
         })
         axios
-          .post(`${this.baseUrl}/hot/product/isHot?ids=${ids}&isHot=true`)
+          .post(`/hot/product/isHot?ids=${ids}&isHot=true`)
           .then(res => {
             console.log(res)
             if (res.status == 200) {
@@ -407,7 +407,7 @@ export default {
         .then(() => {
           axios
             .post(
-              `${this.baseUrl}/hot/product/showIndex?ids=${row.id}&showIndex=false`
+              `/hot/product/showIndex?ids=${row.id}&showIndex=false`
             )
             .then(res => {
               console.log(res)
@@ -456,7 +456,7 @@ export default {
       })
       axios
         .post(
-          `${this.baseUrl}/hot/product/showIndex?ids=${ids}&showIndex=true&effectDate=${this.homeShowForm.effectDate}`
+          `/hot/product/showIndex?ids=${ids}&showIndex=true&effectDate=${this.homeShowForm.effectDate}`
         )
         .then(res => {
           console.log(res)
