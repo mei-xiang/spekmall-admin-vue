@@ -116,23 +116,31 @@
     <!-- 首页品牌管理对话框 -->
     <el-dialog :visible.sync="isShowHomeBrandDia" title="首页品牌管理">
       <div class="homeBrandBox">
-        <div class="addHomeBrand" @click="showHomeAddBrand">点击添加</div>
-        <div v-for="(item,index) in homeBrandList" :key="index" class="item">
+        <div class="addHomeBrand" @click="showHomeAddBrand" v-for="(item,index) in 10" :key="index">
+          点击添加
+          <!-- <div>
+            <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
+            <span class="del" @click="delHomeBrand(item.id)">删除</span>
+          </div> -->
+        </div>
+        <!-- <div v-for="(item,index) in homeBrandList" :key="index" class="item">
           <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
           <span class="del" @click="delHomeBrand(item.id)">删除</span>
-        </div>
+        </div>-->
       </div>
     </el-dialog>
 
     <!-- 首页品牌热门品牌对话框 -->
-    <el-dialog :visible.sync="isShowHotBrandListDia" title="热门品牌" @close="handleHotDiaClose">
+    <el-dialog
+      :visible.sync="isShowHotBrandListDia"
+      title="热门品牌"
+      @close="handleHotDiaClose"
+      class="totBrandListDia"
+    >
       <div>
         <el-form :inline="true" :model="searchHotForm" class="searchForm">
           <el-form-item label>
-            <el-input v-model="searchHotForm.keyword" placeholder="请输入产品名称、供应商名称搜索"></el-input>
-          </el-form-item>
-          <el-form-item label>
-            <el-input v-model="searchHotForm.keyword" placeholder="请输入产品名称、供应商名称搜索"></el-input>
+            <el-input v-model="searchHotForm.keyword" placeholder="请输入品牌编号或品牌名称搜索"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button class="query" icon="el-icon-search" @click="hotquery" size="mini">查询</el-button>
@@ -141,13 +149,20 @@
         <el-table
           :data="hotData"
           highlight-current-row
-          @current-change="handleCurrentChange"
+          @current-change="rowCurrentChange"
           ref="singleTableRef"
         >
-          <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column prop="code" label="品牌编号" width="150"></el-table-column>
-          <el-table-column prop="title" label="品牌名称" width="190" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="title" label="图片" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="brandCode" label="品牌编号"></el-table-column>
+          <el-table-column prop="brandName" label="品牌名称" show-overflow-tooltip></el-table-column>
+          <el-table-column label="图片">
+            <template slot-scope="scope">
+              <el-image
+                style="width: 120px; height: 28px;margin-top:5px"
+                :src="imgBaseUrl + scope.row.brandImg"
+                :preview-src-list="[imgBaseUrl + scope.row.brandImg]"
+              ></el-image>
+            </template>
+          </el-table-column>
         </el-table>
         <el-pagination
           style="position: static; margin-top: 20px;"
@@ -211,14 +226,12 @@ export default {
       // 热门品牌搜索表单
       searchHotForm: {
         keyword: '',
-        isHot: false,
-        showIndex: false,
         page: 0,
         size: 10
       },
       hotTotal: null, // 热门品牌总数
       hotData: [], // 热门品牌列表数据
-      checkedVal: {} // 热门多选数据
+      selectRow: {} // 热门数据
     }
   },
   created() {
@@ -259,17 +272,15 @@ export default {
     },
     // 获取热门品牌数据
     getHotList() {
-      this.axios
-        .get(`/api/brand/hot`, this.searchHotForm)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.hotData = res.data.content
-            this.searchHotForm.page = res.data.number
-            this.searchHotForm.size = res.data.size
-            this.hotTotal = res.data.totalElements
-          }
-        })
+      this.axios.get(`/api/brand/hot`, this.searchHotForm).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.hotData = res.data.content
+          this.searchHotForm.page = res.data.number
+          this.searchHotForm.size = res.data.size
+          this.hotTotal = res.data.totalElements
+        }
+      })
     },
     // 查询
     query() {
@@ -294,16 +305,14 @@ export default {
       this.isShowBrandDialog = true
       this.type = 1
       this.id = row.id
-      this.axios
-        .get(`/api/brand/info`, { id: row.id })
-        .then(res => {
-          if (res.code == 200) {
-            for (let key in this.brandForm) {
-              this.brandForm[key] = res.data[key]
-            }
-            this.fileList.push({ url: this.imgBaseUrl + res.data.brandImg })
+      this.axios.get(`/api/brand/info`, { id: row.id }).then(res => {
+        if (res.code == 200) {
+          for (let key in this.brandForm) {
+            this.brandForm[key] = res.data[key]
           }
-        })
+          this.fileList.push({ url: this.imgBaseUrl + res.data.brandImg })
+        }
+      })
     },
     // 删除
     handleDel(index, row) {
@@ -374,14 +383,12 @@ export default {
             })
         }
         if (this.type == 2) {
-          this.axios
-            .post(`/api/brand`, this.brandForm)
-            .then(res => {
-              if (res.code === 200) {
-                this.isShowBrandDialog = false
-                this.getBrandList()
-              }
-            })
+          this.axios.post(`/api/brand`, this.brandForm).then(res => {
+            if (res.code === 200) {
+              this.isShowBrandDialog = false
+              this.getBrandList()
+            }
+          })
         }
       })
     },
@@ -429,13 +436,11 @@ export default {
     // 删除首页品牌
     delHomeBrand(id) {
       console.log(id)
-      this.axios
-        .put(`/api/brand/del/showhome?id=${id}`)
-        .then(res => {
-          if (res.code === 200) {
-            this.getHomeBrandList()
-          }
-        })
+      this.axios.put(`/api/brand/del/showhome?id=${id}`).then(res => {
+        if (res.code === 200) {
+          this.getHomeBrandList()
+        }
+      })
     },
     // 显示热门品牌对话框
     showHomeAddBrand() {
@@ -444,42 +449,34 @@ export default {
     },
     // 添加首页品牌
     addHomeBrand() {
-      // if (this.type == 'hot') {
-      //   const ids = []
-      //   this.checkedVal.forEach(item => {
-      //     ids.push(item.id)
-      //   })
-      //   axios
-      //     .post(`/hot/product/isHot?ids=${ids}&isHot=true`)
-      //     .then(res => {
-      //       console.log(res)
-      //       if (res.status == 200) {
-      //         this.$message({
-      //           type: 'success',
-      //           message: '添加成功!'
-      //         })
-      //         this.isShowHotBrandListDia = false
-      //         this.getRecommentList()
-      //       }
+      // axios.put(`/api/brand/add/showhome`,{
+      //   id: this.selectRow.id,
+      //   sortNum: null
+      // }).then(res => {
+      //   console.log(res)
+      //   if (res.status == 200) {
+      //     this.$message({
+      //       type: 'success',
+      //       message: '添加成功!'
       //     })
-      // }
-      // if (this.type == 'home') {
-      //   this.isShowHomeDialog = true
-      // }
+      //     this.isShowHotBrandListDia = false
+      //     this.getHomeBrandList()
+      //   }
+      // })
     },
     // 热门品牌分页操作
     hotquery() {
       this.searchHotForm.page = 0
       this.getHotList()
     },
-    handleCurrentChange(val) {
+    rowCurrentChange(val) {
+      if (!val) return
       console.log(val)
-      // this.checkedVal = val
+      this.selectRow = val
     },
     handleHotDiaClose() {
       // 重置操作
-      this.checkedVal = {} // 清空热门选中数据
-      this.$refs.singleTableRef.setCurrentRow() // 重置选中状态
+      this.selectRow = {} // 清空热门选中数据
       this.searchHotForm.page = 0 // 重置分页
       this.searchHotForm.keyword = ''
     },
@@ -501,7 +498,7 @@ export default {
   overflow: scroll;
 }
 .el-dialog {
-  min-width: 950px !important;
+  width: 950px !important;
 }
 .homeBrandBox {
   padding: 20px;
@@ -525,4 +522,7 @@ export default {
   right: 0;
   cursor: pointer;
 }
+/* .totBrandListDia{
+  width: 950px !important;
+} */
 </style>
