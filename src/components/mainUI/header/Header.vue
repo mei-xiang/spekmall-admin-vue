@@ -16,7 +16,7 @@
     <ul class="right-list clearfix">
       <li class="list-item hover icon-text user" v-popover:user-popover>
         <span class="mes_box">
-          <el-badge :value="12" class="item">
+          <el-badge :value="$store.state.noReadTotal" class="item">
             <!-- <el-button size="small">评论</el-button> -->
             <i class="iconfont iconxiaoxi message"></i>
           </el-badge>

@@ -5,15 +5,16 @@
     <h1>
       我的消息
       <span>（</span>
-      <span style="color:#FF0052">4</span>
+      <span style="color:#FF0052">{{noReadTotal}}</span>
       <span>封未读）</span>
     </h1>
     <el-form :inline="true" :model="searchForm" class="searchForm">
       <el-form-item label="状态：">
-        <el-select v-model="searchForm.status" placeholder="状态">
+        <el-select v-model="searchForm.classify" placeholder="状态">
           <el-option label="全部" value></el-option>
-          <el-option label="已启用" value="ENABLED"></el-option>
-          <el-option label="已停用" value="DISABLED"></el-option>
+          <el-option label="订单消息" value="1"></el-option>
+          <el-option label="系统消息" value="2"></el-option>
+          <el-option label="询盘消息" value="3"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -24,9 +25,19 @@
     <!-- 表格区域 -->
     <el-table :data="myMsgData" border style="width: 100%;">
       <!-- <el-table-column type="index" label="序号" fixed></el-table-column> -->
-      <el-table-column prop="code" label="消息分类" width="150"></el-table-column>
-      <el-table-column prop="telephone" label="内容详情" width="150"></el-table-column>
-      <el-table-column prop="registerDate" label="时间"></el-table-column>
+      <el-table-column prop="classify" label="消息分类" width="150">
+        <template slot-scope="scope">
+          <span v-if="scope.row.classify==1">订单消息</span>
+          <span v-if="scope.row.classify==2">系统消息</span>
+          <span v-if="scope.row.classify==3">询盘消息</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="内容详情" prop="content" show-overflow-tooltip>
+        <!-- <template slot-scope="scope">
+          <span v-html="scope.row.content"></span>
+        </template>-->
+      </el-table-column>
+      <el-table-column prop="createDate" label="时间" width="220"></el-table-column>
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看详情</el-button>
@@ -46,25 +57,10 @@
     ></el-pagination>
 
     <!-- 查看对话框 -->
-    <el-dialog :visible.sync="isShowDialog" title="查看">
-      <el-form :model="lookBuyerForm" ref="lookBuyerRef" label-width="80px" class="demo-ruleForm">
-        <el-form-item label="姓名">
-          <el-input v-model="lookBuyerForm.name"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.telephone"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱">
-          <el-input v-model="lookBuyerForm.email"></el-input>
-        </el-form-item>
-        <el-form-item label="详细地址">
-          <el-input v-model="lookBuyerForm.address"></el-input>
-        </el-form-item>
-        <el-form-item label="公司名称">
-          <el-input v-model="lookBuyerForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-
+    <el-dialog :visible.sync="isShowDialog" title="查看" @close="handleClose">
+      <div class="contentDia">
+        <p v-html="content"></p>
+      </div>
       <div slot="footer">
         <el-button type="primary" @click="isShowDialog = false">确 定</el-button>
         <el-button @click="isShowDialog = false">取 消</el-button>
@@ -82,59 +78,74 @@ export default {
     return {
       // 搜索表单
       searchForm: {
-        status: '',
+        classify: '',
         page: 0,
         size: 20
       },
       total: null,
       myMsgData: [],
       isShowDialog: false,
-      // 对话框数据
-      lookBuyerForm: {}
+      content: '',
+      id: null,
+      noReadTotal: 0 // 未读总数
     }
   },
   created() {
-    this.getBuyerList()
+    this.getMsgList()
   },
   methods: {
-    getBuyerList() {
-      this.axios
-        .get(`/api/buyer/search`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.myMsgData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+    getMsgList() {
+      this.axios.get(`/api/message/myMessage`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.myMsgData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+
+          this.noReadTotal = this.myMsgData.filter(
+            item => item.isRead == 0
+          ).length
+          this.$store.commit('SET_NOREADTOTAL', this.noReadTotal)
+        }
+      })
     },
 
     // 查询
     query() {
       this.searchForm.page = 0
-      this.getBuyerList()
+      this.getMsgList()
     },
     handleSizeChange(val) {
       this.searchForm.size = val
-      this.getBuyerList()
+      this.getMsgList()
     },
     handleCurrentChange(val) {
       this.searchForm.page = val
-      this.getBuyerList()
+      this.getMsgList()
     },
     handleDetail(index, row) {
       console.log(index, row)
+      this.id = row.id
       this.isShowDialog = true
-      this.axios.get(`/api/buyer/${row.id}/info`).then(res => {
+      this.content = row.content
+    },
+    handleClose() {
+      this.axios.put(`/api/message/read/${this.id}`).then(res => {
         console.log(res)
-        if (res.code != 200) return
-        this.lookBuyerForm = res.data
+        if (res.code == 200) {
+          this.getMsgList()
+        }
       })
     }
   }
 }
 </script>
 
-<style scopde></style>
+<style scopde>
+.el-dialog {
+  width: 900px !important;
+}
+.contentDia {
+}
+</style>

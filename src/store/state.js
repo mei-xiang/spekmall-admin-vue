@@ -4,6 +4,8 @@ import {
 
 const state = {
   news: localStorage.getItem('news'),
+  // 消息未读数
+  noReadTotal: '',
   // 主题颜色
   theme: getStore({
     name: 'theme'
