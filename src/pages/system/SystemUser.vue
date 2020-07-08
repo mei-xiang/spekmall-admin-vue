@@ -160,7 +160,7 @@ import { setStore, getStore, removeStore } from "js/store";
 export default {
   data() {
     const token = getStore({ name: "access_token", type: "string" });
-    let baseUrl = this.baseUrl;
+    let baseUrl = this.BaseUrl;
     return {
       // table
       tableData: [],
@@ -298,6 +298,10 @@ export default {
       this.$refs.ruleForm.resetFields();
       this.$refs.ruleForm.clearValidate();
       this.imageUrl = "";
+      this.ruleForm = {
+        email: "",
+        mobile: ""
+      };
     },
     // 新增用户
     submitAddUser() {

@@ -92,7 +92,7 @@ export default {
   data() {
     const token = getStore({ name: "access_token", type: "string" });
     console.log(this, "jldsjflsjf");
-    let baseUrl = this.baseUrl;
+    let baseUrl = this.BaseUrl;
     return {
       list: [],
       uploadAdd: baseUrl + "/file/upload",
