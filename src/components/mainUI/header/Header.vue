@@ -139,22 +139,25 @@ export default {
           }
         })
       }
+      this.$message.success('退出成功')
+      reset()
+
       let token = getStore({ name: 'access_token', type: 'string' })
-      this.axios
-        .get('/api/api/logout', {
-          Authorization: token
-        })
-        .then(res => {
-          this.$socket.close()
-          this.$message({
-            message: '退出成功',
-            type: 'success'
-          })
-          reset()
-        })
-        .catch(res => {
-          reset()
-        })
+      // this.axios
+      //   .get('/api/api/logout', {
+      //     Authorization: token
+      //   })
+      //   .then(res => {
+      //     this.$socket.close()
+      //     this.$message({
+      //       message: '退出成功',
+      //       type: 'success'
+      //     })
+      //     reset()
+      //   })
+      //   .catch(res => {
+      //     reset()
+      //   })
     }
     // handleSelect(key, keyPath, value) {
     // var tabs = value.$el.innerHTML;
@@ -342,7 +345,6 @@ $maxWidth = 1180px;
     }
   }
 }
-
 
 .top-nav {
   float: left;
