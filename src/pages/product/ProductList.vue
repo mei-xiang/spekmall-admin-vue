@@ -167,17 +167,15 @@ export default {
   },
   methods: {
     getApplyList() {
-      this.axios
-        .get(`/api/product/search`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.productData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+      this.axios.get(`/api/product/search`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.productData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     startChange() {
       this.searchForm.publishDate[0] = this.$timeDate(
@@ -402,5 +400,6 @@ export default {
 }
 .approvalDialog .el-dialog__body {
   padding-left: 30px;
+  padding-top: 70px;
 }
 </style>

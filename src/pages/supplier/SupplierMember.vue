@@ -44,10 +44,10 @@
     <!-- 表格区域 -->
     <el-table :data="memberData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="code" label="供应商编号" width="190"></el-table-column>
+      <el-table-column prop="code" label="供应商编号" width="140"></el-table-column>
       <el-table-column prop="name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="180"></el-table-column>
-      <el-table-column prop label="地区" width="180">
+      <el-table-column prop="mobile" label="手机" width="140"></el-table-column>
+      <el-table-column prop label="地区" width="140">
         <template slot-scope="scope">
           <span v-if="scope.row.supplierCompanyOutput">
             {{ scope.row.supplierCompanyOutput.province
@@ -55,9 +55,19 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" width="150">
+      <el-table-column label="状态" width="140">
         <template slot-scope="scope">
           <span v-if="scope.row.account">{{ scope.row.account.status.text }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="企业认证状态" width="140">
+        <template slot-scope="scope">
+          <template v-if="scope.row.supplierCompanyOutput">
+            <span v-if="scope.row.supplierCompanyOutput.companyValidity==0">未认证</span>
+            <span v-if="scope.row.supplierCompanyOutput.companyValidity==1">待认证</span>
+            <span v-if="scope.row.supplierCompanyOutput.companyValidity==2">认证通过</span>
+            <span v-if="scope.row.supplierCompanyOutput.companyValidity==3">认证不通过</span>
+          </template>
         </template>
       </el-table-column>
       <el-table-column label="金牌供应商" width="110">
@@ -76,7 +86,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="createDate" label="注册时间" sortablewidth="170"></el-table-column>
+      <el-table-column prop="createDate" label="注册时间" width="170"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
@@ -105,12 +115,13 @@
               @click="handleBecomeGold(scope.$index, scope.row)"
               v-if="scope.row.account.status.status == 0 && scope.row.vip == 0"
             >成为金牌</el-button>
-            <!-- <el-button
-              size="mini"
-              type="text"
-              @click="handleValidity(scope.$index, scope.row)"
-            >企业认证</el-button> -->
           </template>
+          <el-button
+            size="mini"
+            type="text"
+            v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyValidity==1"
+            @click="handleValidity(scope.$index, scope.row)"
+          >企业认证</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -159,6 +170,17 @@
         <el-button type="primary" @click="handleGlod">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 审核对话框 -->
+    <el-dialog
+      title="企业认证审核"
+      :visible.sync="isShowApprovalDialog"
+      @close="handleCloseApproval"
+      class="approvalDialog"
+    >
+      <el-button @click="approveNoPass" type="danger">认证不通过</el-button>
+      <el-button @click="approvePass" type="primary">认证通过</el-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -186,25 +208,25 @@ export default {
       glodForm: {
         dates: []
       },
-      id: null // 当前id
+      id: null, // 当前id
+      validity_id: null,
+      isShowApprovalDialog: false // 控制认证对话框显示与隐藏
     }
   },
   created() {
-    this.getApplyList()
+    this.getMemberList()
   },
   methods: {
-    getApplyList() {
-      this.axios
-        .post(`/api/supplier/search`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.memberData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+    getMemberList() {
+      this.axios.post(`/api/supplier/search`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.memberData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     startChange() {
       if (this.searchForm.dates.length > 0)
@@ -227,15 +249,15 @@ export default {
       ) {
         return this.$message.warning('起始时间不能大于结束时间！')
       }
-      this.getApplyList()
+      this.getMemberList()
     },
     handleSizeChange(val) {
       this.searchForm.size = val
-      this.getApplyList()
+      this.getMemberList()
     },
     handleCurrentChange(val) {
       this.searchForm.page = val
-      this.getApplyList()
+      this.getMemberList()
     },
     // 查看
     handleDetail(index, row) {
@@ -271,7 +293,7 @@ export default {
                   type: 'success',
                   message: '停用成功'
                 })
-                this.getApplyList()
+                this.getMemberList()
               }
             })
         })
@@ -297,21 +319,24 @@ export default {
                   type: 'success',
                   message: '启用成功'
                 })
-                this.getApplyList()
+                this.getMemberList()
               }
             })
         })
         .catch(() => {})
     },
     // 企业认证
-    handleValidity(index, row){
+    handleValidity(index, row) {
       console.log(index, row)
+      this.validity_id = row.supplierCompanyOutput.id
+      this.isShowApprovalDialog = true
     },
     // 显示成为金牌对话框
     handleBecomeGold(index, row) {
       console.log(index, row)
       this.isShowGlodDialog = true
       this.id = row.id // 设置当前id
+      console.log(this.id)
     },
     // 取消金牌
     handleCancelGold(index, row) {
@@ -338,7 +363,7 @@ export default {
                   type: 'success',
                   message: '取消金牌成功'
                 })
-                this.getApplyList()
+                this.getMemberList()
               }
             })
         })
@@ -367,7 +392,7 @@ export default {
               message: '成为金牌成功'
             })
             this.isShowGlodDialog = false
-            this.getApplyList()
+            this.getMemberList()
           }
         })
     },
@@ -375,6 +400,78 @@ export default {
     handleCloseGlod() {
       this.glodForm.dates = []
       this.id = null
+    },
+    approvePassOrNoPass(obj, callback) {
+      this.axios.post(`/api/supplier/company/validity`, obj).then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          callback && callback(res)
+        }
+      })
+    },
+    // 审核通过
+    approvePass() {
+      const _this = this
+      this.$confirm('审核通过确认', '', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          _this.approvePassOrNoPass(
+            {
+              id: _this.validity_id,
+              validity: 2
+            },
+            function(res) {
+              if (res.code == 200) {
+                _this.$message({
+                  type: 'success',
+                  message: '审核成功!'
+                })
+                _this.isShowApprovalDialog = false
+                _this.getMemberList()
+              }
+            }
+          )
+        })
+        .catch(() => {})
+    },
+    // 审核不通过
+    approveNoPass() {
+      const _this = this
+      this.$prompt('', '审核不通过确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'textarea',
+        inputPlaceholder: '请输入不通过原因',
+        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+        inputErrorMessage: '请输入不通过原因'
+      })
+        .then(({ value }) => {
+          _this.approvePassOrNoPass(
+            {
+              id: _this.validity_id,
+              validity: 3,
+              remarks: value
+            },
+            function(res) {
+              if (res.code == 200) {
+                _this.$message({
+                  type: 'success',
+                  message: '审核成功!'
+                })
+                _this.isShowApprovalDialog = false
+                _this.getMemberList()
+              }
+            }
+          )
+        })
+        .catch(() => {})
+    },
+    // 对话框关闭
+    handleCloseApproval() {
+      this.validity_id = null
     }
   }
 }
@@ -387,5 +484,18 @@ export default {
 }
 .glodDialog .el-dialog__body {
   padding-left: 30px;
+}
+.approvalDialog .el-dialog {
+  width: 500px !important;
+  height: 250px !important;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 40%;
+  left: 50%;
+}
+.approvalDialog .el-dialog__body {
+  padding-left: 30px;
+  padding-top: 70px;
 }
 </style>

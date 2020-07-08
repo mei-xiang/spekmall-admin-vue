@@ -14,8 +14,7 @@ import { setStore, getStore, removeStore } from 'js/store'
 import { showLoading, hideLoading } from '../assets/js/loading';
 import apiUrl from './env';
 
-
-axios.defaults.baseURL = apiUrl.development.apiUrl
+axios.defaults.baseURL = apiUrl[process.env.NODE_ENV].apiUrl
 
 // 富文本配置
 const UEDITOR_CONFIG = { //常量

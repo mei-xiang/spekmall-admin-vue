@@ -136,15 +136,13 @@
               </el-select>
             </el-form-item>
             <div v-if="type==1">
-              <span>
-                <i class="select"></i> 产品标签
-              </span>
-              <el-tag
-                :key="index"
-                v-for="(tag,index) in tagList"
-                style="margin-right:10px"
-                v-if="type==1"
-              >{{ tag.name }}</el-tag>
+              <el-form-item label="产品标签" prop="tagsId" v-if="type==1">
+                <el-tag
+                  :key="index"
+                  v-for="(tag,index) in tagList"
+                  style="margin-right:10px"
+                >{{ tag.name }}</el-tag>
+              </el-form-item>
             </div>
           </div>
         </div>
@@ -429,13 +427,9 @@ export default {
             for (let key in this.selfProductForm) {
               this.selfProductForm[key] = res.data[key]
             }
-            // 查看或编辑 type：3
-            if (
-              (this.type == 2 || this.type == 3) &&
-              res.data.tags.length > 0
-            ) {
+            // 解析显示产品标签
+            if (res.data.tags.length > 0) {
               const arr = []
-              // 解析显示产品标签
               res.data.tags.forEach(item => {
                 arr.push(item.id)
               })
@@ -550,9 +544,7 @@ export default {
     getCitiesById(provinceId) {
       this.cities = []
       this.axios
-        .get(
-          `/public/address/cities/provinces?provincesid=${provinceId}`
-        )
+        .get(`/public/address/cities/provinces?provincesid=${provinceId}`)
         .then(res => {
           console.log(res)
           res.data.forEach(item => {
@@ -690,11 +682,9 @@ export default {
         this.$dataTransform(productObj, 'specsList')
         console.log(productObj)
         console.log(this.selfProductForm)
-        this.axios
-          .post(`/api/product/self/save`, productObj)
-          .then(res => {
-            callback && callback(res)
-          })
+        this.axios.post(`/api/product/self/save`, productObj).then(res => {
+          callback && callback(res)
+        })
       })
     },
     save() {

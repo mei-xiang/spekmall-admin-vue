@@ -85,6 +85,7 @@
       :visible.sync="isShowBrandDialog"
       :title="type == 1 ? '修改品牌' : '新增品牌'"
       @close="handleClose"
+      class="totBrandListDia"
     >
       <el-form :model="brandForm" ref="brandRef" :rules="brandRules" label-width="100px">
         <el-form-item label="品牌名称" prop="brandName">
@@ -121,7 +122,7 @@
           <!-- <div>
             <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
             <span class="del" @click="delHomeBrand(item.id)">删除</span>
-          </div> -->
+          </div>-->
         </div>
         <div v-for="(item,index) in homeBrandList" :key="index" class="item">
           <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
@@ -131,12 +132,7 @@
     </el-dialog>
 
     <!-- 首页品牌热门品牌对话框 -->
-    <el-dialog
-      :visible.sync="isShowHotBrandListDia"
-      title="热门品牌"
-      @close="handleHotDiaClose"
-      class="totBrandListDia"
-    >
+    <el-dialog :visible.sync="isShowHotBrandListDia" title="热门品牌" @close="handleHotDiaClose">
       <div>
         <el-form :inline="true" :model="searchHotForm" class="searchForm">
           <el-form-item label>
@@ -500,6 +496,7 @@ export default {
 .el-dialog {
   width: 950px !important;
 }
+
 .homeBrandBox {
   padding: 20px;
   display: flex;
@@ -525,4 +522,15 @@ export default {
 /* .totBrandListDia{
   width: 950px !important;
 } */
+.totBrandListDia .el-dialog {
+  width: 450px !important;
+  position: absolute;
+  right: 0;
+  top: 0;
+
+}
+.totBrandListDia .el-dialog__body {
+  /* padding-left: 30px; */
+  /* padding-top: 70px; */
+}
 </style>
