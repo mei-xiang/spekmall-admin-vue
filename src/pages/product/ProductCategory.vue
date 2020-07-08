@@ -5,7 +5,7 @@
       type="button"
       class="el-button el-button--default el-button--mini addCategory"
       icon="el-icon-circle-plus-outline"
-      @click="addCategory"
+      @click="showAddCategory"
     >添加类别</el-button>
     <div class="box">
       <div class="left">
@@ -42,11 +42,54 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="updataCategory('categoryRef')">更新名称</el-button>
-            <el-button @click="resetForm('categoryRef')">隐藏</el-button>
+            <el-button @click="delCategory('categoryRef')">隐藏</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
+
+    <!-- 添加类别对话框 -->
+    <el-dialog :visible.sync="isShowAddCatDialog" title="添加类别" @close="handleClose">
+      <el-form
+        :model="addCatForm"
+        ref="addCatRef"
+        :rules="addCatRules"
+        label-width="90px"
+        class="addCatForm"
+      >
+        <el-form-item label="上级类别">
+          <el-cascader
+            key="addCategory"
+            ref="addCategoryRef"
+            :options="addCategoryData"
+            v-model="addCatForm.fid"
+            @change="addCategoryChange($event)"
+            :props="setAddCategory()"
+            filterable
+            clearable
+            placeholder="请选择上级类别(为空表示一级类别)"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="类别级别" prop="level">
+          <el-radio-group v-model="addCatForm.level">
+            <el-radio :label="1">一级</el-radio>
+            <el-radio :label="2">二级</el-radio>
+            <el-radio :label="3">三级</el-radio>
+            <el-radio :label="4">四级</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="类别编码" prop="code">
+          <el-input v-model="addCatForm.code" placeholder="请输入类别编码(数字)"></el-input>
+        </el-form-item>
+        <el-form-item label="名称(中文)" prop="name">
+          <el-input v-model="addCatForm.name" placeholder="请输入名称">></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button type="primary" @click="addCategory">添加</el-button>
+        <el-button @click="isShowAddCatDialog = false">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -67,10 +110,25 @@ export default {
         dates: [] // 起止时间
       },
       total: null,
-      buyerData: [],
-      isShowDialog: false,
-      // 对话框数据
-      lookBuyerForm: {},
+      isShowAddCatDialog: false,
+      // 添加分类对话框数据
+      addCatForm: {
+        fid: '',
+        code: '',
+        name: '',
+        level: ''
+      },
+      addCatRules: {
+        code: [
+          { required: true, message: '类别编码不能为空', trigger: 'blur' }
+        ],
+        name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+        level: [
+          { required: true, message: '请选择类别级别', trigger: 'change' }
+        ]
+      },
+      addCategoryData: [],
+      // 编辑分类数据
       categoryData: [],
       categoryForm: {
         id: '',
@@ -88,6 +146,7 @@ export default {
           { required: true, message: '请选择类别级别', trigger: 'change' }
         ]
       },
+
       disabled: true
     }
   },
@@ -120,6 +179,23 @@ export default {
           parse(resData)
         }
         this.categoryData = resData
+        this.addCategoryData = JSON.parse(JSON.stringify(resData))
+
+        // 移除添加分类的第四级
+        if (this.addCategoryData) {
+          const parse = array => {
+            array.map(item => {
+              if (item.level < 3) {
+                if (item.childrens && item.childrens.length > 0) {
+                  parse(item.childrens)
+                }
+              } else {
+                delete item.childrens
+              }
+            })
+          }
+          parse(this.addCategoryData)
+        }
       })
     },
     setCategory(checkStrictly) {
@@ -137,27 +213,81 @@ export default {
         this.categoryForm[key] = data[key]
       }
     },
-    addCategory() {},
-    // 修改类别名称
-    updataCategory(formName) {
-      this.$refs[formName].validate(valid => {
+    showAddCategory() {
+      this.isShowAddCatDialog = true
+    },
+    // 添加分类处理 -------------------------------------------------------------------------
+    addCategoryChange(arr) {
+      if (arr.length > 0) {
+        this.addCatForm.fid = arr[arr.length - 1]
+      }
+    },
+    setAddCategory(checkStrictly) {
+      return {
+        value: 'id',
+        children: 'childrens',
+        label: 'name',
+        checkStrictly: true
+      }
+    },
+    // 添加分类
+    addCategory() {
+      this.$refs.addCatRef.validate(valid => {
         if (!valid) return false
-        console.log(this.categoryForm)
-        this.axios.put(`/api/category/modify`, this.categoryForm).then(res => {
+        console.log(this.addCatForm)
+        axios({
+          url: '/api/category/apply',
+          method: 'post',
+          params: {
+            'category.fid': this.addCatForm.fid,
+            'category.level': this.addCatForm.level,
+            'category.code': this.addCatForm.code,
+            'category.name': this.addCatForm.name,
+            pid: this.addCatForm.fid
+          }
+        }).then(res => {
           console.log(res)
-          if (res.code == 200) {
+          if (res.data.code == 200) {
+            this.$message.success(res.data.message)
+            this.isShowAddCatDialog = false
             this.getCategoryList()
           }
         })
       })
     },
+    // 清空添加类别对话框
+    handleClose() {
+      for (let key in this.addCatForm) {
+        this.addCatForm[key] = ''
+      }
+      this.$refs.addCatRef.resetFields()
+    },
+    // 修改类别名称
+    updataCategory(formName) {
+      this.$refs[formName].validate(valid => {
+        if (!valid) return false
+        console.log(this.categoryForm)
+        this.axios
+          .put(
+            `/api/category/modify?id=${this.categoryForm.id}&name=${this.categoryForm.name}&code=${this.categoryForm.code}&level=${this.categoryForm.level}`
+          )
+          .then(res => {
+            console.log(res)
+            if (res.code == 200) {
+              this.$message.success(res.message)
+              this.getCategoryList()
+            }
+          })
+      })
+    },
     // 删除类别
-    resetForm(formName) {
+    delCategory(formName) {
       this.axios
         .del(`/api/category/delete?id=${this.categoryForm.id}`)
         .then(res => {
           console.log(res)
           if (res.code == 200) {
+            this.$message.success(res.message)
             this.getCategoryList()
           }
         })
@@ -209,5 +339,8 @@ export default {
   width: 500px;
   padding: 20px;
   padding-left: 100px;
+}
+.addCatForm {
+  transform: translateX(-10px);
 }
 </style>

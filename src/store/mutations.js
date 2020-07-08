@@ -6,6 +6,10 @@ const mutations = {
   SET_NEWS(state, val) {
     state.news = val
   },
+  // 消息未读数
+  SET_NOREADTOTAL(state, val) {
+    state.noReadTotal = val
+  },
   // 主题颜色
   SET_THEME: (state, color) => {
     state.theme = color

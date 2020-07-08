@@ -105,6 +105,11 @@
               @click="handleBecomeGold(scope.$index, scope.row)"
               v-if="scope.row.account.status.status == 0 && scope.row.vip == 0"
             >成为金牌</el-button>
+            <!-- <el-button
+              size="mini"
+              type="text"
+              @click="handleValidity(scope.$index, scope.row)"
+            >企业认证</el-button> -->
           </template>
         </template>
       </el-table-column>
@@ -297,6 +302,10 @@ export default {
             })
         })
         .catch(() => {})
+    },
+    // 企业认证
+    handleValidity(index, row){
+      console.log(index, row)
     },
     // 显示成为金牌对话框
     handleBecomeGold(index, row) {
