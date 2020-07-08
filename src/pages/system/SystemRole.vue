@@ -56,6 +56,7 @@
                 <el-switch v-model="data.isEditor"></el-switch>
               </span>
             </span>
+
           </el-tree>
         </el-scrollbar>
       </div>
@@ -168,6 +169,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.mainForm.clearValidate();
       });
+      this.$refs.tree.setCheckedKeys([])
     },
 
     async addBtn() {
@@ -243,9 +245,9 @@ export default {
         const checkedIds = resDate.viewMenuIds.filter(item => {
           if (this.pIds.indexOf(item) === -1) return true;
         });
+        console.log(checkedIds, "checkIds")
         this.isAddType = false;
         this.isShowAddOrEdit = true;
-        console.log(checkedIds);
         this.$nextTick(() => {
           this.$refs.tree.setCheckedKeys(checkedIds);
           this.$nextTick(() => {
