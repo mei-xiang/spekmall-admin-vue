@@ -377,7 +377,7 @@ export default {
 }
 </script>
 
-<style scopde>
+<style scoped>
 .content {
   height: 100%;
   overflow: scroll;
