@@ -57,20 +57,20 @@
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <!-- v-if="scope.row.status == 0" -->
-          <el-button
-            size="mini"
-            type="text"
-            v-if="scope.row.status == 0"
-            @click="handleStop(scope.$index, scope.row)"
-          >停用</el-button>
-          <!--  v-if="scope.row.status == 0" -->
-          <el-button
-            size="mini"
-            type="text"
-            v-if="scope.row.status == 0"
-            @click="handleStart(scope.$index, scope.row)"
-          >启用</el-button>
+          <template v-if="scope.row.account">
+            <el-button
+              size="mini"
+              type="text"
+              v-if="scope.row.account.status.status == 0"
+              @click="handleStop(scope.$index, scope.row)"
+            >停用</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              v-if="scope.row.account.status.status == 1"
+              @click="handleStart(scope.$index, scope.row)"
+            >启用</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -142,17 +142,15 @@ export default {
   },
   methods: {
     getBuyerList() {
-      this.axios
-        .get(`/api/buyer/search`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.buyerData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+      this.axios.get(`/api/buyer/search`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.buyerData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     startChange() {
       this.searchForm.dates[0] = this.$timeDate(this.searchForm.dates[0])
