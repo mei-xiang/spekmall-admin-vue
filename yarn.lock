@@ -8163,7 +8163,7 @@ vue-runtime-helpers@^1.1.2:
   resolved "https://registry.npm.taobao.org/vue-runtime-helpers/download/vue-runtime-helpers-1.1.2.tgz#446b7b820888ab0c5264d2c3a32468e72e4100f3"
   integrity sha1-RGt7ggiIqwxSZNLDoyRo5y5BAPM=
 
-vue-socket.io@^3.0.7:
+vue-socket.io@3.0.7:
   version "3.0.7"
   resolved "https://registry.npm.taobao.org/vue-socket.io/download/vue-socket.io-3.0.7.tgz#fa6db12014243039f2d633d4458e461075d52dc8"
   integrity sha1-+m2xIBQkMDny1jPURY5GEHXVLcg=
