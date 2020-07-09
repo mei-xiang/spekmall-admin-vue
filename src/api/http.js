@@ -74,11 +74,13 @@ setStore({
   }
 })
 
+/*
 if (env !== 'development') {
   oldServer = "/api";
   newServer = "";
   axios.defaults.baseURL = apiUrl[env].apiUrl;
 }
+*/
 
 // 设置富文本配置项
 setStore({
