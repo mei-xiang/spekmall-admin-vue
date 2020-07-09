@@ -9,7 +9,7 @@
         </div>
         <div class="item">
           <span>订单状态：</span>
-          <span style="color:#FF4400">{{orderInfo.status.text}}</span>
+          <span style="color:#FF4400" v-if="orderInfo.status">{{orderInfo.status.text}}</span>
         </div>
         <div class="item">
           <span>交易金额：</span>
@@ -229,27 +229,27 @@ export default {
       .catch(err => {})
   },
   mounted() {
-    this.axios
-      .get(`/dictionary/detail/child/transportationType`)
-      .then(res => {
-        if (res.code === 200) {
-          this.deliveryType = res.data
-        }
-      })
-    this.axios
-      .get(`/dictionary/detail/child/logistics`)
-      .then(res => {
-        if (res.code === 200) {
-          this.expressCompany = res.data
-        }
-      })
+    this.axios.get(`/dictionary/detail/child/transportationType`).then(res => {
+      if (res.code === 200) {
+        this.deliveryType = res.data
+      }
+    })
+    this.axios.get(`/dictionary/detail/child/logistics`).then(res => {
+      if (res.code === 200) {
+        this.expressCompany = res.data
+      }
+    })
   },
   filters: {
     handleDelivery(val) {
-      return _this.deliveryType.find(item => item.value == val).text
+      const delivery = _this.deliveryType.find(item => item.value == val) || val
+
+      return delivery
     },
     handleexpressCom(val) {
-      return _this.expressCompany.find(item => item.value == val).text
+      const expressCom =
+        _this.deliveryType.find(item => item.value == val) || val
+      return expressCom
     }
   },
   methods: {
