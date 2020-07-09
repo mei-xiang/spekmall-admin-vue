@@ -2,12 +2,13 @@
  * @Description: 路由设置
  * @Author: jiaxin
  * @Date: 2019-05-20 16:12:11
- * @LastEditors: jiaxin
- * @LastEditTime: 2020-06-11 11:22:11
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-07-09 10:56:17
  */
 import Vue from 'vue'
 import Router from 'vue-router'
 import { getStore } from 'js/store'
+import VueSocketIO from 'vue-socket.io'
 
 // vue路由懒加载  异步加载
 
@@ -125,7 +126,7 @@ var router = new Router({
       meta: {
         title: '求购订单详情'
       }
-    },
+    }
   ]
 })
 
@@ -133,6 +134,20 @@ let indexScrollTop = 0
 
 router.beforeEach((to, from, next) => {
   const token = getStore({ name: 'access_token', type: "string" });
+  const { isDebug, socketUrl } = getStore({ name: "serviceOption" });
+	const linkSocket = () => {
+		Vue.use(new VueSocketIO({
+			debug: isDebug,
+			// connection: 'http://192.168.212.26:9099',
+			connection: socketUrl,
+			options: {
+				autoConnect: false,
+				query: {
+					userId: `c_${token}`
+				}
+			} //Optional options
+		}))
+	}
   // 路由进入下一个路由对象前，判断是否需要登陆
   // 在路由meta对象中由个requireAuth字段，只要此字段为true，必须做鉴权处理
   if (to.matched.some(res => res.meta.requireAuth)) {
@@ -161,10 +176,12 @@ router.beforeEach((to, from, next) => {
         })
       } else {
         next();
+        linkSocket();
       }
     }
   } else {
     next();
+    linkSocket();
   }
   if (to.path !== '/index') {
     // 记录现在滚动的位置
