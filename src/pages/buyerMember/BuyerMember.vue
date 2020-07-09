@@ -47,10 +47,10 @@
         </template>
       </el-table-column>
       <el-table-column label="状态" width="120">
-        <template slot-scope="scope">
-          <span v-if="scope.row.status == 0">已激活</span>
-          <span v-if="scope.row.status == 1">已停用</span>
-        </template>
+        <template slot-scope="scope" v-if="scope.row.account">
+          <span v-if="scope.row.account.status.status == 0">已激活</span>
+          <span v-if="scope.row.account.status.status == 1">已停用</span>
+        </template>.status
       </el-table-column>
       <el-table-column prop="registerDate" label="注册时间" sortable></el-table-column>
       <el-table-column prop="loginDate" label="最后登录时间"></el-table-column>

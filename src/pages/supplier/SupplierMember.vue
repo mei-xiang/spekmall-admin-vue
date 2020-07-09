@@ -55,12 +55,12 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" width="140">
+      <el-table-column label="状态" width="130">
         <template slot-scope="scope">
           <span v-if="scope.row.account">{{ scope.row.account.status.text }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="企业认证状态" width="140">
+      <el-table-column label="企业认证状态" width="130">
         <template slot-scope="scope">
           <template v-if="scope.row.supplierCompanyOutput">
             <span v-if="scope.row.supplierCompanyOutput.companyValidity==0">未认证</span>

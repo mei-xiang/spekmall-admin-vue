@@ -1,6 +1,6 @@
 <template>
   <!-- 品牌管理 -->
-  <div class="content">
+  <div class="content brand">
     <!-- 搜索区域 -->
     <el-form :inline="true" :model="searchForm" class="searchForm">
       <el-form-item label>
@@ -117,12 +117,8 @@
     <!-- 首页品牌管理对话框 -->
     <el-dialog :visible.sync="isShowHomeBrandDia" title="首页品牌管理">
       <div class="homeBrandBox">
-        <div class="addHomeBrand" @click="showHomeAddBrand">
-          点击添加
-          <!-- <div>
-            <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
-            <span class="del" @click="delHomeBrand(item.id)">删除</span>
-          </div>-->
+        <div class="addHomeBrand_box">
+          <div class="addHomeBrand" @click="showHomeAddBrand" v-for="(item) in 10">点击添加</div>
         </div>
         <div v-for="(item,index) in homeBrandList" :key="index" class="item">
           <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
@@ -218,6 +214,7 @@ export default {
       uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
       isShowHomeBrandDia: false, // 控制首页品牌管理对话框
       homeBrandList: [], // 首页品牌列表
+      ids: [], // 首页品牌列表id
       isShowHotBrandListDia: false, // 控制热门首页品牌对话框的显示与隐藏
       // 热门品牌搜索表单
       searchHotForm: {
@@ -260,9 +257,14 @@ export default {
           size: 10
         })
         .then(res => {
-          console.log(res)
           if (res.code === 200) {
+            console.log(res)
             this.homeBrandList = res.data.content
+            // 获取首页品牌列表id
+            this.ids = []
+            this.homeBrandList.forEach(item => {
+              this.ids.push(item.id)
+            })
           }
         })
     },
@@ -270,7 +272,6 @@ export default {
     getHotList() {
       this.axios.get(`/api/brand/hot`, this.searchHotForm).then(res => {
         if (res.code == 200) {
-          console.log(res)
           this.hotData = res.data.content
           this.searchHotForm.page = res.data.number
           this.searchHotForm.size = res.data.size
@@ -431,10 +432,15 @@ export default {
     },
     // 删除首页品牌
     delHomeBrand(id) {
-      console.log(id)
+      this.ids.splice(
+        this.ids.findIndex(item => id == item),
+        1
+      )
       this.axios.put(`/api/brand/del/showhome?id=${id}`).then(res => {
         if (res.code === 200) {
           this.getHomeBrandList()
+          // 重新排序
+          this.getSortList()
         }
       })
     },
@@ -443,22 +449,36 @@ export default {
       this.isShowHotBrandListDia = true
       this.getHotList()
     },
+    // 排序接口
+    getSortList() {
+      console.log(this.ids)
+      this.axios.put(`/api/brand/sortNum?ids=${this.ids}`).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.getHomeBrandList()
+        }
+      })
+    },
     // 添加首页品牌
     addHomeBrand() {
-      // axios.put(`/api/brand/add/showhome`,{
-      //   id: this.selectRow.id,
-      //   sortNum: null
-      // }).then(res => {
-      //   console.log(res)
-      //   if (res.status == 200) {
-      //     this.$message({
-      //       type: 'success',
-      //       message: '添加成功!'
-      //     })
-      //     this.isShowHotBrandListDia = false
-      //     this.getHomeBrandList()
-      //   }
-      // })
+      this.axios
+        .put(`/api/brand/add/showhome`, {
+          id: this.selectRow.id,
+          sortNum: this.homeBrandList.length + 1
+        })
+        .then(res => {
+          if (res.code == 200) {
+            this.$message({
+              type: 'success',
+              message: '添加成功!'
+            })
+            this.isShowHotBrandListDia = false
+            this.getHomeBrandList() // 获取列表
+
+            // 重新排序
+            this.getSortList()
+          }
+        })
     },
     // 热门品牌分页操作
     hotquery() {
@@ -488,49 +508,5 @@ export default {
 }
 </script>
 
-<style scopde>
-.content {
-  height: 100%;
-  overflow: scroll;
-}
-.el-dialog {
-  width: 950px !important;
-}
-
-.homeBrandBox {
-  padding: 20px;
-  display: flex;
-  flex-wrap: wrap;
-}
-.addHomeBrand {
-  width: 148px;
-  height: 148px;
-  border: 1px solid #ccc;
-  text-align: center;
-  line-height: 148px;
-  cursor: pointer;
-}
-.item {
-  position: relative;
-}
-.del {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  cursor: pointer;
-}
-/* .totBrandListDia{
-  width: 950px !important;
-} */
-.totBrandListDia .el-dialog {
-  width: 450px !important;
-  position: absolute;
-  right: 0;
-  top: 0;
-
-}
-.totBrandListDia .el-dialog__body {
-  /* padding-left: 30px; */
-  /* padding-top: 70px; */
-}
+<style>
 </style>

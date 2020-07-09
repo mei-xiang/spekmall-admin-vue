@@ -505,6 +505,61 @@ a:hover {
   top: -22px !important;
   right: -3px !important;
 }
-.totBrandListDia{
+
+/* 标签管理 */
+.brand.content {
+  height: 100%;
+  overflow: scroll;
+}
+.brand .el-dialog {
+  width: 925px !important;
+  height: 500px !important;
+}
+
+.brand .homeBrandBox {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  position: relative;
+}
+.brand .addHomeBrand_box {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  /* top: 0;
+  left: 0; */
+}
+.brand .addHomeBrand {
+  width: 148px;
+  height: 148px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 148px;
+  cursor: pointer;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  /* background-color: pink; */
+}
+.brand .item {
+  position: relative;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  float: left;
+}
+.brand .del {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: pointer;
+}
+.brand .totBrandListDia .el-dialog {
   width: 450px !important;
+}
+.brand .el-dialog .el-dialog__body {
+  overflow: visible;
+}
+.brand .el-image {
+  overflow: visible;
 }
