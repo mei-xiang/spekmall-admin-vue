@@ -314,7 +314,7 @@ export default {
 		// 初始化表情数据
 		initExpression() {
 			this.expressionsList = this.expressions.map((item) => {
-				item.url = this.baseUrl + item.url;
+				item.url = 'http://192.168.212.13:9080' + item.url;
 				return item;
 			});
 		},

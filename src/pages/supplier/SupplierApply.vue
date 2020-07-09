@@ -69,7 +69,7 @@
       </el-table-column>
       <el-table-column label="状态" width="120">
         <template slot-scope="scope">
-          <!-- <span>{{ scope.row.status.text }}</span> -->
+          <span>{{ scope.row.status.text }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="createDate" label="注册时间" sortable></el-table-column>
