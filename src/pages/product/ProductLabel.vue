@@ -87,6 +87,7 @@ import axios from 'axios'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    const imgBaseUrl = this.imgBaseUrl
     return {
       labelData: [],
       isShowDialog: false,
@@ -109,7 +110,7 @@ export default {
         ]
       },
       type: '', // 对话框类型 新增/编辑
-      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
+      uploadUrl: `${imgBaseUrl}/file/upload?token=${token}`, // 图片上传接口地址
       fileList: [],
       id: null, // 当前数据id
       title: ''
@@ -234,15 +235,13 @@ export default {
             })
         }
         if (this.type == 2) {
-          this.axios
-            .post(`/api/tag/add`, this.labelForm)
-            .then(res => {
-              console.log(res)
-              if (res.code == 200) {
-                this.isShowDialog = false
-                this.getLabelList()
-              }
-            })
+          this.axios.post(`/api/tag/add`, this.labelForm).then(res => {
+            console.log(res)
+            if (res.code == 200) {
+              this.isShowDialog = false
+              this.getLabelList()
+            }
+          })
         }
       })
     }

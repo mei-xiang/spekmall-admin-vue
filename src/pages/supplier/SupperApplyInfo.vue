@@ -71,6 +71,7 @@ import { getStore } from 'js/store'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    const imgBaseUrl = this.imgBaseUrl
     return {
       supperForm: {
         username: '',
@@ -100,7 +101,8 @@ export default {
         ]
       },
       fileList: [],
-      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
+      uploadUrl: `${imgBaseUrl}/file/upload?token=${token}`, // 图片上传接口地址
+
       dialogImageUrl: '',
       dialogVisible: false,
       readonly: false, // 只读
@@ -208,14 +210,12 @@ export default {
       this.$router.push('/supplierApply')
     },
     approvePassOrNoPass(obj, callback) {
-      this.axios
-        .post(`/api/supplier/register/audit`, obj)
-        .then(res => {
-          console.log(res)
-          if (res.code === 200) {
-            callback && callback(res)
-          }
-        })
+      this.axios.post(`/api/supplier/register/audit`, obj).then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          callback && callback(res)
+        }
+      })
     },
     // 审核通过
     approvePass() {

@@ -289,11 +289,13 @@
 <script>
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import { getStore } from 'js/store'
+
 let _this
 export default {
   data() {
     _this = this
     const token = getStore({ name: 'access_token', type: 'string' })
+    const imgBaseUrl = this.imgBaseUrl
     return {
       selfProductForm: {
         title: '', // 产品名称
@@ -375,7 +377,7 @@ export default {
       type: null, // 查看1  编辑2  新增3
       readonly: false, // 只读
       disabled: false, // 禁用
-      uploadUrl: `http://192.168.212.13:8010/file/upload?token=${token}`, // 图片上传接口地址
+      uploadUrl: `${imgBaseUrl}/file/upload?token=${token}`, // 图片上传接口地址
       fileImagesList: [], // images图片
       imagesDialogImageUrl: '', // images图片预览
       imagesDialogVisible: false
@@ -689,7 +691,7 @@ export default {
     },
     save() {
       this.selfProductForm.status = 0 // 草稿
-      // if (this.type == 2) this.selfProductForm.id = this.$route.query.id
+      if (this.type == 2) this.selfProductForm.id = this.$route.query.id
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
           _this.$router.push('/selfProduct')
@@ -701,7 +703,7 @@ export default {
     },
     approve() {
       this.selfProductForm.status = 1 // 审核
-      // if (this.type == 2) this.selfProductForm.id = this.$route.query.id
+      if (this.type == 2) this.selfProductForm.id = this.$route.query.id
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
           _this.$router.push('/selfProduct')
