@@ -689,6 +689,7 @@ export default {
     },
     save() {
       this.selfProductForm.status = 0 // 草稿
+      // if (this.type == 2) this.selfProductForm.id = this.$route.query.id
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
           _this.$router.push('/selfProduct')
@@ -700,6 +701,7 @@ export default {
     },
     approve() {
       this.selfProductForm.status = 1 // 审核
+      // if (this.type == 2) this.selfProductForm.id = this.$route.query.id
       this.saveOrApprove(this.selfProductForm, function(res) {
         if (res.code == 200) {
           _this.$router.push('/selfProduct')

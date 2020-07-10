@@ -210,6 +210,7 @@ export default {
 .number p:last-child {
   font-size: 20px;
   color: #47494b;
+  font-family: 'PingFangSC-Regular';
 }
 .number {
   box-sizing: border-box;

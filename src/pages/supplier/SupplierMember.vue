@@ -45,8 +45,18 @@
     <el-table :data="memberData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="code" label="供应商编号" width="140"></el-table-column>
-      <el-table-column prop="name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="140"></el-table-column>
+      <el-table-column prop="name" label="供应商名称" width="190" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span v-if="scope.row.supplierCompanyOutput">{{ scope.row.supplierCompanyOutput.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="手机" width="140">
+        <template slot-scope="scope">
+          <span
+            v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyLinkMan"
+          >{{ scope.row.supplierCompanyOutput.companyLinkMan.mobile }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop label="地区" width="140">
         <template slot-scope="scope">
           <span v-if="scope.row.supplierCompanyOutput">
@@ -346,7 +356,7 @@ export default {
         cancelButtonText: '取消',
         inputType: 'textarea',
         inputPlaceholder: '请输入取消原因',
-        inputPattern: /^[A-Za-z0-9.]{1,1000}$/,
+        inputPattern: /\S/,
         inputErrorMessage: '请输入原因'
       })
         .then(({ value }) => {

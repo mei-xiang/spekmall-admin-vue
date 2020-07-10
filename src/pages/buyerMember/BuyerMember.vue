@@ -52,8 +52,16 @@
           <span v-if="scope.row.account.status.status == 1">已停用</span>
         </template>.status
       </el-table-column>
-      <el-table-column prop="registerDate" label="注册时间" sortable></el-table-column>
-      <el-table-column prop="loginDate" label="最后登录时间"></el-table-column>
+      <el-table-column label="注册时间">
+        <template slot-scope="scope" v-if="scope.row.account">
+          <span>{{ scope.row.account.createDate }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="最后登录时间">
+        <template slot-scope="scope" v-if="scope.row.account">
+          <span>{{ scope.row.account.loginDate }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>

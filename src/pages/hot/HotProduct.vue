@@ -52,7 +52,7 @@
           v-for="(item,index) in hasCategory"
           :key="index"
         >
-          <el-table :data="productData" border style="width: 100%;">
+          <el-table :data="productData" row-key="id" border style="width: 100%;">
             <el-table-column type="index" label="序号" fixed></el-table-column>
             <el-table-column prop="productCode" label="产品编号" width="120"></el-table-column>
             <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
@@ -115,6 +115,7 @@
 <script>
 import { getStore } from 'js/store'
 import axios from 'axios'
+import Sortable from 'sortablejs'
 export default {
   data() {
     return {
@@ -372,6 +373,17 @@ export default {
             this.getProductById(this.firstCategoryId)
           }
         })
+    },
+    //行拖拽
+    rowDrop() {
+      const tbody = document.querySelector('.el-table__body-wrapper tbody')
+      const _this = this
+      Sortable.create(tbody, {
+        onEnd({ newIndex, oldIndex }) {
+          const currRow = _this.productData.splice(oldIndex, 1)[0]
+          _this.tableData.splice(newIndex, 0, currRow)
+        }
+      })
     }
   }
 }

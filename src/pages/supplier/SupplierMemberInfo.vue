@@ -4,7 +4,15 @@
     <div class="box">
       <h2>
         供应商基本信息
-        <span class="infoType">状态：{{ memberObj.status.text }}</span>
+        <span
+          class="infoType"
+          v-if="memberObj.account&&memberObj.account.status.status !== 1"
+        >状态：{{ memberObj.account.status.text }}</span>
+        <span class="infoType" v-if="memberObj.account&&memberObj.account.status.status == 1">
+          状态：{{ memberObj.account.status.text }} 原因：{{
+          memberObj.account.remarks
+          }}
+        </span>
       </h2>
       <div class="info">
         <div class="glod">

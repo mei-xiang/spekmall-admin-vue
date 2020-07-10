@@ -118,11 +118,12 @@
     <el-dialog :visible.sync="isShowHomeBrandDia" title="首页品牌管理">
       <div class="homeBrandBox">
         <div class="addHomeBrand_box">
-          <div class="addHomeBrand" @click="showHomeAddBrand" v-for="(item) in 10">点击添加</div>
+          <div class="addHomeBrand" @click="showHomeAddBrand" v-for="(item) in 10" :key="item">点击添加</div>
         </div>
         <div v-for="(item,index) in homeBrandList" :key="index" class="item">
           <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
-          <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span>
+          <span class="del" @click="delHomeBrand(item.id)">删除</span>
+          <!-- <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span> -->
         </div>
       </div>
     </el-dialog>
