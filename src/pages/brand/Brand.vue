@@ -120,11 +120,16 @@
         <div class="addHomeBrand_box">
           <div class="addHomeBrand" @click="showHomeAddBrand" v-for="(item) in 10" :key="item">点击添加</div>
         </div>
-        <div v-for="(item,index) in homeBrandList" :key="index" class="item">
-          <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
-          <span class="del" @click="delHomeBrand(item.id)">删除</span>
-          <!-- <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span> -->
-        </div>
+
+        <draggable v-model="homeBrandList" @update="datadragEnd">
+          <transition-group tag="div" class="drop-wrapper">
+            <div v-for="(item,index) in homeBrandList" :key="index" class="item">
+              <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
+              <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span>
+              <!-- <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span> -->
+            </div>
+          </transition-group>
+        </draggable>
       </div>
     </el-dialog>
 
@@ -180,6 +185,7 @@
 import baseUrl from '../../api/env'
 import { getStore } from 'js/store'
 import axios from 'axios'
+import draggable from 'vuedraggable'
 
 export default {
   data() {
@@ -214,7 +220,9 @@ export default {
           { required: true, message: '品牌类型不能为空', trigger: 'change' }
         ]
       },
-      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
+      uploadUrl: `${
+        baseUrl[process.env.NODE_ENV].apiUrl
+      }/file/upload?token=${token}`, // 图片上传地址
       isShowHomeBrandDia: false, // 控制首页品牌管理对话框
       homeBrandList: [], // 首页品牌列表
       ids: [], // 首页品牌列表id
@@ -239,6 +247,9 @@ export default {
       const srcList = urlStr.split(',')
       return this.imgBaseUrl + srcList[0]
     }
+  },
+  components: {
+    draggable
   },
   methods: {
     // 获取品牌列表
@@ -482,6 +493,20 @@ export default {
             this.getSortList()
           }
         })
+    },
+    getdata: function(evt) {
+      console.log(evt.draggedContext.element.id)
+    },
+    datadragEnd: function(evt) {
+      console.log('拖动前的索引：' + evt.oldIndex)
+      console.log('拖动后的索引：' + evt.newIndex)
+      console.log(this.homeBrandList)
+      // 获取首页品牌列表id
+      this.ids = []
+      this.homeBrandList.forEach(item => {
+        this.ids.push(item.id)
+      })
+      this.getSortList()
     },
     // 热门品牌分页操作
     hotquery() {

@@ -110,7 +110,9 @@ export default {
         ]
       },
       type: '', // 对话框类型 新增/编辑
-      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
+      uploadUrl: `${
+        baseUrl[process.env.NODE_ENV].apiUrl
+      }/file/upload?token=${token}`, // 图片上传地址
       fileList: [],
       id: null, // 当前数据id
       title: ''

@@ -1,6 +1,6 @@
 <template>
   <!-- 首页热门品类管理 -->
-  <div class="content">
+  <div class="content productBox">
     <div v-if="!isShowCategory">暂未添加热门分类</div>
     <el-select v-model="categoryVal" placeholder="请选择分类">
       <el-option
@@ -149,6 +149,9 @@ export default {
       return this.hasCategory.length > 0 ? true : false
     }
   },
+  mounted() {
+    // this.rowDrop()
+  },
   methods: {
     // 获取所有分类
     getAllCategoryList() {
@@ -196,6 +199,7 @@ export default {
           console.log(res)
           if (res.code == 200) {
             this.productData = res.data
+            this.rowDrop()
           }
         })
     },
@@ -377,11 +381,27 @@ export default {
     //行拖拽
     rowDrop() {
       const tbody = document.querySelector('.el-table__body-wrapper tbody')
+      console.log(tbody)
       const _this = this
       Sortable.create(tbody, {
         onEnd({ newIndex, oldIndex }) {
           const currRow = _this.productData.splice(oldIndex, 1)[0]
-          _this.tableData.splice(newIndex, 0, currRow)
+          _this.productData.splice(newIndex, 0, currRow)
+          console.log(_this.productData)
+          const arr = []
+          _this.productData.forEach((item, index) => {
+            arr.push({
+              id: item.id,
+              isSort: index + 1
+            })
+          })
+          _this.axios.post(`/api/hotCategoryProduct/sort`, arr,{headers:{'Content-Type':'application/json'}}).then(res => {
+            console.log(res)
+            if (res.code == 200) {
+              // _this.productData = []
+              // _this.getProductById(_this.firstCategoryId)
+            }
+          })
         }
       })
     }
@@ -389,12 +409,12 @@ export default {
 }
 </script>
 
-<style scoped>
-.content {
+<style>
+.productBox {
   height: 100%;
   overflow: scroll;
 }
-.el-dialog {
+.productBox .el-dialog {
   width: 1100px !important;
 }
 </style>

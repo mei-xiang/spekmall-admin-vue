@@ -227,35 +227,7 @@ export default {
   created() {
     this.getRecommentList() // 获取热门商品数据
   },
-  mounted() {
-    this.rowDrop()
-    this.columnDrop()
-  },
   methods: {
-    //行拖拽
-    rowDrop() {
-      const tbody = document.querySelector('.el-table__body-wrapper tbody')
-      const _this = this
-      Sortable.create(tbody, {
-        onEnd({ newIndex, oldIndex }) {
-          const currRow = _this.tableData.splice(oldIndex, 1)[0]
-          _this.tableData.splice(newIndex, 0, currRow)
-        }
-      })
-    },
-    //列拖拽
-    columnDrop() {
-      const wrapperTr = document.querySelector('.el-table__header-wrapper tr')
-      this.sortable = Sortable.create(wrapperTr, {
-        animation: 180,
-        delay: 0,
-        onEnd: evt => {
-          const oldItem = this.dropCol[evt.oldIndex]
-          this.dropCol.splice(evt.oldIndex, 1)
-          this.dropCol.splice(evt.newIndex, 0, oldItem)
-        }
-      })
-    },
     getRecommentList() {
       this.axios
         .get(`/hot/product`, this.searchForm)
