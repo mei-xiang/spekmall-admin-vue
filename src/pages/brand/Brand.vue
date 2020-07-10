@@ -177,12 +177,13 @@
 </template>
 
 <script>
+import baseUrl from '../../api/env'
 import { getStore } from 'js/store'
 import axios from 'axios'
+
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
-    const imgBaseUrl = this.imgBaseUrl
     return {
       // 搜索表单
       searchForm: {
@@ -213,7 +214,7 @@ export default {
           { required: true, message: '品牌类型不能为空', trigger: 'change' }
         ]
       },
-      uploadUrl: `${imgBaseUrl}/file/upload?token=${token}`, // 图片上传接口地址
+      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
       isShowHomeBrandDia: false, // 控制首页品牌管理对话框
       homeBrandList: [], // 首页品牌列表
       ids: [], // 首页品牌列表id

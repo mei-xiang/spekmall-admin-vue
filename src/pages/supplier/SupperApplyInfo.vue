@@ -67,11 +67,11 @@
 </template>
 
 <script>
+import baseUrl from '../../api/env'
 import { getStore } from 'js/store'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
-    const imgBaseUrl = this.imgBaseUrl
     return {
       supperForm: {
         username: '',
@@ -101,7 +101,7 @@ export default {
         ]
       },
       fileList: [],
-      uploadUrl: `${imgBaseUrl}/file/upload?token=${token}`, // 图片上传接口地址
+      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
 
       dialogImageUrl: '',
       dialogVisible: false,

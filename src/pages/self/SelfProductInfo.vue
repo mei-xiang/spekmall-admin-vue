@@ -287,6 +287,7 @@
 </template>
 
 <script>
+import baseUrl from '../../api/env'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 import { getStore } from 'js/store'
 
@@ -295,7 +296,6 @@ export default {
   data() {
     _this = this
     const token = getStore({ name: 'access_token', type: 'string' })
-    const imgBaseUrl = this.imgBaseUrl
     return {
       selfProductForm: {
         title: '', // 产品名称
@@ -377,7 +377,7 @@ export default {
       type: null, // 查看1  编辑2  新增3
       readonly: false, // 只读
       disabled: false, // 禁用
-      uploadUrl: `${imgBaseUrl}/file/upload?token=${token}`, // 图片上传接口地址
+      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
       fileImagesList: [], // images图片
       imagesDialogImageUrl: '', // images图片预览
       imagesDialogVisible: false

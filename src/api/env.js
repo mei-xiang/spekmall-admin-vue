@@ -8,11 +8,11 @@ module.exports = {
   },
   debug: {
     apiUrl: "http://192.168.212.13:8010",
-    socketUrl: ""
+    socketUrl: "http://192.168.212.13:9080"
   },
   test: {
     apiUrl: "http://192.168.212.63:8010",
-    socketUrl: ""
+    socketUrl: "http://192.168.212.13:9080"
   },
   production: {
     apiUrl: "",

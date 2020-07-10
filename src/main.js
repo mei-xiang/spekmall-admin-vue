@@ -22,6 +22,7 @@ import 'v-contextmenu/dist/index.css' //右键菜单相关样式
 import 'js/directives.js' // 引入自定义指令
 import rules from 'js/rules.js' // 引入自定义验证
 import myConst from 'js/const.js' // 常量设置
+// import { getStore } from 'js/store'
 import baseUrl from './api/env'
 
 import './assets/font/font.css' // 引入字体
@@ -33,11 +34,14 @@ import 'slider-verification-code/lib/slider-verification-code.css';
 import setLayoutHeight from "@/assets/js/mixins/setLayoutHeight"; // 设置布局的高度
 import components from './components/components.js'; //全局组件注册
 
+// const token = getStore({ name: 'access_token', type: 'string' })
+
 Vue.prototype.axios = axios_; // 挂载到Vue实例上面
 Vue.prototype.store = store; // 挂载到Vue实例上面
 // Vue.prototype.BaseUrl = `${baseUrl.test.apiUrl}` // 登录测试----测试接口
 Vue.prototype.BaseUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}` // 登录接口
 Vue.prototype.imgBaseUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}/file/white/download?filePath=` // 图片拼接部分
+// Vue.prototype.uploadImgUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}` // 图片上传地址
 Vue.config.productionTip = false;
 Vue.use(SliderVerificationCode);
 
