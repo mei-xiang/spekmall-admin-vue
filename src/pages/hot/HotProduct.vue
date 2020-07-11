@@ -399,7 +399,7 @@ export default {
             console.log(res)
             if (res.code == 200) {
               // _this.productData = []
-              // _this.getProductById(_this.firstCategoryId)
+              _this.getProductById(_this.firstCategoryId)
             }
           })
         }

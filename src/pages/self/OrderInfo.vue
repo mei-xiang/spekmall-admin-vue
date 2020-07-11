@@ -52,7 +52,9 @@
       <div class="info">
         <div class="item">
           <span>收货地址</span>
-          <span v-if="orderInfo.addressInfo">{{orderInfo.addressInfo.address}}</span>
+          <span
+            v-if="orderInfo.addressInfo"
+          >{{orderInfo.addressInfo.province+orderInfo.addressInfo.address+orderInfo.addressInfo.city}}</span>
         </div>
         <div class="item">
           <span>运送方式</span>
@@ -122,7 +124,9 @@
         </div>
         <div class="item">
           <span>寄送信息</span>
-          <span v-if="orderInfo.addressInfo">{{orderInfo.addressInfo.address}}</span>
+          <span
+            v-if="orderInfo.invoiceAddressInfo"
+          >{{orderInfo.invoice.province}}{{orderInfo.invoiceAddressInfo.address}}{{orderInfo.invoiceAddressInfo.city}}</span>
         </div>
       </div>
     </div>
@@ -242,14 +246,23 @@ export default {
   },
   filters: {
     handleDelivery(val) {
-      const delivery = _this.deliveryType.find(item => item.value == val) || val
+      let delivery = _this.deliveryType.find(item => item.value == val)
+      if (delivery) {
+        return delivery.text
+      } else {
+        return val
+      }
 
-      return delivery
+      // return delivery.text || val
     },
     handleexpressCom(val) {
-      const expressCom =
-        _this.deliveryType.find(item => item.value == val) || val
-      return expressCom
+      let expressCom = _this.expressCompany.find(item => item.value == val)
+      if (expressCom) {
+        return expressCom.text
+      } else {
+        return val
+      }
+      // return expressCom.text || val
     }
   },
   methods: {

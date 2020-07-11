@@ -39,12 +39,21 @@
     <!-- 表格区域 -->
     <el-table :data="shopData" border style="width: 90%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="name" label="供应商编号" width="190"></el-table-column>
-      <el-table-column prop="name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="code" label="供应商编号" width="190"></el-table-column>
+      <el-table-column label="供应商名称" width="190" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span v-if="scope.row.company">{{ scope.row.company.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="mobile" label="手机" width="190"></el-table-column>
       <el-table-column prop label="地区" width="190">
         <template slot-scope="scope">
-          <span v-if="scope.row.shop.shopCompany">{{ scope.row.shop.shopCompany.province }}{{ scope.row.shop.shopCompany.city }}</span>
+          <span
+            v-if="scope.row.shop.shopCompany"
+          >{{ scope.row.shop.shopCompany.province }}{{ scope.row.shop.shopCompany.city }}</span>
+          <!-- <span
+            v-if="scope.row.shop.shopCompany"
+          >{{ scope.row.shop.shopCompany.provinceId|formatProvince }} {{ scope.row.shop.shopCompany.cityId|formatCity(scope.row.shop.shopCompany.provinceId) }}</span> -->
         </template>
       </el-table-column>
       <el-table-column prop="name" label="是否金牌供应商">
@@ -59,7 +68,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="name" label="店铺提交审核时间" width="190"></el-table-column>
+      <el-table-column label="店铺提交审核时间" width="190">
+        <template slot-scope="scope">
+          <span v-if="scope.row.company">{{ scope.row.company.createDate }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
@@ -89,9 +102,11 @@
 <script>
 import { getStore } from 'js/store'
 import axios from 'axios'
+let _this
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    _this = this
     return {
       // 搜索表单
       searchForm: {
@@ -103,24 +118,76 @@ export default {
         dates: [] // 起止时间
       },
       total: null,
-      shopData: [] // 列表数据
+      shopData: [], // 列表数据
+      provinces: [], // 省份列表
+      cities: [] // 城市列表
     }
   },
   created() {
     this.getShopList()
+    this.getProvinces() // 获取省份列表
+  },
+  filters: {
+    formatProvince(val) {
+      if (!val) return val
+      let province = _this.provinces.find(item => item.id == val)
+      if (province) {
+        return province.label
+      } else {
+        return val
+      }
+    },
+    formatCity(val) {
+      if (!val) return val
+      // let city = _this.cities.find(item => item.id == val)
+      // if (city) {
+      //   return city.name
+      // } else {
+      //   return val
+      // }
+      // return city.name || val
+      return val
+    }
   },
   methods: {
     getShopList() {
+      this.axios.get(`/api/supplier/shop/search`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.shopData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
+    },
+    // 获取所有省份
+    getProvinces() {
+      this.axios.get(`/public/address/provinces`).then(res => {
+        console.log(res)
+        res.data.forEach(item => {
+          this.provinces.push({
+            label: item.name,
+            value: item.name,
+            id: item.id
+          })
+        })
+      })
+    },
+    // 根据省份编码获取所有市
+    getCitiesById(provinceId) {
+      this.cities = []
       this.axios
-        .get(`/api/supplier/shop/search`, this.searchForm)
+        .get(`/public/address/cities/provinces?provincesid=${provinceId}`)
         .then(res => {
           console.log(res)
-          if (res.code == 200) {
-            this.shopData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
+          res.data.forEach(item => {
+            this.cities.push({
+              label: item.name,
+              value: item.name,
+              id: item.id
+            })
+          })
         })
     },
     startChange() {

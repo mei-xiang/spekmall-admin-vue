@@ -6,7 +6,7 @@
       <span
         class="infoType"
         v-if="shopObj.shop.shopStatus.index !== 3"
-      >状态：{{ shopObj.shop.shopStatus.text }}</span>
+      >状态：{{ shopObj.shop.shopStatus.index==2?'已审核':'' }}</span>
       <span class="infoType" v-if="shopObj.shop.shopStatus.index == 3">
         状态：{{ shopObj.shop.shopStatus.text }} 原因：{{
         shopObj.shop.remarks
@@ -158,14 +158,12 @@ export default {
       this.$router.push('/supplierShop')
     },
     approvePassOrNoPass(obj, callback) {
-      this.axios
-        .post(`/api/supplier/shop/audit`, obj)
-        .then(res => {
-          console.log(res)
-          if (res.code === 200) {
-            callback && callback(res)
-          }
-        })
+      this.axios.post(`/api/supplier/shop/audit`, obj).then(res => {
+        console.log(res)
+        if (res.code === 200) {
+          callback && callback(res)
+        }
+      })
     },
     approvePass() {
       this.$confirm('审核通过确认', '', {

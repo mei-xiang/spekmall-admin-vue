@@ -431,7 +431,7 @@ export default {
     },
     // 退款确认
     handleRefund(id) {
-      this.$router.push({ path: '/selfOrderRefund', query: { id: id } })
+      this.$router.push({ path: '/orderRefund', query: { id: id } })
     }
   }
 }
