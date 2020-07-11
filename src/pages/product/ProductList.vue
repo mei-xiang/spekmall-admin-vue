@@ -56,7 +56,7 @@
       <el-table-column prop="categoryName" label="产品类别（末级）" width="300"></el-table-column>
       <el-table-column prop="title" label="产品中文名称" width="180" show-overflow-tooltip></el-table-column>
       <el-table-column prop="price" label="价格" width="130"></el-table-column>
-      <el-table-column prop="supplierOutput.name" label="供应商名称" width="180" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="supplierOutput.supplierCompanyOutput.name" label="供应商名称" width="180" show-overflow-tooltip></el-table-column>
       <el-table-column label="是否主要产品" width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.hot">是</span>

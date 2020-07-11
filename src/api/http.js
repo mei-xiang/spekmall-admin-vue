@@ -41,7 +41,7 @@ const UEDITOR_CONFIG = { //常量
   // serverUrl: 'http://35.201.165.105:8000/controller.php',
   // UEditor 资源文件存放的根目录，如果你使用的是 vue-cli 3.x，设置为'/UEditor/'（参考下方的常见问题2）
   UEDITOR_HOME_URL: '/static/UEditor/',
-  serverUrl: ""
+  serverUrl: apiUrl[process.env.NODE_ENV].apiUrl
 }
 
 const pending = {}

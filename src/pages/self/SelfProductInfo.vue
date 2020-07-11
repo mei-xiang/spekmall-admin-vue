@@ -431,6 +431,7 @@ export default {
             for (let key in this.selfProductForm) {
               this.selfProductForm[key] = res.data[key]
             }
+            this.selfProductForm.introduction = res.data.introduction || ''
             // 解析显示产品标签
             if (res.data.tags.length > 0) {
               const arr = []

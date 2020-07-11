@@ -2,11 +2,8 @@
   <!-- 供应商注册信息 -->
   <div class="content">
     供应商注册信息
-    <!-- <span class="infoType" v-if="remarks"
-      >状态：{{ statusText }} 原因：{{ remarks }}</span
-    >-->
-    <span class="infoType" v-if="remarks">状态：{{ statusText }}</span>
-    <span class="infoType" v-else>状态：{{ statusText }}</span>
+    <span class="infoType" v-if="status.index!=3">状态：{{ status.text }}</span>
+    <span class="infoType" v-else>状态：{{ status.text }}</span>
     <el-form
       :model="supperForm"
       ref="supperRef"
@@ -53,7 +50,7 @@
       <el-form-item label="联系邮箱">
         <el-input v-model="supperForm.linkEmail" placeholder="请输入你的联系邮箱" :readonly="readonly"></el-input>
       </el-form-item>
-      <el-form-item label="不通过原因" v-if="remarks">
+      <el-form-item label="不通过原因" v-if="status.index==3">
         <el-input v-model="remarks" :readonly="readonly" class="noPass"></el-input>
       </el-form-item>
       <el-form-item>
@@ -81,7 +78,7 @@ export default {
         businessLicense: '',
         linkEmail: ''
       },
-      statusText: '', // 状态
+      status: '', // 状态对象
       remarks: '', // 审核不通过内容
       supperRules: {
         username: [
@@ -101,7 +98,9 @@ export default {
         ]
       },
       fileList: [],
-      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
+      uploadUrl: `${
+        baseUrl[process.env.NODE_ENV].apiUrl
+      }/file/upload?token=${token}`, // 图片上传地址
 
       dialogImageUrl: '',
       dialogVisible: false,
@@ -154,7 +153,9 @@ export default {
               this.supperForm[key] = res.data[key]
             }
             this.remarks = res.data.remarks
-            this.statusText = res.data.status.text
+            if (res.data.status) {
+              this.status = res.data.status
+            }
 
             // 展示图片处理
             const srcList = this.supperForm.businessLicense
