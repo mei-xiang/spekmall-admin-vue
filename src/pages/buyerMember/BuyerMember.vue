@@ -101,7 +101,7 @@
           <el-input v-model="lookBuyerForm.name"></el-input>
         </el-form-item>
         <el-form-item label="手机号">
-          <el-input v-model="lookBuyerForm.telephone"></el-input>
+          <el-input v-model="lookBuyerForm.mobile"></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
           <el-input v-model="lookBuyerForm.email"></el-input>

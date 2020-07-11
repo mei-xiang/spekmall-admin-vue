@@ -34,7 +34,7 @@
         </div>
         <div class="item">
           <span>公司简介</span>
-          <span>{{ shopObj.shop.shopCompany.companyDesc }}</span>
+          <span class="companyDesc">{{ shopObj.shop.shopCompany.companyDesc }}</span>
         </div>
         <div class="item">
           <span>主营产品</span>
@@ -82,7 +82,7 @@
           </el-carousel>
         </div>
         <div class="item" style="width:900px;display:flex">
-          <span>店铺图片</span>
+          <span>公司图片</span>
           <el-carousel :interval="4000" type="card" height="200px" style="flex:1;">
             <el-carousel-item v-for="(item, index) in shopObj.shop.images" :key="index">
               <img :src="imgBaseUrl + item" class="image" />
@@ -256,10 +256,15 @@ h2 {
 }
 .info .item {
   line-height: 35px;
+  display: flex;
 }
 .info .item span:first-of-type {
   display: inline-block;
   width: 150px;
+}
+.info .companyDesc {
+  width: 900px;
+  /* white-space: normal; */
 }
 .glod {
   position: absolute;

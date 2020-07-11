@@ -253,7 +253,7 @@ export default {
     orderDetail(id, status) {
       // type:1 自营订单详情  type:2 电商订单详情
       console.log(status)
-      if (status == 6) {
+      if (status == 6||status == 7||status == 8) {
         this.$router.push({
           path: '/orderRefund',
           query: { id: id, type: 2 }

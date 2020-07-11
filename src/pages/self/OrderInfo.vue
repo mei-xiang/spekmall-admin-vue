@@ -54,7 +54,7 @@
           <span>收货地址</span>
           <span
             v-if="orderInfo.addressInfo"
-          >{{orderInfo.addressInfo.province+orderInfo.addressInfo.address+orderInfo.addressInfo.city}}</span>
+          >{{orderInfo.addressInfo.province}}&nbsp;{{orderInfo.addressInfo.city}}&nbsp;{{orderInfo.addressInfo.area}}&nbsp;{{orderInfo.addressInfo.address}}</span>
         </div>
         <div class="item">
           <span>运送方式</span>
@@ -144,7 +144,7 @@
           <span>寄送信息</span>
           <span
             v-if="orderInfo.invoiceAddressInfo"
-          >{{orderInfo.invoice.province}}{{orderInfo.invoiceAddressInfo.address}}{{orderInfo.invoiceAddressInfo.city}}</span>
+          >{{orderInfo.invoiceAddressInfo.province}}&nbsp;{{orderInfo.invoiceAddressInfo.city}}&nbsp;{{orderInfo.invoiceAddressInfo.area}}&nbsp;{{orderInfo.invoiceAddressInfo.address}}</span>
         </div>
       </div>
     </div>

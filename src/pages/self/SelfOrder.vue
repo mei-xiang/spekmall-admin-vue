@@ -268,14 +268,12 @@ export default {
       }
       this.$dataTransform(statusObj, 'statusArr')
       console.log(statusObj)
-      this.axios
-        .get(`/api/admin/self/goodsOrderCount`, statusObj)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.statusLenList = res.data
-          }
-        })
+      this.axios.get(`/api/admin/self/goodsOrderCount`, statusObj).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.statusLenList = res.data
+        }
+      })
     },
     startChange() {
       this.searchForm.dateStart = this.$timeDate(this.searchForm.dateStart)
@@ -319,7 +317,7 @@ export default {
     orderDetail(id, status) {
       // type:1 自营订单详情  type:2 电商订单详情
       console.log(status)
-      if (status == 6) {
+      if (status == 6 || status == 7 || status == 8) {
         this.$router.push({
           path: '/orderRefund',
           query: { id: id, type: 1 }
@@ -392,13 +390,11 @@ export default {
             this.deliveryType = res.data
           }
         })
-      this.axios
-        .get(`/dictionary/detail/child/logistics`)
-        .then(res => {
-          if (res.code === 200) {
-            this.expressCompany = res.data
-          }
-        })
+      this.axios.get(`/dictionary/detail/child/logistics`).then(res => {
+        if (res.code === 200) {
+          this.expressCompany = res.data
+        }
+      })
     },
     // 物流信息对话框关闭数据重置
     handleDiaClose() {

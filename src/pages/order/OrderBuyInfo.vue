@@ -104,7 +104,7 @@
           </div>
           <div class="item">
             <span>交易金额：</span>
-            <span style="color:#FF4400">¥{{orderInfo.totalPrice}}</span>
+            <span style="color:#FF4400" v-if="orderInfo.totalPrice">¥{{orderInfo.totalPrice}}</span>
           </div>
           <div class="item">
             <span>下单时间：</span>
@@ -129,15 +129,21 @@
         <div class="info">
           <div class="item">
             <span>收货地址</span>
-            <span v-if="orderInfo.addressInfo">{{orderInfo.addressInfo.address}}</span>
+            <span
+              v-if="orderInfo.addressInfo"
+            >{{orderInfo.addressInfo.province}}&nbsp;{{orderInfo.addressInfo.city}}&nbsp;{{orderInfo.addressInfo.area}}&nbsp;{{orderInfo.addressInfo.address}}</span>
           </div>
           <div class="item">
             <span>运送方式</span>
-            <span v-if="orderInfo.expressInfoView">{{orderInfo.expressInfoView.deliveryType}}</span>
+            <span
+              v-if="orderInfo.expressInfoView"
+            >{{orderInfo.expressInfoView.deliveryType|handleDelivery}}</span>
           </div>
           <div class="item">
             <span>物流公司</span>
-            <span v-if="orderInfo.expressInfoView">{{orderInfo.expressInfoView.expressCompany}}</span>
+            <span
+              v-if="orderInfo.expressInfoView"
+            >{{orderInfo.expressInfoView.expressCompany|handleexpressCom}}</span>
           </div>
           <div class="item">
             <span>运单号</span>
@@ -150,22 +156,39 @@
         <div class="info">
           <div class="item">
             <span>公司名称</span>
-            <span>{{orderInfo.supplierName}}</span>
+            <span>{{orderInfo.buyerView.company}}</span>
           </div>
           <div class="item">
             <span>姓名</span>
-            <span>{{orderInfo.supplierPersionName}}</span>
+            <span>{{orderInfo.buyerView.name}}</span>
           </div>
           <div class="item">
             <span>联系方式</span>
-            <span>{{orderInfo.supplierMobile}}</span>
+            <span>{{orderInfo.buyerView.telephone0}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>商家信息</h2>
+        <div class="info">
+          <div class="item">
+            <span>商家</span>
+            <span>{{orderInfo.supplierView.company}}</span>
+          </div>
+          <div class="item">
+            <span>姓名</span>
+            <span>{{orderInfo.supplierView.name}}</span>
+          </div>
+          <div class="item">
+            <span>联系方式</span>
+            <span>{{orderInfo.supplierView.telephone}}</span>
           </div>
         </div>
       </div>
       <div class="box">
         <h2>商品明细</h2>
         <div class="info">
-          <el-table :data="orderInfo.godvList" border stripe style="width: 800px">
+          <el-table :data="[orderInfo.product]" border stripe style="width: 800px">
             <el-table-column prop="date" label="商品信息" width="300" show-overflow-tooltip>
               <template slot-scope="scope">
                 <img
@@ -178,8 +201,12 @@
               </template>
             </el-table-column>
             <el-table-column prop="price" label="单价" width="180"></el-table-column>
-            <el-table-column prop="num" label="数量" width="180"></el-table-column>
-            <el-table-column prop="total" label="商品小计"></el-table-column>
+            <el-table-column prop="count" label="数量" width="180"></el-table-column>
+            <el-table-column label="商品小计">
+              <template>
+                <span>{{orderInfo.totalPrice}}</span>
+              </template>
+            </el-table-column>
           </el-table>
           <div class="item">
             <span>用户备注</span>
@@ -200,7 +227,9 @@
           </div>
           <div class="item">
             <span>寄送信息</span>
-            <span v-if="orderInfo.addressInfo">{{orderInfo.addressInfo.address}}</span>
+            <span
+              v-if="orderInfo.invoiceAddressInfo"
+            >{{orderInfo.invoiceAddressInfo.province}}&nbsp;{{orderInfo.invoiceAddressInfo.city}}&nbsp;{{orderInfo.invoiceAddressInfo.area}}&nbsp;{{orderInfo.invoiceAddressInfo.address}}</span>
           </div>
         </div>
       </div>
@@ -210,14 +239,18 @@
 
 <script>
 import { getStore } from 'js/store'
+let _this
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    _this = this
     return {
       orderInfo: {}, // 店铺数据
       id: null,
       type: '', // 1自营订单详情 2电商订单详情
-      activeName: null
+      activeName: null,
+      deliveryType: [], // 物流方式列表
+      expressCompany: [] // 物流公司列表
     }
   },
   created() {
@@ -228,6 +261,27 @@ export default {
     }
     if (this.type == 2) {
       this.getOrderSendList()
+    }
+  },
+  filters: {
+    handleDelivery(val) {
+      let delivery = _this.deliveryType.find(item => item.value == val)
+      if (delivery) {
+        return delivery.text
+      } else {
+        return val
+      }
+
+      // return delivery.text || val
+    },
+    handleexpressCom(val) {
+      let expressCom = _this.expressCompany.find(item => item.value == val)
+      if (expressCom) {
+        return expressCom.text
+      } else {
+        return val
+      }
+      // return expressCom.text || val
     }
   },
   methods: {
@@ -269,9 +323,7 @@ export default {
     // 获取待发货与待收货状态数据
     getOrderSendList() {
       this.axios
-        .get(
-          `/api/admin/demandPayOrderDetails?demandId=${this.id}`
-        )
+        .get(`/api/admin/demandPayOrderDetails?orderId=${this.id}`)
         .then(res => {
           console.log(res)
           const data = res.data

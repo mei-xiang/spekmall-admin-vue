@@ -37,7 +37,10 @@
         </div>
         <div class="item">
           <span>退款金额：</span>
-          <span style="color:#FF4400" v-if="orderInfo.orView">¥{{orderInfo.totalPriceComfirm}}</span>
+          <span
+            style="color:#FF4400"
+            v-if="orderInfo.orView.refundPrice"
+          >¥{{orderInfo.orView.refundPrice}}</span>
         </div>
         <div class="item">
           <span>退款说明：</span>
@@ -45,13 +48,14 @@
         </div>
         <div class="item">
           <span>申请时间：</span>
-          <span v-if="orderInfo.orView">{{orderInfo.orView. createDate}}</span>
+          <span v-if="orderInfo.orView">{{orderInfo.orView.createDate}}</span>
         </div>
         <div class="item">
           <span>退款进度：</span>
           <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView. status.text}}</span>
         </div>
-        <div class="item" v-if="type==1">
+        <!-- 自营订单可以操作，并且是退款中状态 -->
+        <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
           <span>退款操作：</span>
           <el-radio v-model="status" label="STATUS7" @change="changeOrviewSta">同意退款</el-radio>
           <el-radio v-model="status" label="STATUS8" @change="changeOrviewSta">拒绝退款</el-radio>
@@ -61,7 +65,13 @@
           <span>说明：</span>
           <el-input v-model="refuseReason" placeholder="请输入内容" class="explain"></el-input>
         </div>
-        <div class="item" v-if="type==1">
+        <!-- 自营订单/电商订单 退款成功和失败的说明 -->
+        <div class="item" v-if="orderInfo.orView&&orderInfo.orView.status.status!=1">
+          <span>说明：</span>
+          <span v-if="orderInfo.orView.refundRemark">{{orderInfo.orView.refundRemark}}</span>
+        </div>
+        <!-- 自营订单可以操作，并且是退款中状态 -->
+        <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
           <span>操作：</span>
           <el-button type="primary" @click="refund">确认提交</el-button>
         </div>
@@ -72,7 +82,9 @@
       <div class="info">
         <div class="item">
           <span>收货地址</span>
-          <span v-if="orderInfo.addressInfo">{{orderInfo.addressInfo.address}}</span>
+          <span
+            v-if="orderInfo.addressInfo"
+          >{{orderInfo.addressInfo.province}}&nbsp;{{orderInfo.addressInfo.city}}&nbsp;{{orderInfo.addressInfo.area}}&nbsp;{{orderInfo.addressInfo.address}}</span>
         </div>
         <div class="item">
           <span>运送方式</span>
@@ -138,7 +150,9 @@
         </div>
         <div class="item">
           <span>寄送信息</span>
-          <span v-if="orderInfo.addressInfo">{{orderInfo.addressInfo.address}}</span>
+          <span
+            v-if="orderInfo.invoiceAddressInfo"
+          >{{orderInfo.invoiceAddressInfo.province}}&nbsp;{{orderInfo.invoiceAddressInfo.city}}&nbsp;{{orderInfo.invoiceAddressInfo.area}}&nbsp;{{orderInfo.invoiceAddressInfo.address}}</span>
         </div>
       </div>
     </div>
@@ -183,11 +197,15 @@ export default {
           const data = res.data
           if (res.code == 200) {
             this.orderInfo = data
+            if (data.orView) {
+              this.refuseReason = data.orView.refuseReason
+            }
           }
         })
     },
     changeOrviewSta(val) {
       console.log(val)
+      // 同意退款
       if (val === 'STATUS8') {
         this.isShowInput = true
       } else {

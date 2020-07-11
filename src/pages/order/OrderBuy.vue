@@ -88,7 +88,10 @@
             </el-col>
             <el-col :span="3">
               <div class="grid-content bg-purple-light detail">
-                <el-link type="primary" @click="orderDetail(item.id,item.status.status)">订单详情</el-link>
+                <el-link
+                  type="primary"
+                  @click="orderDetail(item.id,item.orderId,item.status.status)"
+                >订单详情</el-link>
               </div>
             </el-col>
           </el-row>
@@ -212,14 +215,12 @@ export default {
       }
       this.$dataTransform(statusObj, 'statusArr')
       console.log(statusObj)
-      this.axios
-        .get(`/api/admin/demandOrderCount`, statusObj)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.statusLenList = res.data
-          }
-        })
+      this.axios.get(`/api/admin/demandOrderCount`, statusObj).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.statusLenList = res.data
+        }
+      })
     },
     startChange() {
       this.searchForm.dateStart = this.$timeDate(this.searchForm.dateStart)
@@ -259,16 +260,20 @@ export default {
       this.getOrderList()
     },
     // 订单详情
-    orderDetail(id, status) {
+    orderDetail(id, orderId, status) {
       if (status == 6 || status == 7) {
         this.type = 2
+        this.$router.push({
+          path: '/orderBuyInfo',
+          query: { id: orderId, type: this.type }
+        })
       } else {
         this.type = 1
+        this.$router.push({
+          path: '/orderBuyInfo',
+          query: { id: id, type: this.type }
+        })
       }
-      this.$router.push({
-        path: '/orderBuyInfo',
-        query: { id: id, type: this.type }
-      })
     }
   }
 }
