@@ -58,7 +58,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm('supperRef')" v-if="type == 3">确定</el-button>
-        <el-button @click="close" v-if="type == 3 || type == 1">取消</el-button>
+        <!-- <el-button @click="close" v-if="type == 3 || type == 1">取消</el-button> -->
         <el-button @click="approveNoPass" type="danger" v-if="type == 2">审核不通过</el-button>
         <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>
       </el-form-item>

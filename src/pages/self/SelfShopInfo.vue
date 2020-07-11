@@ -241,9 +241,9 @@
       </div>
     </el-form>
 
-    <el-button @click="close" class="close">取消</el-button>
+    <!-- <el-button @click="close" class="close">取消</el-button> -->
     <!-- type:1 查看 type:2 编辑 type:3 新增-->
-    <el-button @click="save" type="primary" v-if="type == 2||type == 3">保存为草稿</el-button>
+    <el-button @click="save" type="primary" v-if="type == 2||type == 3" class="btn_approve">保存为草稿</el-button>
     <el-button @click="approve" type="primary" v-if="type == 2||type == 3">添加审核</el-button>
   </div>
 </template>
@@ -331,7 +331,9 @@ export default {
 
       type: null, // 查看1/编辑2/新增3
       readonly: false, // 只读
-      uploadUrl: `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}`, // 图片上传地址
+      uploadUrl: `${
+        baseUrl[process.env.NODE_ENV].apiUrl
+      }/file/upload?token=${token}`, // 图片上传地址
 
       fileLogoList: [], // logo图片
       logoDialogImageUrl: '', // logo图片预览
@@ -440,9 +442,7 @@ export default {
     getCitiesById(provinceId) {
       this.cities = []
       this.axios
-        .get(
-          `/public/address/cities/provinces?provincesid=${provinceId}`
-        )
+        .get(`/public/address/cities/provinces?provincesid=${provinceId}`)
         .then(res => {
           console.log(res)
           res.data.forEach(item => {
@@ -697,5 +697,8 @@ export default {
 }
 .self .address.el-input {
   width: auto;
+}
+.self .btn_approve {
+  margin-left: 550px !important;
 }
 </style>

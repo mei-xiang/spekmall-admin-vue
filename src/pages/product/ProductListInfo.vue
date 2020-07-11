@@ -153,7 +153,7 @@
       </div>
     </div>
 
-    <el-button @click="close" v-if="type == 1">取消</el-button>
+    <!-- <el-button @click="close" v-if="type == 1">取消</el-button> -->
     <!-- type:1 查看 type:2 审核-->
     <el-button @click="approveNoPass" type="danger" v-if="type == 2">审核不通过</el-button>
     <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>

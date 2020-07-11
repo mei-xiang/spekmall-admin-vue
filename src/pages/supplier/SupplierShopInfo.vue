@@ -105,15 +105,15 @@
       <div class="info">
         <div class="item">
           <span>信息认证标识</span>
-          <el-radio v-model="radio" :label="true">有</el-radio>
-          <el-radio v-model="radio" :label="false">没有</el-radio>
+          <el-radio v-model="radio" :label="true" :disabled="disabled">有</el-radio>
+          <el-radio v-model="radio" :label="false" :disabled="disabled">没有</el-radio>
         </div>
       </div>
     </div>
 
-    <el-button @click="close" v-if="type == 1">取消</el-button>
+    <!-- <el-button @click="close" v-if="type == 1">取消</el-button> -->
     <!-- type:1 查看 type:2 审核-->
-    <el-button @click="approveNoPass" type="danger" v-if="type == 2">审核不通过</el-button>
+    <el-button @click="approveNoPass" type="danger" v-if="type == 2" class="btn_approve">审核不通过</el-button>
     <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>
   </div>
 </template>
@@ -128,12 +128,16 @@ export default {
       signboard: [], // 店铺主页招牌图片
       shopObj: {}, // 店铺数据
       radio: true,
-      type: null // 查看1  审核2
+      type: null, // 查看1  审核2
+      disabled: true
     }
   },
   created() {
     // 查看 type：1   审核 type：2
     this.type = this.$route.query.type
+    if (this.type == 2) {
+      this.disabled = false
+    }
     this.getProductList()
   },
   methods: {
@@ -281,5 +285,8 @@ h2 {
 span,
 img {
   vertical-align: top;
+}
+.btn_approve {
+  margin-left: 500px !important;
 }
 </style>
