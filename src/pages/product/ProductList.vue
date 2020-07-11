@@ -59,7 +59,7 @@
       <el-table-column prop="supplierOutput.supplierCompanyOutput.name" label="供应商名称" width="180" show-overflow-tooltip></el-table-column>
       <el-table-column label="是否主要产品" width="100">
         <template slot-scope="scope">
-          <span v-if="scope.row.hot">是</span>
+          <span v-if="scope.row.isMainProduct">是</span>
           <span v-else>否</span>
         </template>
       </el-table-column>

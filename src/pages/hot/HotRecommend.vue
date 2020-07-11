@@ -30,7 +30,12 @@
       <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
       <el-table-column prop="title" label="产品中文名称" width="190" show-overflow-tooltip></el-table-column>
       <el-table-column prop="price" label="价格" width="120"></el-table-column>
-      <el-table-column prop="supplierOutput.name" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
+      <el-table-column
+        prop="supplierOutput.supplierCompanyOutput.name"
+        label="供应商名称"
+        width="190"
+        show-overflow-tooltip
+      ></el-table-column>
       <el-table-column prop="supplierOutput.code" label="供应商编号" width="150"></el-table-column>
       <el-table-column prop="showBegin" label="成为热门推荐时间" width="150"></el-table-column>
       <el-table-column label="是否首页展示" width="120">
@@ -73,9 +78,9 @@
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column prop="code" label="商品编号" width="150"></el-table-column>
           <el-table-column prop="title" label="产品名" width="190" show-overflow-tooltip></el-table-column>
-          <el-table-column prop="title" label="品牌" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="brand" label="品牌" show-overflow-tooltip></el-table-column>
           <el-table-column
-            prop="supplierOutput.name"
+            prop="supplierOutput.supplierCompanyOutput.name"
             label="供应商名称"
             width="190"
             show-overflow-tooltip
@@ -99,7 +104,7 @@
     </el-dialog>
 
     <!-- 首页热门管理对话框 -->
-    <el-dialog :visible.sync="isShowHomeBrandDialog" title="热门管理">
+    <el-dialog :visible.sync="isShowHomeBrandDialog" title="热门管理" class="hotHomeBox">
       <div>
         <div
           style="
@@ -110,7 +115,7 @@
           "
         >
           <!-- todo---拖拽 -->
-          <!-- <span>拖拽排列顺序</span> -->
+          <span>拖拽排列顺序</span>
           <el-button
             type="button"
             class="el-button el-button--default el-button--mini"
@@ -119,13 +124,13 @@
           >添加商品</el-button>
         </div>
 
-        <el-table :data="homeData" ref="homeTable" row-key="id">
+        <el-table :data="homeData" row-key="id" ref="homeTable">
           <el-table-column type="index" label="序号" fixed></el-table-column>
           <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
           <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
           <el-table-column prop="title" label="产品中文名称" width="175" show-overflow-tooltip></el-table-column>
           <el-table-column
-            prop="supplierOutput.name"
+            prop="supplierOutput.supplierCompanyOutput.name"
             label="供应商名称"
             width="175"
             show-overflow-tooltip
@@ -177,9 +182,9 @@
 </template>
 
 <script>
-import Sortable from 'sortablejs'
 import { getStore } from 'js/store'
 import axios from 'axios'
+import Sortable from 'sortablejs'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
@@ -227,46 +232,42 @@ export default {
   created() {
     this.getRecommentList() // 获取热门商品数据
   },
+  mounted() {},
   methods: {
     getRecommentList() {
-      this.axios
-        .get(`/hot/product`, this.searchForm)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.recommendData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+      this.axios.get(`/hot/product`, this.searchForm).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.recommendData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     // 获取热门商品数据
     getHotList() {
-      this.axios
-        .get(`/hot/product`, this.searchHotForm)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.hotData = res.data.content
-            this.searchHotForm.page = res.data.number
-            this.searchHotForm.size = res.data.size
-            this.hotTotal = res.data.totalElements
-          }
-        })
+      this.axios.get(`/hot/product`, this.searchHotForm).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.hotData = res.data.content
+          this.searchHotForm.page = res.data.number
+          this.searchHotForm.size = res.data.size
+          this.hotTotal = res.data.totalElements
+        }
+      })
     },
     // 获取首页首页展示数据
     getHomeList() {
-      this.axios
-        .get(`/hot/product`, this.searchHomeForm)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.homeData = res.data.content
-            this.searchHomeForm.page = res.data.number
-            this.searchHomeForm.size = res.data.size
-          }
-        })
+      this.axios.get(`/hot/product`, this.searchHomeForm).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.homeData = res.data.content
+          this.searchHomeForm.page = res.data.number
+          this.searchHomeForm.size = res.data.size
+          this.rowDrop()
+        }
+      })
     },
     // 查询
     query() {
@@ -303,9 +304,7 @@ export default {
       })
         .then(() => {
           axios
-            .post(
-              `/hot/product/isHot?ids=${[row.id]}&isHot=false`
-            )
+            .post(`/hot/product/isHot?ids=${[row.id]}&isHot=false`)
             .then(res => {
               this.$message({
                 type: 'success',
@@ -350,19 +349,20 @@ export default {
         this.multipleSelection.forEach(item => {
           ids.push(item.id)
         })
-        axios
-          .post(`/hot/product/isHot?ids=${ids}&isHot=true`)
-          .then(res => {
-            console.log(res)
-            if (res.status == 200) {
-              this.$message({
-                type: 'success',
-                message: '添加成功!'
-              })
-              this.isShowHotProductDialog = false
-              this.getRecommentList()
-            }
-          })
+        axios.post(`/hot/product/isHot?ids=${ids}&isHot=true`).then(res => {
+          console.log(res)
+          if (res.status == 200) {
+            this.$message({
+              type: 'success',
+              message: '添加成功!'
+            })
+            this.isShowHotProductDialog = false
+            this.getRecommentList()
+          }
+          if (res.code == 500) {
+            this.$message.success(res.message)
+          }
+        })
       }
       if (this.type == 'home') {
         this.isShowHomeDialog = true
@@ -378,9 +378,7 @@ export default {
       })
         .then(() => {
           axios
-            .post(
-              `/hot/product/showIndex?ids=${row.id}&showIndex=false`
-            )
+            .post(`/hot/product/showIndex?ids=${row.id}&showIndex=false`)
             .then(res => {
               console.log(res)
               if (res.data.code == 200) {
@@ -402,20 +400,22 @@ export default {
     },
     // 首页展示起始时间
     startChange() {
-      if (this.homeShowForm.effectDate.length > 0)
-        this.homeShowForm.effectDate[0] = this.$timeDate(
-          this.homeShowForm.effectDate[0]
-        )
+      this.homeShowForm.effectDate[0] = this.$timeDate(
+        this.homeShowForm.effectDate[0]
+      )
     },
     endChange() {
-      if (this.homeShowForm.effectDate.length > 0)
-        this.homeShowForm.effectDate[1] = this.$timeDate(
-          this.homeShowForm.effectDate[1]
-        )
+      this.homeShowForm.effectDate[1] = this.$timeDate(
+        this.homeShowForm.effectDate[1]
+      )
     },
     // 首页展示
     handleHome() {
-      if (this.homeShowForm.effectDate.length == 0) return false
+      if (!this.homeShowForm.effectDate[0] && !this.homeShowForm.effectDate[0])
+        return false
+      if (new Date(this.homeShowForm.effectDate[1]).getTime() < +new Date()) {
+        return this.$message.warning('结束时间不能小于当前时间')
+      }
       if (
         new Date(this.homeShowForm.effectDate[0]).getTime() >
         new Date(this.homeShowForm.effectDate[1]).getTime()
@@ -433,10 +433,13 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code == 200) {
-            this.$message({
-              type: 'success',
-              message: '添加成功!'
-            })
+            this.$message.success('添加成功!')
+            this.isShowHomeDialog = false
+            this.isShowHotProductDialog = false
+            this.getHomeList()
+          }
+          if (res.data.code == 500) {
+            this.$message.warning(res.data.message)
             this.isShowHomeDialog = false
             this.isShowHotProductDialog = false
             this.getHomeList()
@@ -447,6 +450,29 @@ export default {
     handleCloseHome() {
       this.homeShowForm.effectDate = []
       this.id = null
+    },
+    //行拖拽
+    rowDrop() {
+      const tbody = document.querySelector(
+        '.hotHomeBox .el-table__body-wrapper tbody'
+      )
+      const _this = this
+      Sortable.create(tbody, {
+        onEnd({ newIndex, oldIndex }) {
+          const currRow = _this.homeData.splice(oldIndex, 1)[0]
+          _this.homeData.splice(newIndex, 0, currRow)
+          console.log(_this.homeData)
+          const arr = []
+          _this.homeData.forEach((item, index) => {
+            arr.push(item.id)
+          })
+          _this.axios.put(`/hot/product/showSort?ids=${arr}`).then(res => {
+            if (res.code == 200) {
+              _this.getHomeList()
+            }
+          })
+        }
+      })
     }
   }
 }
