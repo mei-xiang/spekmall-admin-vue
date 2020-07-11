@@ -56,7 +56,7 @@
     <el-table :data="buyerData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="company" label="供应商名称" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="mobile" label="手机" width="150"></el-table-column>
+      <el-table-column prop="username" label="手机" width="150"></el-table-column>
       <el-table-column prop="legalPersonName" label="法人" width="190"></el-table-column>
       <el-table-column label="营业执照" width="190">
         <template slot-scope="scope">
