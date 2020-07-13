@@ -171,7 +171,6 @@
                 :limit="5"
               >
                 <i class="el-icon-plus"></i>
-                <span>aaaa</span>
               </el-upload>
               <span class="size_limit">尺寸350*350,格式jpg/png/gif,大小不超过500K</span>
               <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
