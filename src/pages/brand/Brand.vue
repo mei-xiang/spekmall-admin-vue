@@ -123,7 +123,7 @@
 
         <draggable v-model="homeBrandList" @update="datadragEnd">
           <transition-group tag="div" class="drop-wrapper">
-            <div v-for="(item,index) in homeBrandList" :key="index" class="item">
+            <div v-for="item in homeBrandList" :key="item" class="item">
               <el-image style="width: 148px; height: 148px" :src="imgBaseUrl+item.brandImg"></el-image>
               <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span>
               <!-- <span class="del" @click="delHomeBrand(item.id)">删除{{item.sortNum}}</span> -->

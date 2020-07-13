@@ -63,8 +63,21 @@
             </el-form-item>
           </div>
           <div class="item">
-            <el-form-item label="行业" prop="industry">
+            <!-- <el-form-item label="行业" prop="industry">
               <el-input v-model="selfForm.industry" :readonly="readonly"></el-input>
+            </el-form-item> -->
+            <el-form-item label="行业" prop="industry">
+              <el-cascader
+                key="productList"
+                ref="selfShopInfoRef"
+                :options="shopCategoryData"
+                v-model="selfForm.industry"
+                @change="categoryChange($event)"
+                :props="setCategory()"
+                :readonly="readonly"
+                filterable
+                clearable
+              ></el-cascader>
             </el-form-item>
           </div>
           <div class="item">
@@ -324,6 +337,7 @@ export default {
           { required: true, message: '店铺图片不能为空', trigger: 'change' }
         ]
       },
+      shopCategoryData: [], // 行业列表
       provincesVal: '', // 省份选择框
       cityVal: '', // 城市选择框
       provinces: [], // 省份列表
@@ -358,14 +372,19 @@ export default {
       this.readonly = true
     }
     if (this.type == 2) {
-      this.getSelfShopList()
-      this.readonly = false
+      // 先获取行业类别进行展示
+      setTimeout(() => {
+        this.getSelfShopList()
+        this.readonly = false
+      }, 0)
     }
     if (this.type == 3) {
       this.readonly = false
     }
     // 获取所有省份
     this.getProvinces()
+    // 获取所有行业类别
+    this.getShopList()
     this.UEDITOR_CONFIG = getStore({ name: 'UEDITOR_CONFIG' })
   },
   components: {
@@ -387,7 +406,7 @@ export default {
             this.selfForm.city = data.shop.shopCompany.city
             this.selfForm.cityId = data.shop.shopCompany.cityId
             this.selfForm.address = data.shop.shopCompany.address
-            this.selfForm.industry = data.shop.shopCompany.industry
+            // this.selfForm.industry = data.shop.shopCompany.industry
             this.selfForm.companyDesc = data.shop.shopCompany.companyDesc
             this.selfForm.majorPorducts = data.majorPorducts
             this.selfForm.establishmentDate =
@@ -399,6 +418,23 @@ export default {
             // 显示省市
             this.provincesVal = data.shop.shopCompany.province
             this.cityVal = data.shop.shopCompany.city
+
+            // 显示行业
+            const industryArr = []
+            this.selfForm.industry = data.shop.shopCompany.industry
+            this.shopCategoryData.forEach(item1 => {
+              if (item1) {
+                item1.detailList.forEach(item2 => {
+                  if (item2.id == data.shop.shopCompany.industry) {
+                    industryArr[0] = item2.pId
+                    industryArr[1] = item2.id
+                  }
+                })
+              }
+            })
+            console.log(this.shopCategoryData)
+            console.log(industryArr)
+            this.selfForm.industry = industryArr
 
             // 图片解析
             this.selfForm.logo = this.$getArrayByStr(data.shop.logo)
@@ -473,6 +509,32 @@ export default {
       }).id
       this.selfForm.city = this.cityVal
       this.selfForm.cityId = cityId
+    },
+    // 获取行业分类 -------------------------------------------------------------------------
+    getShopList() {
+      this.axios.get(`/dictionary/dicAndDetail/majorBusiness2`).then(res => {
+        console.log(res)
+        const resData = res.data
+        resData.forEach(item => {
+          item.text = item.name
+        })
+        this.shopCategoryData = resData
+      })
+    },
+    // 行业分类
+    categoryChange(arr) {
+      console.log(arr)
+      if (arr.length > 0) {
+        this.selfForm.industry = arr[arr.length - 1]
+      }
+    },
+    setCategory(checkStrictly) {
+      return {
+        value: 'id',
+        children: 'detailList',
+        label: 'text',
+        checkStrictly: false
+      }
     },
     // 时间改变
     dateChange() {

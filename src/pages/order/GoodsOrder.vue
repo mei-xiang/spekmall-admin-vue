@@ -78,7 +78,7 @@
               <div class="grid-content bg-purple-light time">下单时间：{{item1.createDate}}</div>
             </el-col>
             <el-col :span="5">
-              <div class="grid-content bg-purple user">买家用户：{{item1.buyerPersionName}}</div>
+              <div class="grid-content bg-purple user">买家用户：{{item1.buyerName}}</div>
             </el-col>
             <el-col :span="5">
               <div class="grid-content bg-purple user">商家：{{item1.supplierName}}</div>
@@ -177,17 +177,15 @@ export default {
   },
   methods: {
     getOrderList() {
-      this.axios
-        .get(`/api/admin/goodsOrderPage`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.orderData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+      this.axios.get(`/api/admin/goodsOrderPage`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.orderData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     // 获取订单状态数量
     getOrderLenList() {
@@ -203,14 +201,12 @@ export default {
       }
       this.$dataTransform(statusObj, 'statusArr')
       console.log(statusObj)
-      this.axios
-        .get(`/api/admin/goodsOrderCount`, statusObj)
-        .then(res => {
-          if (res.code == 200) {
-            console.log(res)
-            this.statusLenList = res.data
-          }
-        })
+      this.axios.get(`/api/admin/goodsOrderCount`, statusObj).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          this.statusLenList = res.data
+        }
+      })
     },
     startChange() {
       this.searchForm.dateStart = this.$timeDate(this.searchForm.dateStart)
@@ -253,7 +249,7 @@ export default {
     orderDetail(id, status) {
       // type:1 自营订单详情  type:2 电商订单详情
       console.log(status)
-      if (status == 6||status == 7||status == 8) {
+      if (status == 6 || status == 7 || status == 8) {
         this.$router.push({
           path: '/orderRefund',
           query: { id: id, type: 2 }

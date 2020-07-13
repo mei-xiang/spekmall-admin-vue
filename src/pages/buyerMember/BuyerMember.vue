@@ -50,7 +50,7 @@
         <template slot-scope="scope" v-if="scope.row.account">
           <span v-if="scope.row.account.status.status == 0">已激活</span>
           <span v-if="scope.row.account.status.status == 1">已停用</span>
-        </template>.status
+        </template>
       </el-table-column>
       <el-table-column label="注册时间">
         <template slot-scope="scope" v-if="scope.row.account">

@@ -72,7 +72,8 @@
             <div slot="tip" class="el-upload__tip">（尺寸：230×180、格式jpg\png、大小10M内)</div>
           </el-upload>
         </el-form-item>
-        <el-form-item label="链接地址：" prop="url" :label-width="formLabelWidth">
+        <!--  prop="url" -->
+        <el-form-item label="链接地址：" :label-width="formLabelWidth">
           <el-input v-model="form.url" style="width:320px"></el-input>
         </el-form-item>
       </el-form>
@@ -85,18 +86,18 @@
 </template>
 
 <script>
-import Sortable from "sortablejs";
-import { setStore, getStore, removeStore } from "js/store";
+import Sortable from 'sortablejs'
+import { setStore, getStore, removeStore } from 'js/store'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
-    console.log(this, "jldsjflsjf");
-    let baseUrl = this.BaseUrl;
+    const token = getStore({ name: 'access_token', type: 'string' })
+    console.log(this, 'jldsjflsjf')
+    let baseUrl = this.BaseUrl
     return {
       list: [],
-      uploadAdd: baseUrl + "/file/upload",
+      uploadAdd: baseUrl + '/file/upload',
       uploadHeader: {
-        Authorization: "Bearer " + token
+        Authorization: 'Bearer ' + token
       },
       isEditSubmit: false,
       listLoading: false,
@@ -106,180 +107,180 @@ export default {
       },
       sortable: null,
       dialogFormVisible: false,
-      formLabelWidth: "120px",
+      formLabelWidth: '120px',
       form: {
-        name: "",
-        src: "",
-        url: ""
+        name: '',
+        src: '',
+        url: ''
       },
-      imageUrl: "",
-      bannerId: "",
+      imageUrl: '',
+      bannerId: '',
       rules: {
         name: [
-          { required: true, message: "请输入banner名称", trigger: "blur" }
+          { required: true, message: '请输入banner名称', trigger: 'blur' }
         ],
-        url: [{ required: true, message: "请输入链接地址", trigger: "blur" }],
-        src: [{ required: true, message: "请上传图片", trigger: "change" }]
+        url: [{ required: true, message: '请输入链接地址', trigger: 'blur' }],
+        src: [{ required: true, message: '请上传图片', trigger: 'change' }]
       }
-    };
+    }
   },
   mounted() {
     // 阻止默认行为
     document.body.ondrop = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-    this.getBannerList();
-    this.setSort();
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    this.getBannerList()
+    this.setSort()
   },
   methods: {
     // 轮播图拖拽事件
     setSort() {
       const el = this.$refs.dragTable.$el.querySelectorAll(
-        ".el-table__body-wrapper > table > tbody"
-      )[0];
+        '.el-table__body-wrapper > table > tbody'
+      )[0]
       this.sortable = Sortable.create(el, {
-        ghostClass: "sortable-ghost",
+        ghostClass: 'sortable-ghost',
         setData: function(dataTransfer) {
-          dataTransfer.setData("Text", "");
+          dataTransfer.setData('Text', '')
         },
         onEnd: evt => {
           let oldArr = this.list
             .map(item => {
-              return item.id;
+              return item.id
             })
-            .join(",");
-          const targetRow = this.list.splice(evt.oldIndex, 1)[0];
-          this.list.splice(evt.newIndex, 0, targetRow);
+            .join(',')
+          const targetRow = this.list.splice(evt.oldIndex, 1)[0]
+          this.list.splice(evt.newIndex, 0, targetRow)
           let newArr = this.list
             .map(item => {
-              return item.id;
+              return item.id
             })
-            .join(",");
-          if (oldArr === newArr) return;
+            .join(',')
+          if (oldArr === newArr) return
           this.axios.put(`/api/banner/home/sort?ids=${newArr}`).then(res => {
-            this.getBannerList();
-          });
+            this.getBannerList()
+          })
         }
-      });
+      })
     },
     async getBannerList() {
-      let res = await this.axios.get("/api/banner/home");
-      if (!res.success) return;
-      let { data } = res;
-      this.list = data;
+      let res = await this.axios.get('/api/banner/home')
+      if (!res.success) return
+      let { data } = res
+      this.list = data
       this.list.forEach((item, index) => {
-        this.list[index].src =
-          this.imgBaseUrl +
-          item.src
-      });
+        this.list[index].src = this.imgBaseUrl + item.src
+      })
     },
     // 文件上传成功的钩子函数
     uploadSuccess(res, file, fileList) {
-      this.form.src = res.data;
-      this.imageUrl = this.imgBaseUrl + res.data;
+      this.form.src = res.data
+      this.imageUrl = this.imgBaseUrl + res.data
     },
     // 编辑操作
     handleModify(row) {
-      this.isEditSubmit = true;
-      this.dialogFormVisible = true;
-      this.form = row;
-      this.imageUrl = row.src;
+      this.isEditSubmit = true
+      this.dialogFormVisible = true
+      this.form = row
+      this.imageUrl = row.src
     },
     // 删除操作
     handleDel(row) {
-      this.$confirm("此操作将永久删除该图片, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          let queryStr = `/api/banner/home?id=${row.id}`;
+          let queryStr = `/api/banner/home?id=${row.id}`
           this.axios.del(queryStr).then(res => {
             this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            this.getBannerList();
-          });
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.getBannerList()
+          })
 
-          console.log(111);
+          console.log(111)
         })
         .catch(() => {
           this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     // 新增banner
     addBanner() {
-      this.dialogFormVisible = true;
-      this.isEditSubmit = false;
+      this.dialogFormVisible = true
+      this.isEditSubmit = false
     },
 
     // 文件上传前的钩子函数，用于对文件类型进行校验
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-      const isLt2M = file.size / 1024 / 1024 < 10;
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 10
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 或者 PNG 格式!");
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 10MB!");
+        this.$message.error('上传头像图片大小不能超过 10MB!')
       }
-      console.log(isJPG && isLt2M);
-      return isJPG && isLt2M;
+      console.log(isJPG && isLt2M)
+      return isJPG && isLt2M
     },
     // 提交表单
     handleSubmit(val) {
-    
       this.$refs.ruleForm.validate(async valid => {
         if (valid) {
           if (this.list.length >= 5) {
-            this.$message.warning("图片轮播只允许5章")
-            return;
+            this.$message.warning('图片轮播只允许5章')
+            return
           }
 
           if (!this.isEditSubmit) {
-            let params = this.form;
-            params.type = "IMAGE"
-            params.position = "INDEX"
-            this.axios.post("/api/banner/home",this.form,{String:"json"}).then(res => {
-              this.$message.success("添加成功")
-              this.getBannerList();
-            })
+            let params = this.form
+            params.type = 'IMAGE'
+            params.position = 'INDEX'
+            this.axios
+              .post('/api/banner/home', this.form, { String: 'json' })
+              .then(res => {
+                this.$message.success('添加成功')
+                this.getBannerList()
+              })
 
             // 新建提交
           } else {
             // 编辑提交
-            let queryStr = `/api/banner/home/${this.form.id}`;
-            this.axios.put(queryStr, this.form, {String:"json"}).then(res => {
-              if (!res.success) return
-              this.$message.success("编辑成功")
-              this.getBannerList()
-            });
+            let queryStr = `/api/banner/home/${this.form.id}`
+            this.axios
+              .put(queryStr, this.form, { String: 'json' })
+              .then(res => {
+                if (!res.success) return
+                this.$message.success('编辑成功')
+                this.getBannerList()
+              })
           }
-          this.dialogFormVisible = false;
-
+          this.dialogFormVisible = false
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 取消模态框
     handleCancelModal() {
-      this.dialogFormVisible = false;
+      this.dialogFormVisible = false
       this.form = {
-        name: "",
-        src: "",
-        linkUrl: ""
-      };
-      this.imageUrl = "";
+        name: '',
+        src: '',
+        linkUrl: ''
+      }
+      this.imageUrl = ''
     }
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>
