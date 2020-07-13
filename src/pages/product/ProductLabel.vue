@@ -51,7 +51,7 @@
     >
       <el-form :model="labelForm" ref="labelRef" :rules="labelRules" label-width="100px">
         <el-form-item label="标签名称" prop="name">
-          <el-input v-model="labelForm.name"></el-input>
+          <el-input v-model="labelForm.name" placeholder="必填项，十个字以内" maxlength="10"></el-input>
         </el-form-item>
         <el-form-item label="标签类型" prop="type">
           <el-select v-model="labelForm.type">
@@ -71,6 +71,7 @@
           >
             <i class="el-icon-plus"></i>
           </el-upload>
+          <span class="size_limit">尺寸1920*440，1M以内，PNG/JPG/JPEG/GIF</span>
           <!-- 修改与审核图片展示 -->
         </el-form-item>
       </el-form>
@@ -206,17 +207,43 @@ export default {
       this.labelForm.ico = ''
     },
     beforeAvatarUpload(file) {
-      // const isJPG = file.type === "image/jpeg";
-      // const isPNG = file.type === "image/png";
-      // const isGIF = file.type === "image/gif";
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpeg' ||
+        file.type === 'image/jpg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
       const isLt2M = file.size / 1024 / 1024 < 1
-      // if (!isJPG || !isPNG || !isGIF) {
-      //   this.$message.error("上传头像图片只能是 PNG/JPG/JPEG/GIF 格式!");
-      // }
+
+      if (!isJPG) {
+        this.$message.error(
+          '上传头像图片只能是 JPG 或者 JPEG 或者 PNG 或者 GIF 格式!'
+        )
+      }
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 1MB!')
       }
-      return isLt2M
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 1920 // 限制图片尺寸为1920*440
+        let height = 440
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为1920 x 440')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
     },
     // 添加或编辑
     addOrEditLabel() {

@@ -615,6 +615,10 @@ export default {
             })
           })
         }
+        // 新增产品type 3 默认选中自营和放心购标签
+        if (this.type == 3) {
+          this.selfProductForm.tagsId = [14, 5]
+        }
       })
     },
     // 处理产品图片上传

@@ -944,5 +944,50 @@ export default {
       }
       return data.childrens
     }
+    // /**
+		//  * @description:  校验上传文件大小，格式，类型
+		//  * @param {file,obj} Object [文件对象,大小格式类型对象]
+		//  * @return: bollean
+		//  */
+    // Vue.prototype.$beforeAvatarUpload = function (file, obj) {
+    //   let _this = this
+    //   // const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+    //   if (!Array.isArray(obj.type)) obj.type = []
+    //   const isJPG = obj.type.includes(file.type)
+    //   const isLt2M = file.size / 1024 / 1024 < obj.size
+
+    //   const arr = []
+    //   obj.type.forEach(item => {
+    //     arr.push(item.replace('image/', ''))
+    //   })
+    //   const typeStr = arr.join(' 或者 ')
+    //   if (!isJPG) {
+    //     this.$message.error(`上传头像图片只能是${typeStr}格式!`)
+    //   }
+    //   if (!isLt2M) {
+    //     this.$message.error(`上传头像图片大小不能超过 ${obj.size}MB!`)
+    //   }
+    //   const isSize = new Promise(function (resolve, reject) {
+    //     let width = obj.width // 限制图片尺寸为230X180
+    //     let height = obj.height
+    //     let _URL = window.URL || window.webkitURL
+    //     let img = new Image()
+    //     img.onload = function () {
+    //       let valid = img.width === width && img.height === height
+    //       valid ? resolve() : reject()
+    //     }
+    //     img.src = _URL.createObjectURL(file)
+    //   }).then(
+    //     () => {
+    //       return file
+    //     },
+    //     () => {
+    //       _this.$message.error(`图片尺寸限制为${obj.width} x ${obj.height}`)
+    //       return Promise.reject()
+    //     }
+    //   ).catch(res => { })
+
+    //   return isJPG && isLt2M && isSize
+    // }
   }
 }

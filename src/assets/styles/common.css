@@ -513,7 +513,7 @@ a:hover {
 }
 .brand .el-dialog {
   width: 925px !important;
-  height: 500px !important;
+  height: 450px !important;
 }
 
 .brand .homeBrandBox {
@@ -562,4 +562,8 @@ a:hover {
 }
 .brand .el-image {
   overflow: visible;
+}
+.size_limit {
+  font-size: 12px;
+  color: #606266;
 }

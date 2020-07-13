@@ -156,11 +156,11 @@
 </template>
 
 <script>
-import { setStore, getStore, removeStore } from "js/store";
+import { setStore, getStore, removeStore } from 'js/store'
 export default {
   data() {
-    const token = getStore({ name: "access_token", type: "string" });
-    let baseUrl = this.BaseUrl;
+    const token = getStore({ name: 'access_token', type: 'string' })
+    let baseUrl = this.BaseUrl
     return {
       // table
       tableData: [],
@@ -169,13 +169,13 @@ export default {
       rolesList: [],
       isShowPwd: false,
       ruleForm: {
-        nickname: "",
-        avatar: "",
-        roleId: "",
-        username: "",
-        password: "",
-        email: "",
-        mobile: ""
+        nickname: '',
+        avatar: '',
+        roleId: '',
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
       },
       pageData: {
         page: 1,
@@ -183,15 +183,15 @@ export default {
         total: 0
       },
       rules: {
-        nickname: [{ required: true, message: "请输入昵称", trigger: "blur" }],
-        rights: [{ required: true, message: "请选择昵称", trigger: "change" }],
-        avatar: [{ required: true, message: "请上传头像", trigger: "change" }],
+        nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+        rights: [{ required: true, message: '请选择昵称', trigger: 'change' }],
+        avatar: [{ required: true, message: '请上传头像', trigger: 'change' }],
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" }
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         roleId: [
-          { required: true, message: "请选择角色权限", trigger: "change" }
+          { required: true, message: '请选择角色权限', trigger: 'change' }
         ]
       },
       modifyModal: false,
@@ -200,34 +200,34 @@ export default {
       //   password: [{ required: true, message: "请输入密码", trigger: "blur" }]
       // },
       // wenjian
-      uploadAdd: baseUrl + "/file/upload",
+      uploadAdd: baseUrl + '/file/upload',
       uploadHeader: {
-        Authorization: "Bearer " + token
+        Authorization: 'Bearer ' + token
       },
-      imageUrl: "",
+      imageUrl: '',
       isAddOrEdit: false // falase是新增， true 为edit
-    };
+    }
   },
   created() {
-    this.getRoleList();
-    this.getUerList();
+    this.getRoleList()
+    this.getUerList()
   },
   methods: {
     // 发布新闻
     handleAddUser() {
-      this.isAddOrEdit = false;
-      this.isShowPwd = false;
-      this.addUserModal = true;
+      this.isAddOrEdit = false
+      this.isShowPwd = false
+      this.addUserModal = true
     },
     getRoleList() {
-      this.axios.get("/api/role").then(res => {
+      this.axios.get('/api/role').then(res => {
         this.rolesList = res.data.content.map(item => {
           return {
             value: item.id,
             label: item.name
-          };
-        });
-      });
+          }
+        })
+      })
     },
     getUerList() {
       this.axios
@@ -236,38 +236,38 @@ export default {
         )
         .then(res => {
           if (res.code == 200) {
-            this.tableData = res.data.content;
+            this.tableData = res.data.content
             this.tableData = this.tableData.map(item => {
-              item.avatar = this.imgBaseUrl + item.avatar;
+              item.avatar = this.imgBaseUrl + item.avatar
 
-              return item;
-            });
+              return item
+            })
 
-            this.pageData.total = res.data.totalElements;
+            this.pageData.total = res.data.totalElements
           }
-        });
+        })
     },
     resetForm(formName) {
-      this.$refs.ruleForm.resetFields();
+      this.$refs.ruleForm.resetFields()
     },
     handleAvatarSuccess() {},
     // 修改密码
     handleResetPwd(row) {
-      this.modifyModal = true;
-      this.modifyPwd.username = row.account.username;
+      this.modifyModal = true
+      this.modifyPwd.username = row.account.username
     },
     submitPwd() {
       this.axios
         // .post("/api/manager/password/reset", this.modifyModal,{String:"json"})
         .post(`/api/manager/password/reset?username=${this.modifyPwd.username}`)
         .then(res => {
-          this.$message.success("密码修改成功");
-          this.modifyModal = false;
-          this.getUerList();
-        });
+          this.$message.success('密码修改成功')
+          this.modifyModal = false
+          this.getUerList()
+        })
     },
     claoseModifyModal() {
-      this.$refs.modifyPwd.resetFields();
+      this.$refs.modifyPwd.resetFields()
     },
     // 禁用
 
@@ -275,68 +275,68 @@ export default {
       this.axios
         .post(
           `/api/manager/disable/`,
-          { id: row.id, remarks: "" },
-          { String: "json" }
+          { id: row.id, remarks: '' },
+          { String: 'json' }
         )
         .then(res => {
-          this.$message.success("禁用成功");
-          this.getUerList();
-        });
+          this.$message.success('禁用成功')
+          this.getUerList()
+        })
     },
 
     // 启用
     startAccount(row) {
       this.axios.post(`/api/manager/enable/?id=${row.id}`).then(res => {
-        this.$message.success("启用成功");
-        this.getUerList();
-      });
+        this.$message.success('启用成功')
+        this.getUerList()
+      })
     },
 
     // 新增用户
 
     claoseAddUserModal() {
-      this.$refs.ruleForm.resetFields();
-      this.$refs.ruleForm.clearValidate();
-      this.imageUrl = "";
+      this.$refs.ruleForm.resetFields()
+      this.$refs.ruleForm.clearValidate()
+      this.imageUrl = ''
       this.ruleForm = {
-        email: "",
-        mobile: ""
-      };
+        email: '',
+        mobile: ''
+      }
     },
     // 新增用户
     submitAddUser() {
-      let url = "/api/manager/apply";
+      let url = '/api/manager/apply'
       if (this.isAddOrEdit) {
-        url = `/api/manager/update`;
+        url = `/api/manager/update`
       }
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          let params = this.ruleForm;
-          params.userType = 1;
-          this.axios.post(url, params, { String: "json" }).then(res => {
-            this.$message.success("增加成功");
-            this.getUerList();
-            this.$refs.ruleForm.resetFields();
-            this.imageUrl = "";
+          let params = this.ruleForm
+          params.userType = 1
+          this.axios.post(url, params, { String: 'json' }).then(res => {
+            this.$message.success('增加成功')
+            this.getUerList()
+            this.$refs.ruleForm.resetFields()
+            this.imageUrl = ''
             this.ruleForm = {
-              email: "",
-              mobile: ""
-            };
-            this.addUserModal = false;
-          });
+              email: '',
+              mobile: ''
+            }
+            this.addUserModal = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // 编辑操作
     handleEdit(item) {
-      this.isAddOrEdit = true;
-      this.isShowPwd = true;
-      this.addUserModal = true;
+      this.isAddOrEdit = true
+      this.isShowPwd = true
+      this.addUserModal = true
       this.axios.get(`/api/manager/${item.id}`).then(res => {
-        let resData = res.data;
+        let resData = res.data
         this.ruleForm = {
           avatar: resData.account.avatar,
           roleId: resData.roleId,
@@ -346,37 +346,67 @@ export default {
           email: resData.email,
           mobile: resData.mobile,
           id: resData.id
-        };
-        this.imageUrl = this.imgBaseUrl + item.account.avatar;
-      });
+        }
+        this.imageUrl = this.imgBaseUrl + item.account.avatar
+      })
     },
     // 文件上传前的钩子函数，用于对文件类型进行校验
+    // beforeAvatarUpload(file) {
+    //   this.$beforeAvatarUpload(file, {
+    //     type: ['image/jpeg', 'image/png'],
+    //     size: 10,
+    //     width: 230,
+    //     height: 180
+    //   })
+    // },
+    // 文件上传前的钩子函数，用于对文件类型进行校验
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
-      const isLt2M = file.size / 1024 / 1024 < 10;
+      let _this = this
+      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 10
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 或者 PNG 格式!");
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 10MB!");
+        this.$message.error('上传头像图片大小不能超过 10MB!')
       }
-      return isJPG && isLt2M;
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 230 // 限制图片尺寸为230X180
+        let height = 180
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为230 x 180')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
     },
     uploadSuccess(res, file, fileList) {
-      this.ruleForm.avatar = res.data;
-      this.imageUrl = this.imgBaseUrl + res.data;
+      this.ruleForm.avatar = res.data
+      this.imageUrl = this.imgBaseUrl + res.data
     },
     handlePageChange(val) {
-      this.pageData.page = val;
-      this.getUerList();
+      this.pageData.page = val
+      this.getUerList()
     },
     handleSizeChange(val) {
-      this.pageData.size = val;
-      this.getUerList();
+      this.pageData.size = val
+      this.getUerList()
     }
   }
-};
+}
 </script>
 
 <style lang="stylus" scoped>

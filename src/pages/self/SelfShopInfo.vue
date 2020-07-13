@@ -65,7 +65,7 @@
           <div class="item">
             <!-- <el-form-item label="行业" prop="industry">
               <el-input v-model="selfForm.industry" :readonly="readonly"></el-input>
-            </el-form-item> -->
+            </el-form-item>-->
             <el-form-item label="行业" prop="industry">
               <el-cascader
                 key="productList"
@@ -122,6 +122,7 @@
                 :on-preview="handleLogoPicPreview"
                 :on-remove="handleLogoRemove"
                 :file-list="fileLogoList"
+                :before-upload="beforeLogoAvatarUpload"
                 v-if="type == 2 || type == 3"
               >
                 <i class="el-icon-plus"></i>
@@ -137,6 +138,7 @@
                 :preview-src-list="[imgBaseUrl + item]"
                 v-if="type == 1"
               ></el-image>
+              <span class="size_limit">尺寸300*300，JPG/PNG/GIF,大小不超过1M</span>
             </el-form-item>
           </div>
 
@@ -150,6 +152,7 @@
                 :on-remove="handleSignboardRemove"
                 :on-preview="handleSignboardPreview"
                 :file-list="fileSignboardList"
+                :before-upload="beforeSignboardAvatarUpload"
                 v-if="type == 2 || type == 3"
               >
                 <i class="el-icon-plus"></i>
@@ -165,6 +168,7 @@
                 :preview-src-list="[imgBaseUrl + item]"
                 v-if="type == 1"
               ></el-image>
+              <span class="size_limit">尺寸1200*190，JPG/PNG/GIF,大小不超过5M</span>
             </el-form-item>
           </div>
 
@@ -186,6 +190,7 @@
                 :on-preview="handleBannerPreview"
                 :file-list="fileBannerList"
                 :on-exceed="handleBannerExceed"
+                :before-upload="beforeBannerAvatarUpload"
                 :limit="5"
                 v-if="type == 2 || type == 3"
               >
@@ -194,6 +199,7 @@
               <el-dialog :visible.sync="bannerDialogVisible" v-if="type == 2 || type == 3">
                 <img width="100%" :src="bannerDialogImageUrl" alt />
               </el-dialog>
+              <span class="size_limit">尺寸1200*350，JPG/PNG/GIF,大小不超过5M,最多添加5张</span>
             </el-form-item>
           </div>
 
@@ -220,6 +226,7 @@
                 :on-preview="handleImagesPreview"
                 :file-list="fileImagesList"
                 :on-exceed="handleImagesExceed"
+                :before-upload="beforeImagesAvatarUpload"
                 :limit="10"
                 v-if="type == 2 || type == 3"
               >
@@ -228,6 +235,7 @@
               <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
                 <img width="100%" :src="imagesDialogImageUrl" alt />
               </el-dialog>
+              <span class="size_limit">尺寸300*300，JPG/PNG/GIF,大小不超过500k</span>
             </el-form-item>
           </div>
         </div>
@@ -560,6 +568,42 @@ export default {
       this.logoDialogImageUrl = file.url
       this.logoDialogVisible = true
     },
+    beforeLogoAvatarUpload(file) {
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpeg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
+      const isLt2M = file.size / 1024 / 1024 < 1
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 1MB!')
+      }
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 300 // 限制图片尺寸为230X180
+        let height = 300
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为300 x 300')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
+    },
     // 处理店铺主页招牌图片上传
     handleSignboardSuccess(res, file, fileList) {
       if (this.selfForm.signboard.length > 0) {
@@ -573,6 +617,42 @@ export default {
     handleSignboardPreview(file) {
       this.signboardDialogImageUrl = file.url
       this.signboardDialogVisible = true
+    },
+    beforeSignboardAvatarUpload(file) {
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpeg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
+      const isLt2M = file.size / 1024 / 1024 < 5
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 5MB!')
+      }
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 1200 // 限制图片尺寸为1200X190
+        let height = 190
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为1200 x 190')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
     },
     // 处理banner图片上传
     handleBannerSuccess(res, file, fileList) {
@@ -602,6 +682,42 @@ export default {
     handleBannerExceed(files, fileList) {
       this.$message.warning(`最多添加5张`)
     },
+    beforeBannerAvatarUpload(file) {
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpeg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
+      const isLt2M = file.size / 1024 / 1024 < 5
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 5MB!')
+      }
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 1200 // 限制图片尺寸为1200X350
+        let height = 350
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为1200 x 350')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
+    },
     // 处理店铺图片上传
     handleImagesSuccess(res, file, fileList) {
       this.selfForm.images.push(res.data)
@@ -626,6 +742,42 @@ export default {
     handleImagesExceed(files, fileList) {
       this.$message.warning(`最多添加10张`)
     },
+    beforeImagesAvatarUpload(file) {
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpeg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
+      const isLt2M = file.size / 1024 / 1024 < 0.48828125
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 500KB!')
+      }
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 300 // 限制图片尺寸为300X300
+        let height = 300
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为300 x 300')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
+    },
     saveOrApprove(obj, callback) {
       this.selfForm.logo = this.selfForm.logo.toString()
       this.selfForm.signboard = this.selfForm.signboard.toString()
@@ -648,14 +800,9 @@ export default {
         }
         this.$dataTransform(shopObj, 'banners')
         console.log(shopObj)
-        this.axios
-          .post(`/api/supplier/shop/self/info`, shopObj)
-          // .post(
-          //   `/api/supplier/shop/self/info?name=${this.selfForm.name}&creditCode=${this.selfForm.creditCode}&province=${this.selfForm.province}&provinceId=${this.selfForm.provinceId}&city=${this.selfForm.city}&cityId=${this.selfForm.cityId}&address=${this.selfForm.address}&industry=${this.selfForm.industry}&companyDesc=${this.selfForm.companyDesc}&majorPorducts=${this.selfForm.majorPorducts}&establishmentDate=${this.selfForm.establishmentDate}&registeredCapital=${this.selfForm.registeredCapital}&introduction=${this.selfForm.introduction}&status=${this.selfForm.status}&logo=${this.selfForm.logo}&signboard=${this.selfForm.signboard}&images=${this.selfForm.images}`
-          // )
-          .then(res => {
-            callback && callback(res)
-          })
+        this.axios.post(`/api/supplier/shop/self/info`, shopObj).then(res => {
+          callback && callback(res)
+        })
       })
     },
     save() {

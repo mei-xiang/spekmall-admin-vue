@@ -89,7 +89,7 @@
     >
       <el-form :model="brandForm" ref="brandRef" :rules="brandRules" label-width="100px">
         <el-form-item label="品牌名称" prop="brandName">
-          <el-input v-model="brandForm.brandName"></el-input>
+          <el-input v-model="brandForm.brandName" placeholder="必填项，十个字以内" maxlength="10"></el-input>
         </el-form-item>
         <el-form-item label="品牌图片" prop="brandImg">
           <el-upload
@@ -102,6 +102,7 @@
           >
             <i class="el-icon-plus"></i>
           </el-upload>
+          <span class="size_limit">尺寸216*130，1M以内，PNG/JPG/JPEG/GIF</span>
         </el-form-item>
         <el-form-item label="品牌类型" prop="hot">
           <el-radio v-model="brandForm.hot" :label="true">热门品牌</el-radio>
@@ -424,17 +425,43 @@ export default {
       this.brandForm.brandImg = ''
     },
     beforeAvatarUpload(file) {
-      // const isJPG = file.type === "image/jpeg";
-      // const isPNG = file.type === "image/png";
-      // const isGIF = file.type === "image/gif";
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpeg' ||
+        file.type === 'image/jpg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
       const isLt2M = file.size / 1024 / 1024 < 1
-      // if (!isJPG || !isPNG || !isGIF) {
-      //   this.$message.error("上传头像图片只能是 PNG/JPG/JPEG/GIF 格式!");
-      // }
+
+      if (!isJPG) {
+        this.$message.error(
+          '上传头像图片只能是 JPG 或者 JPEG 或者 PNG 或者 GIF 格式!'
+        )
+      }
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 1MB!')
       }
-      return isLt2M
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 216 // 限制图片尺寸为216X130
+        let height = 130
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为216 x 130')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
     },
 
     /**  首页品牌管理 */
