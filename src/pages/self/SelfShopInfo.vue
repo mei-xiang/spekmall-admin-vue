@@ -66,12 +66,12 @@
             <!-- <el-form-item label="行业" prop="industry">
               <el-input v-model="selfForm.industry" :readonly="readonly"></el-input>
             </el-form-item>-->
-            <el-form-item label="行业" prop="industry">
+            <el-form-item label="行业" prop="industryArr">
               <el-cascader
                 key="productList"
                 ref="selfShopInfoRef"
                 :options="shopCategoryData"
-                v-model="selfForm.industry"
+                v-model="selfForm.industryArr"
                 @change="categoryChange($event)"
                 :props="setCategory()"
                 :readonly="readonly"
@@ -138,7 +138,7 @@
                 :preview-src-list="[imgBaseUrl + item]"
                 v-if="type == 1"
               ></el-image>
-              <span class="size_limit">尺寸300*300，JPG/PNG/GIF,大小不超过1M</span>
+              <p class="size_limit">尺寸300*300，JPG/PNG/GIF,大小不超过1M</p>
             </el-form-item>
           </div>
 
@@ -168,7 +168,7 @@
                 :preview-src-list="[imgBaseUrl + item]"
                 v-if="type == 1"
               ></el-image>
-              <span class="size_limit">尺寸1200*190，JPG/PNG/GIF,大小不超过5M</span>
+              <p class="size_limit">尺寸1200*190，JPG/PNG/GIF,大小不超过5M</p>
             </el-form-item>
           </div>
 
@@ -199,7 +199,7 @@
               <el-dialog :visible.sync="bannerDialogVisible" v-if="type == 2 || type == 3">
                 <img width="100%" :src="bannerDialogImageUrl" alt />
               </el-dialog>
-              <span class="size_limit">尺寸1200*350，JPG/PNG/GIF,大小不超过5M,最多添加5张</span>
+              <p class="size_limit">尺寸1200*350，JPG/PNG/GIF,大小不超过5M,最多添加5张</p>
             </el-form-item>
           </div>
 
@@ -235,7 +235,7 @@
               <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
                 <img width="100%" :src="imagesDialogImageUrl" alt />
               </el-dialog>
-              <span class="size_limit">尺寸300*300，JPG/PNG/GIF,大小不超过500k</span>
+              <p class="size_limit">尺寸300*300，JPG/PNG/GIF,大小不超过500k</p>
             </el-form-item>
           </div>
         </div>
@@ -287,7 +287,11 @@ export default {
         city: '',
         cityId: '',
         address: '',
+        industryArr: [], // 展示行业列表
         industry: '',
+        industryName: '',
+        industry2: '',
+        industry2Text: '',
         companyDesc: '',
         majorPorducts: '',
         establishmentDate: '',
@@ -310,7 +314,7 @@ export default {
         address: [
           { required: true, message: '地址不能为空', trigger: 'change' }
         ],
-        industry: [
+        industryArr: [
           { required: true, message: '行业不能为空', trigger: 'blur' }
         ],
         companyDesc: [
@@ -376,11 +380,13 @@ export default {
     // 查看 type：1   编辑 type：2  新增 type：3
     this.type = this.$route.query.type
     if (this.type == 1) {
-      this.getSelfShopList()
-      this.readonly = true
+      setTimeout(() => {
+        this.getSelfShopList()
+        this.readonly = true
+      })
     }
     if (this.type == 2) {
-      // 先获取行业类别进行展示
+      // 先获取行业类别再进行展示
       setTimeout(() => {
         this.getSelfShopList()
         this.readonly = false
@@ -407,42 +413,29 @@ export default {
           const data = res.data
           if (res.code == 200) {
             // 解析数据
-            this.selfForm.name = data.shop.shopCompany.name
-            this.selfForm.creditCode = data.shop.shopCompany.creditCode
-            this.selfForm.province = data.shop.shopCompany.province
-            this.selfForm.provinceId = data.shop.shopCompany.provinceId
-            this.selfForm.city = data.shop.shopCompany.city
-            this.selfForm.cityId = data.shop.shopCompany.cityId
-            this.selfForm.address = data.shop.shopCompany.address
-            // this.selfForm.industry = data.shop.shopCompany.industry
-            this.selfForm.companyDesc = data.shop.shopCompany.companyDesc
+            const shopCompany = data.shop.shopCompany
+            this.selfForm.name = shopCompany.name
+            this.selfForm.creditCode = shopCompany.creditCode
+            this.selfForm.province = shopCompany.province
+            this.selfForm.provinceId = shopCompany.provinceId
+            this.selfForm.city = shopCompany.city
+            this.selfForm.cityId = shopCompany.cityId
+            this.selfForm.address = shopCompany.address
+            this.selfForm.industry = shopCompany.industry
+            this.selfForm.industryName = shopCompany.industryName
+            this.selfForm.industry2 = shopCompany.industry2
+            this.selfForm.industry2Text = shopCompany.industry2Text
+            this.selfForm.companyDesc = shopCompany.companyDesc
             this.selfForm.majorPorducts = data.majorPorducts
-            this.selfForm.establishmentDate =
-              data.shop.shopCompany.establishmentDate
-            this.selfForm.registeredCapital =
-              data.shop.shopCompany.registeredCapital
+            this.selfForm.establishmentDate = shopCompany.establishmentDate
+            this.selfForm.registeredCapital = shopCompany.registeredCapital
             this.selfForm.introduction = data.shop.introduction || ''
 
             // 显示省市
-            this.provincesVal = data.shop.shopCompany.province
-            this.cityVal = data.shop.shopCompany.city
+            this.provincesVal = shopCompany.province
+            this.cityVal = shopCompany.city
 
-            // 显示行业
-            const industryArr = []
-            this.selfForm.industry = data.shop.shopCompany.industry
-            this.shopCategoryData.forEach(item1 => {
-              if (item1) {
-                item1.detailList.forEach(item2 => {
-                  if (item2.id == data.shop.shopCompany.industry) {
-                    industryArr[0] = item2.pId
-                    industryArr[1] = item2.id
-                  }
-                })
-              }
-            })
-            console.log(this.shopCategoryData)
-            console.log(industryArr)
-            this.selfForm.industry = industryArr
+            this.selfForm.industryArr = [shopCompany.industryName,shopCompany.industry2Text]
 
             // 图片解析
             this.selfForm.logo = this.$getArrayByStr(data.shop.logo)
@@ -533,12 +526,24 @@ export default {
     categoryChange(arr) {
       console.log(arr)
       if (arr.length > 0) {
-        this.selfForm.industry = arr[arr.length - 1]
+        this.shopCategoryData.forEach(item1 => {
+          if (arr[0] == item1.text) {
+            this.selfForm.industry = item1.code
+            this.selfForm.industryName = item1.name
+          }
+          item1.detailList.forEach(item2 => {
+            if (arr[1] == item2.text) {
+              this.selfForm.industry2 = item2.value
+              this.selfForm.industry2Text = item2.text
+            }
+          })
+        })
+        this.selfForm.industryArr = arr
       }
     },
     setCategory(checkStrictly) {
       return {
-        value: 'id',
+        value: 'text',
         children: 'detailList',
         label: 'text',
         checkStrictly: false

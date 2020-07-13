@@ -126,7 +126,12 @@
           </div>
           <div class="item">
             <el-form-item label="产品标签" prop="tagsId" v-if="type==2||type==3">
-              <el-select v-model="selfProductForm.tagsId" multiple placeholder="请选择产品标签">
+              <el-select
+                v-model="selfProductForm.tagsId"
+                multiple
+                multiple-limit="3"
+                placeholder="请选择产品标签"
+              >
                 <el-option
                   v-for="(item,index) in optionsTag"
                   :key="index"
