@@ -130,7 +130,8 @@ export default {
           axios
             .post(`${this.BaseUrl}/public/login`, {
               username: this.ruleForm.username,
-              password: this.ruleForm.password
+              password: this.ruleForm.password,
+              userType: 1
             })
             .then(res => {
               console.log(res)
