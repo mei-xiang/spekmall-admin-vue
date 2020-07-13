@@ -53,10 +53,20 @@
     <el-table :data="productData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="code" label="产品编号" width="120"></el-table-column>
-      <el-table-column prop="categoryName" label="产品类别（末级）" width="300"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别（末级）" width="300">
+        <template slot-scope="scope">
+          <span>{{ scope.row.categoryName|formatCategory }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column prop="title" label="产品中文名称" width="180" show-overflow-tooltip></el-table-column>
       <el-table-column prop="price" label="价格" width="130"></el-table-column>
-      <el-table-column prop="supplierOutput.supplierCompanyOutput.name" label="供应商名称" width="180" show-overflow-tooltip></el-table-column>
+      <el-table-column
+        prop="supplierOutput.supplierCompanyOutput.name"
+        label="供应商名称"
+        width="180"
+        show-overflow-tooltip
+      ></el-table-column>
       <el-table-column label="是否主要产品" width="100">
         <template slot-scope="scope">
           <span v-if="scope.row.isMainProduct">是</span>
@@ -164,6 +174,14 @@ export default {
   created() {
     this.getApplyList()
     this.getCategoryList()
+  },
+  filters: {
+    formatCategory(val) {
+      if (val&&val.indexOf('>') != -1) {
+        return val.substring(val.lastIndexOf('>') + 1)
+      }
+      return val
+    }
   },
   methods: {
     getApplyList() {

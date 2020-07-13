@@ -160,12 +160,14 @@
                 :on-remove="handleImagesRemove"
                 :on-exceed="handleImagesExceed"
                 :file-list="fileImagesList"
+                :before-upload="beforeAvatarUpload"
                 v-if="type == 2 || type == 3"
                 style="width:850px;"
                 :limit="5"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
+              <span class="size_limit">尺寸350*350,格式jpg/png/gif,大小不超过500K</span>
               <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
                 <img width="100%" :src="imagesDialogImageUrl" alt />
               </el-dialog>
@@ -644,6 +646,44 @@ export default {
     },
     handleImagesExceed(files, fileList) {
       this.$message.warning(`最多添加5张`)
+    },
+    beforeAvatarUpload(file) {
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpg' ||
+        file.type === 'image/png' ||
+        file.type === 'image/GIF'
+      const isLt2M = file.size / 1024 / 1024 < 0.48828125
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 500KB!')
+      }
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 350 // 限制图片尺寸为350*350
+        let height = 350
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      })
+        .then(
+          () => {
+            return file
+          },
+          () => {
+            _this.$message.error('图片尺寸限制为350 x 350')
+            return Promise.reject()
+          }
+        )
+        .catch(error => {})
+
+      return isJPG && isLt2M && isSize
     },
     // 表格删除
     handleDel(index, row) {

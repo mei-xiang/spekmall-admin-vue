@@ -27,7 +27,11 @@
     <el-table :data="recommendData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
-      <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别" width="300">
+        <template slot-scope="scope">
+          <span>{{ scope.row.categoryName|formatCategory }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="title" label="产品中文名称" width="190" show-overflow-tooltip></el-table-column>
       <el-table-column prop="price" label="价格" width="120"></el-table-column>
       <el-table-column
@@ -127,7 +131,11 @@
         <el-table :data="homeData" row-key="id" ref="homeTable">
           <el-table-column type="index" label="序号" fixed></el-table-column>
           <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
-          <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
+          <el-table-column prop="categoryName" label="产品类别" width="300">
+            <template slot-scope="scope">
+              <span>{{ scope.row.categoryName|formatCategory }}</span>
+            </template>
+          </el-table-column>
           <el-table-column prop="title" label="产品中文名称" width="175" show-overflow-tooltip></el-table-column>
           <el-table-column
             prop="supplierOutput.supplierCompanyOutput.name"
@@ -233,6 +241,14 @@ export default {
     this.getRecommentList() // 获取热门商品数据
   },
   mounted() {},
+  filters: {
+    formatCategory(val) {
+      if (val && val.indexOf('>') != -1) {
+        return val.substring(val.lastIndexOf('>') + 1)
+      }
+      return val
+    }
+  },
   methods: {
     getRecommentList() {
       this.axios.get(`/hot/product`, this.searchForm).then(res => {

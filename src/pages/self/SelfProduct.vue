@@ -48,7 +48,11 @@
         </template>
       </el-table-column>
       <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
-      <el-table-column prop="categoryName" label="产品类别（末级）"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别（末级）">
+        <template slot-scope="scope">
+          <span>{{ scope.row.categoryName|formatCategory }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="title" label="产品中文名称" show-overflow-tooltip></el-table-column>
       <el-table-column prop="price" label="价格" width="150"></el-table-column>
       <el-table-column label="是否主要产品" width="120">
@@ -128,19 +132,25 @@ export default {
     this.getSelfProductList()
     this.getCategoryList()
   },
+  filters: {
+    formatCategory(val) {
+      if (val&&val.indexOf('>') != -1) {
+        return val.substring(val.lastIndexOf('>') + 1)
+      }
+      return val
+    }
+  },
   methods: {
     getSelfProductList() {
-      this.axios
-        .get(`/api/product/self/search`, this.searchForm)
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.productData = res.data.content
-            this.searchForm.page = res.data.number
-            this.searchForm.size = res.data.size
-            this.total = res.data.totalElements
-          }
-        })
+      this.axios.get(`/api/product/self/search`, this.searchForm).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.productData = res.data.content
+          this.searchForm.page = res.data.number
+          this.searchForm.size = res.data.size
+          this.total = res.data.totalElements
+        }
+      })
     },
     // 查询
     query() {

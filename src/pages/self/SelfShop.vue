@@ -6,7 +6,7 @@
       <span>您的店铺暂未开通</span>
       <el-button class="query" @click="publish" size="mini">店铺发布</el-button>
     </div>
-    <el-table :data="selfData" border style="width: 90%;" v-if="isOwnShop">
+    <el-table :data="selfData" border style="width: 1249px;" v-if="isOwnShop">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="name" label="店铺名称" width="190"></el-table-column>
       <el-table-column prop="createDate" label="店铺成立时间" width="190" show-overflow-tooltip></el-table-column>

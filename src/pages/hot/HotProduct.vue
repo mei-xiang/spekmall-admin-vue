@@ -55,7 +55,11 @@
           <el-table :data="productData" row-key="id" border style="width: 100%;">
             <el-table-column type="index" label="序号" fixed></el-table-column>
             <el-table-column prop="productCode" label="产品编号" width="120"></el-table-column>
-            <el-table-column prop="categoryName" label="产品类别" width="300"></el-table-column>
+            <el-table-column prop="categoryName" label="产品类别" width="300">
+              <template slot-scope="scope">
+                <span>{{ scope.row.categoryName|formatCategory }}</span>
+              </template>
+            </el-table-column>
             <el-table-column prop="productName" label="产品中文名称"></el-table-column>
             <el-table-column prop="companyName" label="供应商名称"></el-table-column>
             <el-table-column label="操作">
@@ -151,6 +155,14 @@ export default {
   },
   mounted() {
     // this.rowDrop()
+  },
+  filters: {
+    formatCategory(val) {
+      if (val && val.indexOf('>') != -1) {
+        return val.substring(val.lastIndexOf('>') + 1)
+      }
+      return val
+    }
   },
   methods: {
     // 获取所有分类
@@ -395,13 +407,17 @@ export default {
               isSort: index + 1
             })
           })
-          _this.axios.post(`/api/hotCategoryProduct/sort`, arr,{headers:{'Content-Type':'application/json'}}).then(res => {
-            console.log(res)
-            if (res.code == 200) {
-              // _this.productData = []
-              _this.getProductById(_this.firstCategoryId)
-            }
-          })
+          _this.axios
+            .post(`/api/hotCategoryProduct/sort`, arr, {
+              headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => {
+              console.log(res)
+              if (res.code == 200) {
+                // _this.productData = []
+                _this.getProductById(_this.firstCategoryId)
+              }
+            })
         }
       })
     }
