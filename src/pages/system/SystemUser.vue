@@ -368,9 +368,11 @@ export default {
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 10MB!')
-      }
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 10MB!')
+        }
+      }, 0)
       const isSize = new Promise(function(resolve, reject) {
         let width = 230 // 限制图片尺寸为230X180
         let height = 180

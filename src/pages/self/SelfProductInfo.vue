@@ -171,6 +171,7 @@
                 :limit="5"
               >
                 <i class="el-icon-plus"></i>
+                <span>aaaa</span>
               </el-upload>
               <span class="size_limit">尺寸350*350,格式jpg/png/gif,大小不超过500K</span>
               <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
@@ -663,9 +664,11 @@ export default {
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 500KB!')
-      }
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 500KB!')
+        }
+      }, 0)
       const isSize = new Promise(function(resolve, reject) {
         let width = 350 // 限制图片尺寸为350*350
         let height = 350

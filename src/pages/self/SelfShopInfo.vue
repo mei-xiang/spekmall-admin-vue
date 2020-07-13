@@ -435,7 +435,10 @@ export default {
             this.provincesVal = shopCompany.province
             this.cityVal = shopCompany.city
 
-            this.selfForm.industryArr = [shopCompany.industryName,shopCompany.industry2Text]
+            this.selfForm.industryArr = [
+              shopCompany.industryName,
+              shopCompany.industry2Text
+            ]
 
             // 图片解析
             this.selfForm.logo = this.$getArrayByStr(data.shop.logo)
@@ -584,9 +587,11 @@ export default {
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 1MB!')
-      }
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 1MB!')
+        }
+      }, 0)
       const isSize = new Promise(function(resolve, reject) {
         let width = 300 // 限制图片尺寸为230X180
         let height = 300
@@ -634,9 +639,11 @@ export default {
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 5MB!')
-      }
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 5MB!')
+        }
+      }, 0)
       const isSize = new Promise(function(resolve, reject) {
         let width = 1200 // 限制图片尺寸为1200X190
         let height = 190
@@ -698,9 +705,11 @@ export default {
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 5MB!')
-      }
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 5MB!')
+        }
+      }, 0)
       const isSize = new Promise(function(resolve, reject) {
         let width = 1200 // 限制图片尺寸为1200X350
         let height = 350
@@ -758,9 +767,11 @@ export default {
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 或者 GIF 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 500KB!')
-      }
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 500KB!')
+        }
+      }, 0)
       const isSize = new Promise(function(resolve, reject) {
         let width = 300 // 限制图片尺寸为300X300
         let height = 300
