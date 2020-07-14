@@ -13,7 +13,14 @@
         </div>
         <div class="item">
           <span>交易金额：</span>
-          <span style="color:#FF4400" v-if="orderInfo.totalPrice">¥{{orderInfo.totalPrice}}</span>
+          <span
+            style="color:#FF4400"
+            v-if="orderInfo.godvList&&orderInfo.godvList[0].bargain==false"
+          >¥{{orderInfo.totalPrice}}</span>
+          <span
+            style="color:#FF4400"
+            v-if="orderInfo.godvList&&orderInfo.godvList[0].bargain==true"
+          >议价</span>
         </div>
         <div class="item">
           <span>下单时间：</span>
