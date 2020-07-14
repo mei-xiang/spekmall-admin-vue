@@ -153,6 +153,8 @@
 
 <script type="text/ecmascript-6">
 import { mapGetters } from "vuex";
+import apiUrl from '../../api/env';
+
 export default {
 	name: "Service",
 	data() {
@@ -314,7 +316,8 @@ export default {
 		// 初始化表情数据
 		initExpression() {
 			this.expressionsList = this.expressions.map((item) => {
-				item.url = 'http://192.168.212.13:9080' + item.url;
+				// item.url = 'http://192.168.212.13:9099' + item.url;
+				item.url = apiUrl[process.env.NODE_ENV].socketUrl + item.url;
 				return item;
 			});
 		},

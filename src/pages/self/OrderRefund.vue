@@ -39,7 +39,7 @@
           <span>退款金额：</span>
           <span
             style="color:#FF4400"
-            v-if="orderInfo.orView.refundPrice"
+            v-if="orderInfo.orView&&orderInfo.orView.refundPrice"
           >¥{{orderInfo.orView.refundPrice}}</span>
         </div>
         <div class="item">
@@ -52,7 +52,7 @@
         </div>
         <div class="item">
           <span>退款进度：</span>
-          <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView. status.text}}</span>
+          <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView.status.text}}</span>
         </div>
         <!-- 自营订单可以操作，并且是退款中状态 -->
         <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
@@ -186,7 +186,9 @@ export default {
     this.getOrderList()
   },
   mounted() {
-    // this.countdown()
+    this.$nextTick(() => {
+      this.countdown()
+    })
   },
   methods: {
     getOrderList() {
@@ -219,7 +221,8 @@ export default {
         let endTime =
           new Date(this.orderInfo.orView.createDate).getTime() +
           2 * 24 * 60 * 60 * 1000
-        let startTime = new Date(this.orderInfo.orView.createDate).getTime()
+        // let startTime = new Date(this.orderInfo.orView.createDate).getTime()
+        let startTime = new Date().getTime()
         let time = (endTime - startTime) / 1000 // 获取天、时、分、秒
         let hours = ''
         let minutes = ''
