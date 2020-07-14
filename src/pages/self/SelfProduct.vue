@@ -134,7 +134,7 @@ export default {
   },
   filters: {
     formatCategory(val) {
-      if (val&&val.indexOf('>') != -1) {
+      if (val && val.indexOf('>') != -1) {
         return val.substring(val.lastIndexOf('>') + 1)
       }
       return val

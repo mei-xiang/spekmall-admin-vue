@@ -94,13 +94,21 @@
                 </div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item2.price}}</div>
+                <div
+                  class="grid-content bg-purple-light"
+                  v-if="item2.bargain==false"
+                >¥{{item2.price}}</div>
+                <div class="grid-content bg-purple-light" v-if="item2.bargain==true">议价</div>
               </el-col>
               <el-col :span="3">
                 <div class="grid-content bg-purple">{{item2.num}}</div>
               </el-col>
               <el-col :span="3">
-                <div class="grid-content bg-purple-light">¥{{item1.totalPrice}}</div>
+                <div
+                  class="grid-content bg-purple-light"
+                  v-if="item2.bargain==false"
+                >¥{{item1.totalPrice}}</div>
+                <div class="grid-content bg-purple-light" v-if="item2.bargain==true">议价</div>
               </el-col>
               <el-col :span="3">
                 <div class="grid-content bg-purple-light sure" v-if="index2==0">

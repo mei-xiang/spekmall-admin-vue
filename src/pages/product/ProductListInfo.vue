@@ -56,7 +56,8 @@
           <span>
             <i class="select">*</i> 价格
           </span>
-          <span>￥{{ productObj.price }}</span>
+          <span v-if="productObj.bargain==false">￥{{ productObj.price }}</span>
+          <span v-if="productObj.bargain==true">议价</span>
         </div>
         <div class="item">
           <span>

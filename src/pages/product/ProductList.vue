@@ -58,9 +58,13 @@
           <span>{{ scope.row.categoryName|formatCategory }}</span>
         </template>
       </el-table-column>
-
       <el-table-column prop="title" label="产品中文名称" width="180" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="price" label="价格" width="130"></el-table-column>
+      <el-table-column prop="price" label="价格" width="130">
+        <template slot-scope="scope">
+          <span v-if="scope.row.bargain==false">{{ scope.row.price }}</span>
+          <span v-if="scope.row.bargain==true">议价</span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="supplierOutput.supplierCompanyOutput.name"
         label="供应商名称"
@@ -177,7 +181,7 @@ export default {
   },
   filters: {
     formatCategory(val) {
-      if (val&&val.indexOf('>') != -1) {
+      if (val && val.indexOf('>') != -1) {
         return val.substring(val.lastIndexOf('>') + 1)
       }
       return val

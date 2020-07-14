@@ -106,9 +106,24 @@
             </el-form-item>
           </div>
           <div class="item">
-            <el-form-item label="价格" prop="price">
-              <el-input v-model="selfProductForm.price" :readonly="readonly" class="price"></el-input>
-              <el-checkbox v-model="selfProductForm.bargain" v-if="type==2||type==3">议价</el-checkbox>
+            <el-form-item label="价格" prop="bargain">
+              <el-input
+                v-model="selfProductForm.price"
+                :readonly="readonly"
+                class="price"
+                placeholder="输入金额"
+                :disabled="disabledPrice"
+              ></el-input>
+              <el-radio v-model="selfProductForm.bargain" :label="false" @change="bargainChange">金额</el-radio>
+              <el-radio
+                v-model="selfProductForm.bargain"
+                :label="true"
+                v-if="type==2||type==3"
+                @change="bargainChange"
+              >议价</el-radio>
+              <!-- <el-checkbox v-model="selfProductForm.bargain" v-if="type==2||type==3">议价</el-checkbox> -->
+              <!-- <el-input v-model="selfProductForm.price" :readonly="readonly" class="price" placeholder="输入金额"></el-input>
+              <el-checkbox v-model="selfProductForm.bargain" v-if="type==2||type==3">议价</el-checkbox>-->
             </el-form-item>
           </div>
           <div class="item">
@@ -129,7 +144,7 @@
               <el-select
                 v-model="selfProductForm.tagsId"
                 multiple
-                multiple-limit="3"
+                :multiple-limit="3"
                 placeholder="请选择产品标签"
               >
                 <el-option
@@ -165,11 +180,11 @@
                 :on-remove="handleImagesRemove"
                 :on-exceed="handleImagesExceed"
                 :file-list="fileImagesList"
-                :before-upload="beforeAvatarUpload"
                 v-if="type == 2 || type == 3"
                 style="width:850px;"
                 :limit="5"
               >
+                <!--   :before-upload="beforeAvatarUpload" -->
                 <i class="el-icon-plus"></i>
               </el-upload>
               <span class="size_limit">尺寸350*350,格式jpg/png/gif,大小不超过500K</span>
@@ -348,7 +363,9 @@ export default {
         minimumOrderingQuantity: [
           { required: true, message: '最小起订量不能为空', trigger: 'blur' }
         ],
-        price: [{ required: true, message: '价格不能为空', trigger: 'change' }],
+        bargain: [
+          { required: true, message: '价格不能为空', trigger: 'change' }
+        ],
         unit: [{ required: true, message: '单位不能为空', trigger: 'blur' }],
         isMainProduct: [
           { required: true, message: '是否主要产品不能为空', trigger: 'change' }
@@ -370,6 +387,8 @@ export default {
           { required: true, message: '产品详情不能为空', trigger: 'blur' }
         ]
       },
+
+      disabledPrice: false, // 议价下禁用价格输入框
 
       tagList: [], // 标签展示 type 1
       country: [], // 国家列表
@@ -406,6 +425,7 @@ export default {
       this.getProductList()
       this.readonly = false
       this.disabled = false
+      this.disabledPrice = true
     }
     if (this.type == 3) {
       this.readonly = false
@@ -527,6 +547,16 @@ export default {
         children: 'childrens',
         label: 'name',
         checkStrictly: false
+      }
+    },
+
+    bargainChange(val) {
+      console.log(val)
+      if (val) {
+        this.disabledPrice = true
+        this.selfProductForm.price = ''
+      } else {
+        this.disabledPrice = false
       }
     },
 
@@ -711,7 +741,12 @@ export default {
     saveOrApprove(obj, callback) {
       // 表单校验
       this.$refs.selfProductRef.validate(valid => {
-        if (!valid) return
+        if (
+          this.selfProductForm.bargain == false &&
+          this.selfProductForm.price.length <= 0
+        ) {
+          return this.$message.warning('价格不能为空')
+        }
         if (
           this.selfProductForm.specsList.length == 0 ||
           this.selfProductForm.specsList[0].specsName == '' ||
@@ -719,6 +754,7 @@ export default {
         ) {
           return this.$message.warning('产品规格不能为空')
         }
+        if (!valid) return
 
         // 数据类型转换
         this.selfProductForm.categoryId = this.selfProductForm.categoryId[
