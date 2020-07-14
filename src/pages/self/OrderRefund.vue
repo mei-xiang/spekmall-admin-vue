@@ -55,6 +55,7 @@
           <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView.status.text}}</span>
         </div>
         <!-- 自营订单可以操作，并且是退款中状态 -->
+        <!-- &&orderInfo.orView&&orderInfo.orView.status.status==1 -->
         <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
           <span>退款操作：</span>
           <el-radio v-model="status" label="STATUS7" @change="changeOrviewSta">同意退款</el-radio>
@@ -217,6 +218,33 @@ export default {
     // 时间倒计时
     countdown() {
       const _this = this
+      // let endTime =
+      //   new Date('2020-07-13 14:44:30').getTime() +
+      //   2 * 24 * 60 * 60 * 1000
+      // // let startTime = new Date(this.orderInfo.orView.createDate).getTime()
+      // let startTime = new Date().getTime()
+      // let time = (endTime - startTime) / 1000 // 获取天、时、分、秒
+      // let hours = ''
+      // let minutes = ''
+      // let seconds = ''
+      // _this._interval = setInterval(function() {
+      //   if (time <= 0) {
+      //     clearInterval(_this._interval)
+      //     _this.hours = '00'
+      //     _this.minutes = '00'
+      //     _this.seconds = '00'
+      //   }
+      //   let hours = parseInt((time % (60 * 60 * 48)) / 3600)
+      //   let minutes = parseInt(((time % (60 * 60 * 24)) % 3600) / 60)
+      //   let seconds = parseInt(((time % (60 * 60 * 24)) % 3600) % 60)
+
+      //   _this.hours = hours > 9 ? hours : '0' + hours
+      //   _this.minutes = minutes > 9 ? minutes : '0' + minutes
+      //   _this.seconds = seconds > 9 ? seconds : '0' + seconds
+      //   // console.log(_this.hours, _this.minutes, _this.seconds)
+      //   time--
+      // }, 1000)
+
       if (this.orderInfo.orView) {
         let endTime =
           new Date(this.orderInfo.orView.createDate).getTime() +

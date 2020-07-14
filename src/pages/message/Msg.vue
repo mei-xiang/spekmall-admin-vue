@@ -317,7 +317,8 @@ export default {
 		initExpression() {
 			this.expressionsList = this.expressions.map((item) => {
 				// item.url = 'http://192.168.212.13:9099' + item.url;
-				item.url = apiUrl[process.env.NODE_ENV].socketUrl + item.url;
+        // item.url = apiUrl[process.env.NODE_ENV].socketUrl + item.url;
+        item.url = this.baseUrl + item.url;
 				return item;
 			});
 		},
