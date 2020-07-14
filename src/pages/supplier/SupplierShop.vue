@@ -53,7 +53,7 @@
           >{{ scope.row.shop.shopCompany.province }}{{ scope.row.shop.shopCompany.city }}</span>
           <!-- <span
             v-if="scope.row.shop.shopCompany"
-          >{{ scope.row.shop.shopCompany.provinceId|formatProvince }} {{ scope.row.shop.shopCompany.cityId|formatCity(scope.row.shop.shopCompany.provinceId) }}</span> -->
+          >{{ scope.row.shop.shopCompany.provinceId|formatProvince }} {{ scope.row.shop.shopCompany.cityId|formatCity(scope.row.shop.shopCompany.provinceId) }}</span>-->
         </template>
       </el-table-column>
       <el-table-column prop="name" label="是否金牌供应商">
@@ -120,7 +120,7 @@ export default {
       total: null,
       shopData: [], // 列表数据
       provinces: [], // 省份列表
-      cities: [] // 城市列表
+      cities: [] // 城市列表,
     }
   },
   created() {
@@ -161,6 +161,7 @@ export default {
         }
       })
     },
+
     // 获取所有省份
     getProvinces() {
       this.axios.get(`/public/address/provinces`).then(res => {

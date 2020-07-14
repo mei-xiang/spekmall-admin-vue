@@ -6,7 +6,7 @@
       <span
         class="infoType"
         v-if="shopObj.shop.shopStatus.index !== 3"
-      >状态：{{ shopObj.shop.shopStatus.index==2?'已审核':'' }}</span>
+      >状态：{{ shopObj.shop.shopStatus.index==2?'已审核':shopObj.shop.shopStatus.text }}</span>
       <span class="infoType" v-if="shopObj.shop.shopStatus.index == 3">
         状态：{{ shopObj.shop.shopStatus.text }} 原因：{{
         shopObj.shop.remarks
@@ -18,23 +18,28 @@
       <div class="info">
         <div class="item">
           <span>公司名称</span>
-          <span>{{ shopObj.shop.shopCompany.name }}</span>
+          <span v-if="shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.name }}</span>
         </div>
         <div class="item">
           <span>统一信用代码</span>
-          <span>{{ shopObj.shop.shopCompany.creditCode }}</span>
+          <span v-if="shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.creditCode }}</span>
         </div>
         <div class="item">
           <span>地址</span>
-          <span>{{ shopObj.shop.shopCompany.address }}</span>
+          <span v-if="shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.address }}</span>
         </div>
         <div class="item">
           <span>行业</span>
-          <span>{{ shopObj.shop.shopCompany.industry }}</span>
+          <span
+            v-if="shopObj.shop.shopCompany"
+          >{{ shopObj.shop.shopCompany.industry|formatIndustry(shopObj.shop.shopCompany.industry2) }}</span>
         </div>
         <div class="item">
           <span>公司简介</span>
-          <span class="companyDesc">{{ shopObj.shop.shopCompany.companyDesc }}</span>
+          <span
+            class="companyDesc"
+            v-if="shopObj.shop.shopCompany"
+          >{{ shopObj.shop.shopCompany.companyDesc }}</span>
         </div>
         <div class="item">
           <span>主营产品</span>
@@ -42,11 +47,11 @@
         </div>
         <div class="item">
           <span>公司成立时间</span>
-          <span>{{ shopObj.shop.shopCompany.establishmentDate }}</span>
+          <span v-if="shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.establishmentDate }}</span>
         </div>
         <div class="item">
           <span>注册资金</span>
-          <span>{{ shopObj.shop.shopCompany.registeredCapital }}万元</span>
+          <span v-if="shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.registeredCapital }}万元</span>
         </div>
       </div>
     </div>
@@ -105,8 +110,9 @@
       <div class="info">
         <div class="item">
           <span>信息认证标识</span>
-          <el-radio v-model="radio" :label="true" :disabled="disabled">有</el-radio>
-          <el-radio v-model="radio" :label="false" :disabled="disabled">没有</el-radio>
+          <span style="color:#F56C6C;position:absolute;left:90px;top:3px;">*</span>
+          <el-radio v-model="radio" :label="true" :disabled="disabled" style="margin-top:10px;">有</el-radio>
+          <el-radio v-model="radio" :label="false" :disabled="disabled" style="margin-top:10px;">没有</el-radio>
         </div>
       </div>
     </div>
@@ -120,16 +126,19 @@
 
 <script>
 import { getStore } from 'js/store'
+let _this = null
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    _this = this
     return {
       logo: [], // 店铺Logo
       signboard: [], // 店铺主页招牌图片
       shopObj: {}, // 店铺数据
       radio: true,
       type: null, // 查看1  审核2
-      disabled: true
+      disabled: true,
+      shopCategoryData: [] // 行业列表
     }
   },
   created() {
@@ -139,6 +148,27 @@ export default {
       this.disabled = false
     }
     this.getProductList()
+  },
+  filters: {
+    formatIndustry(val1, val2) {
+      let industrys = null
+      let industrys2
+      console.log(_this.shopCategoryData)
+      _this.shopCategoryData.forEach(item => {
+        if (item.code == val1) {
+          industrys = item.name
+          item.detailList.forEach(item1 => {
+            if (item1.value == val2) {
+              industrys2 = item1.text
+            }
+          })
+        }
+      })
+      if (!industrys || !industrys2) {
+        return val1
+      }
+      return industrys + '/' + industrys2
+    }
   },
   methods: {
     getProductList() {
@@ -154,8 +184,23 @@ export default {
             // 图片解析
             this.logo = this.$getArrayByStr(data.shop.logo)
             this.signboard = this.$getArrayByStr(data.shop.signboard)
+            // 获取所有行业类别
+            setTimeout(() => {
+              this.getBusinessList()
+            }, 0)
           }
         })
+    },
+    // 获取行业分类 -------------------------------------------------------------------------
+    getBusinessList() {
+      this.axios.get(`/dictionary/dicAndDetail/majorBusiness2`).then(res => {
+        console.log(res)
+        const resData = res.data
+        resData.forEach(item => {
+          item.text = item.name
+        })
+        this.shopCategoryData = resData
+      })
     },
     // 返回
     close() {
@@ -170,6 +215,7 @@ export default {
       })
     },
     approvePass() {
+      // if()
       this.$confirm('审核通过确认', '', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -201,7 +247,7 @@ export default {
         cancelButtonText: '取消',
         inputType: 'textarea',
         inputPlaceholder: '请输入不通过原因',
-        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+        inputPattern: /[\s\S]{1,1000}/,
         inputErrorMessage: '请输入不通过原因'
       })
         .then(({ value }) => {

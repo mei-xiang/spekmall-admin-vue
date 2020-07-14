@@ -257,7 +257,7 @@ export default {
           cancelButtonText: '取消',
           inputType: 'textarea',
           inputPlaceholder: '请输入不通过原因',
-          inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+          inputPattern: /[\s\S]{1,1000}/,
           inputErrorMessage: '请输入不通过原因'
         })
           .then(({ value }) => {

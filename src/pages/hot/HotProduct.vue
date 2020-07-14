@@ -57,7 +57,8 @@
             <el-table-column prop="productCode" label="产品编号" width="120"></el-table-column>
             <el-table-column prop="categoryName" label="产品类别" width="300">
               <template slot-scope="scope">
-                <span>{{ scope.row.categoryName|formatCategory }}</span>
+                <span>{{ scope.row.categoryName }}</span>
+                <!-- <span>{{ scope.row.categoryName|formatCategory }}</span> -->
               </template>
             </el-table-column>
             <el-table-column prop="productName" label="产品中文名称"></el-table-column>

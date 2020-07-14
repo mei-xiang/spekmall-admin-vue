@@ -741,6 +741,7 @@ export default {
     saveOrApprove(obj, callback) {
       // 表单校验
       this.$refs.selfProductRef.validate(valid => {
+        if (!valid) return
         if (
           this.selfProductForm.bargain == false &&
           this.selfProductForm.price.length <= 0
@@ -754,7 +755,6 @@ export default {
         ) {
           return this.$message.warning('产品规格不能为空')
         }
-        if (!valid) return
 
         // 数据类型转换
         this.selfProductForm.categoryId = this.selfProductForm.categoryId[

@@ -39,7 +39,7 @@
     <el-table :data="buyerData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
       <el-table-column prop="code" label="会员编码" width="150"></el-table-column>
-      <el-table-column prop="telephone" label="手机" width="150"></el-table-column>
+      <el-table-column prop="mobile" label="手机" width="150"></el-table-column>
       <el-table-column prop="company" label="公司名称" width="190" show-overflow-tooltip></el-table-column>
       <el-table-column label="地区" width="150">
         <template slot-scope="scope">

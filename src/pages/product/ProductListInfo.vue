@@ -156,7 +156,7 @@
 
     <!-- <el-button @click="close" v-if="type == 1">取消</el-button> -->
     <!-- type:1 查看 type:2 审核-->
-    <el-button @click="approveNoPass" type="danger" v-if="type == 2">审核不通过</el-button>
+    <el-button @click="approveNoPass" type="danger" v-if="type == 2" class="btn_approve">审核不通过</el-button>
     <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>
   </div>
 </template>
@@ -236,7 +236,7 @@ export default {
         cancelButtonText: '取消',
         inputType: 'textarea',
         inputPlaceholder: '请输入不通过原因',
-        inputPattern: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,1000}$/,
+        inputPattern: /[\s\S]{1,1000}/,
         inputErrorMessage: '请输入不通过原因'
       })
         .then(({ value }) => {
@@ -310,5 +310,8 @@ h2 {
 span,
 img {
   vertical-align: top;
+}
+.btn_approve {
+  margin-left: 250px !important;
 }
 </style>

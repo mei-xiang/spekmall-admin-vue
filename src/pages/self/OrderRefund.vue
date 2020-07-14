@@ -236,7 +236,8 @@ export default {
             _this.minutes = '00'
             _this.seconds = '00'
             // 自动退款成功
-            this.$router.go(0)
+            // this.$router.go(0)
+            this.$router.push('/selfOrder')
           }
           let hours = parseInt((time % (60 * 60 * 48)) / 3600)
           let minutes = parseInt(((time % (60 * 60 * 24)) % 3600) / 60)
