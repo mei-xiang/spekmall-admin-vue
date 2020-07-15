@@ -44,7 +44,8 @@
           <span>
             <i class="select">*</i> 生产地
           </span>
-          <span>{{ productObj.province }}{{ productObj.city }}</span>
+          <span v-if="productObj.province == productObj.city">{{ productObj.province }}</span>
+          <span v-else>{{ productObj.province }}{{ productObj.city }}</span>
         </div>
         <div class="item">
           <span>

@@ -197,7 +197,7 @@
 </template>
 
 <script>
-import { getStore } from 'js/store'
+import { setStore, getStore } from 'js/store'
 import axios from 'axios'
 import Qs from 'qs'
 export default {
@@ -330,10 +330,18 @@ export default {
           path: '/orderRefund',
           query: { id: id, type: 1 }
         })
+        setStore({
+          name: 'orderRefund',
+          content: { id: id, type: 1 }
+        })
       } else {
         this.$router.push({
           path: '/orderInfo',
           query: { id: id, type: 1 }
+        })
+        setStore({
+          name: 'orderInfo',
+          content: { id: id, type: 1 }
         })
       }
     },
@@ -436,6 +444,10 @@ export default {
     // 退款确认
     handleRefund(id) {
       this.$router.push({ path: '/orderRefund', query: { id: id } })
+      setStore({
+        name: 'orderRefund',
+        content: { id: id }
+      })
     }
   }
 }

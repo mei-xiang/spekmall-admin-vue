@@ -26,7 +26,10 @@
         </div>
         <div class="item">
           <span>地址</span>
-          <span v-if="shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.address }}</span>
+          <span
+            v-if="shopObj.company&&shopObj.company.companyLinkMan"
+          >{{ shopObj.company.companyLinkMan.province }}{{ shopObj.company.companyLinkMan.city }}</span>
+          <span v-if="shopObj.shop&&shopObj.shop.shopCompany">{{ shopObj.shop.shopCompany.address }}</span>
         </div>
         <div class="item">
           <span>行业</span>
@@ -61,7 +64,7 @@
         <div class="item">
           <span>店铺Logo</span>
           <el-image
-            style="width: 140px; height: 140px"
+            style="width: 140px; height: 140px;margin-right:10px"
             v-for="(item, index) in logo"
             :key="index"
             :src="imgBaseUrl + item"
@@ -71,7 +74,7 @@
         <div class="item">
           <span>店铺主页招牌图片</span>
           <el-image
-            style="width: 140px; height: 140px"
+            style="width: 140px; height: 140px;margin-right:10px"
             v-for="(item, index) in signboard"
             :key="index"
             :src="imgBaseUrl + item"
@@ -307,6 +310,7 @@ h2 {
 .info .item {
   line-height: 35px;
   display: flex;
+  margin-bottom: 10px;
 }
 .info .item span:first-of-type {
   display: inline-block;

@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import { getStore } from 'js/store'
+import { setStore, getStore } from 'js/store'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
@@ -280,6 +280,10 @@ export default {
         path: '/productListInfo',
         query: { id: row.id, type: 1 }
       })
+      setStore({
+        name: 'productListInfo',
+        content: { id: row.id, type: 1 }
+      })
     },
     // 审核
     handleApproval(index, row) {
@@ -293,6 +297,10 @@ export default {
       this.$router.push({
         path: '/productListInfo',
         query: { id: row.id, type: 2 }
+      })
+      setStore({
+        name: 'productListInfo',
+        content: { id: row.id, type: 2 }
       })
     },
     handleLike(obj, callback) {

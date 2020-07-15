@@ -59,9 +59,11 @@
       </el-table-column>
       <el-table-column prop label="地区" width="140">
         <template slot-scope="scope">
-          <span v-if="scope.row.supplierCompanyOutput">
-            {{ scope.row.supplierCompanyOutput.province
-            }}{{ scope.row.supplierCompanyOutput.city }}
+          <span
+            v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyLinkMan"
+          >
+            {{ scope.row.supplierCompanyOutput.companyLinkMan.province
+            }} {{ scope.row.supplierCompanyOutput.companyLinkMan.city }}
           </span>
         </template>
       </el-table-column>
@@ -195,7 +197,7 @@
 </template>
 
 <script>
-import { getStore } from 'js/store'
+import { setStore, getStore } from 'js/store'
 import axios from 'axios'
 export default {
   data() {
@@ -276,6 +278,10 @@ export default {
       this.$router.push({
         path: '/supplierMemberInfo',
         query: { id: row.id }
+      })
+      setStore({
+        name: 'supplierMemberInfo',
+        content: { id: row.id }
       })
     },
     // 停用

@@ -147,7 +147,7 @@
 </template>
 
 <script>
-import { getStore } from 'js/store'
+import { setStore, getStore } from 'js/store'
 import axios from 'axios'
 export default {
   data() {
@@ -254,10 +254,18 @@ export default {
           path: '/orderRefund',
           query: { id: id, type: 2 }
         })
+        setStore({
+          name: 'orderRefund',
+          content: { id: id, type: 2 }
+        })
       } else {
         this.$router.push({
           path: '/orderInfo',
           query: { id: id, type: 2 }
+        })
+        setStore({
+          name: 'orderInfo',
+          content: { id: id, type: 2 }
         })
       }
     }

@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { getStore } from 'js/store'
+import { setStore, getStore } from 'js/store'
 import axios from 'axios'
 let _this
 export default {
@@ -235,6 +235,10 @@ export default {
       this.$router.push({
         path: '/supperApplyInfo',
         query: { id: row.id, type: 1 }
+      })
+      setStore({
+        name: 'supperApplyInfo',
+        content: { id: row.id, type: 1 }
       })
     },
     // 审核

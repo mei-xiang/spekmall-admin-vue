@@ -462,7 +462,7 @@ export default {
             }
             this.selfProductForm.introduction = res.data.introduction || ''
             // 解析显示产品标签
-            if (res.data.tags.length > 0) {
+            if (res.data.tags && res.data.tags.length > 0) {
               const arr = []
               res.data.tags.forEach(item => {
                 arr.push(item.id)

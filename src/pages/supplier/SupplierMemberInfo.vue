@@ -41,33 +41,38 @@
           <span>主营行业</span>
           <span
             v-if="memberObj.supplierCompanyOutput"
-          >{{ memberObj.supplierCompanyOutput.industry }}</span>
+          >{{ memberObj.supplierCompanyOutput.industry|formatIndustry }}</span>
         </div>
+        <!-- <span
+          v-if="memberObj.supplierShopOutput&&memberObj.supplierShopOutput.shopCompany"
+        >{{ memberObj.supplierShopOutput.shopCompany.industry|formatIndustry }}</span>-->
         <div class="item">
           <span>主营产品</span>
           <span>{{ memberObj.majorPorducts }}</span>
         </div>
         <div class="item">
           <span>地址</span>
-          <span v-if="memberObj.supplierCompanyOutput">{{ memberObj.supplierCompanyOutput.address }}</span>
+          <span
+            v-if="memberObj.supplierCompanyOutput&&memberObj.supplierCompanyOutput.companyLinkMan"
+          >{{ memberObj.supplierCompanyOutput.companyLinkMan.province }}{{ memberObj.supplierCompanyOutput.companyLinkMan.city }}{{ memberObj.supplierCompanyOutput.companyLinkMan.address }}</span>
         </div>
         <div class="item">
           <span>成立时间</span>
           <span
-            v-if="memberObj.supplierCompanyOutput"
-          >{{ memberObj.supplierCompanyOutput.establishmentDate }}</span>
+            v-if="memberObj.supplierShopOutput"
+          >{{ memberObj.supplierShopOutput.shopCompany.establishmentDate }}</span>
         </div>
         <div class="item">
           <span>注册资金</span>
           <span
-            v-if="memberObj.supplierCompanyOutput"
-          >{{ memberObj.supplierCompanyOutput.registeredCapital }}万元</span>
+            v-if="memberObj.supplierShopOutput"
+          >{{ memberObj.supplierShopOutput.shopCompany.registeredCapital }}万元</span>
         </div>
         <div class="item">
           <span>公司简介</span>
           <span
-            v-if="memberObj.supplierCompanyOutput"
-          >{{ memberObj.supplierCompanyOutput.companyDesc }}</span>
+            v-if="memberObj.supplierShopOutput"
+          >{{ memberObj.supplierShopOutput.shopCompany.companyDesc }}</span>
         </div>
         <div class="item">
           <span>店铺地址</span>
@@ -75,38 +80,38 @@
         </div>
         <template
           v-if="
-            memberObj.supplierShopOutput && memberObj.supplierShopOutput.linkMan
+            memberObj.supplierCompanyOutput && memberObj.supplierCompanyOutput.companyLinkMan
           "
         >
           <div class="item">
             <span>固定电话</span>
-            <span>{{ memberObj.supplierShopOutput.linkMan.telephone }}</span>
+            <span>{{ memberObj.supplierCompanyOutput.companyLinkMan.telephone }}</span>
           </div>
           <div class="item">
             <span>联系人</span>
-            <span>{{ memberObj.supplierShopOutput.linkMan.linkName }}</span>
+            <span>{{ memberObj.supplierCompanyOutput.companyLinkMan.linkName }}</span>
           </div>
           <div class="item">
             <span>性别</span>
             <span>
               {{
-              memberObj.supplierShopOutput.linkMan.sex.index == 0
+              memberObj.supplierCompanyOutput.companyLinkMan.sex.index == 0
               }}
             </span>
             <span>
               {{
-              memberObj.supplierShopOutput.linkMan.sex.index == 1
+              memberObj.supplierCompanyOutput.companyLinkMan.sex.index == 1
               }}
             </span>
             <span>
               {{
-              memberObj.supplierShopOutput.linkMan.sex.index == 2
+              memberObj.supplierCompanyOutput.companyLinkMan.sex.index == 2
               }}
             </span>
           </div>
           <div class="item">
             <span>联系手机</span>
-            <span>{{ memberObj.supplierShopOutput.linkMan.mobile }}</span>
+            <span>{{ memberObj.supplierCompanyOutput.companyLinkMan.mobile }}</span>
           </div>
         </template>
       </div>
@@ -165,17 +170,35 @@
 
 <script>
 import { getStore } from 'js/store'
+let _this
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
+    _this = this
     return {
       memberObj: '', // 会员数据对象
       businessLicense: [], // 营业执照
-      legalPersonCardPicture: [] // 法人代表身份证
+      legalPersonCardPicture: [], // 法人代表身份证
+      shopCategoryData: [] // 行业列表
     }
   },
   created() {
     this.getProductList()
+  },
+  filters: {
+    formatIndustry(val) {
+      let industrys = null
+      console.log(_this.shopCategoryData)
+      _this.shopCategoryData.forEach(item => {
+        if (item.value == val) {
+          industrys = item.text
+        }
+      })
+      if (!industrys) {
+        return val
+      }
+      return industrys
+    }
   },
   methods: {
     getProductList() {
@@ -197,8 +220,19 @@ export default {
                 res.data.supplierCompanyOutput.legalPersonCardPicture
               )
             }
+            // 获取所有行业类别
+            setTimeout(() => {
+              this.getBusinessList()
+            }, 0)
           }
         })
+    },
+    // 获取行业分类
+    getBusinessList() {
+      this.axios.get(`/dictionary/detail/childs/majorBusiness`).then(res => {
+        this.shopCategoryData = res.data[0].details
+        console.log(this.shopCategoryData)
+      })
     }
   }
 }

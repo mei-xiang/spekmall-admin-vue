@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { setStore } from 'js/store'
 export default {
   data() {
     return {
@@ -65,6 +66,10 @@ export default {
         path: '/selfShopInfo',
         query: { id: row.id, type: 1 }
       })
+      setStore({
+        name: 'selfShopInfo',
+        content: { id: row.id, type: 1 }
+      })
     },
     // 编辑
     handleEdit(index, row) {
@@ -73,12 +78,20 @@ export default {
         path: '/selfShopInfo',
         query: { id: row.id, type: 2 }
       })
+      setStore({
+        name: 'selfShopInfo',
+        content: { id: row.id, type: 2 }
+      })
     },
     // 发布店铺
     publish() {
       this.$router.push({
         path: '/selfShopInfo',
         query: { type: 3 }
+      })
+      setStore({
+        name: 'selfShopInfo',
+        content: { type: 3 }
       })
     }
   }

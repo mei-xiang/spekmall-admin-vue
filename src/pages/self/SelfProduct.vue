@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { getStore } from 'js/store'
+import { setStore, getStore } from 'js/store'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
@@ -216,6 +216,10 @@ export default {
         path: '/selfProductInfo',
         query: { type: 3 }
       })
+      setStore({
+        name: 'selfProductInfo',
+        content: { type: 3 }
+      })
     },
     // 查看
     handleDetail(index, row) {
@@ -224,6 +228,10 @@ export default {
         path: '/selfProductInfo',
         query: { id: row.id, type: 1 }
       })
+      setStore({
+        name: 'selfProductInfo',
+        content: { id: row.id, type: 1 }
+      })
     },
     // 编辑
     handleEdit(index, row) {
@@ -231,6 +239,10 @@ export default {
       this.$router.push({
         path: '/selfProductInfo',
         query: { id: row.id, type: 2 }
+      })
+      setStore({
+        name: 'selfProductInfo',
+        content: { id: row.id, type: 2 }
       })
     },
     // 下架
