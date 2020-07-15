@@ -55,7 +55,7 @@
         </el-form-item>
         <el-form-item label="标签类型" prop="type">
           <el-select v-model="labelForm.type">
-            <el-option label="自营渠道" :value="1"></el-option>
+            <!-- <el-option label="自营渠道" :value="1"></el-option> -->
             <el-option label="运营产品标签" :value="2"></el-option>
             <el-option label="商家添加标签" :value="3"></el-option>
           </el-select>
