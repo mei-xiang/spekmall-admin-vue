@@ -114,8 +114,8 @@
         <div class="item">
           <span>信息认证标识</span>
           <span style="color:#F56C6C;position:absolute;left:90px;top:3px;">*</span>
-          <el-radio v-model="radio" :label="true" :disabled="disabled" style="margin-top:10px;">有</el-radio>
-          <el-radio v-model="radio" :label="false" :disabled="disabled" style="margin-top:10px;">没有</el-radio>
+          <el-radio v-model="shopValidity" :label="true" :disabled="disabled" style="margin-top:10px;">有</el-radio>
+          <el-radio v-model="shopValidity" :label="false" :disabled="disabled" style="margin-top:10px;">没有</el-radio>
         </div>
       </div>
     </div>
@@ -138,7 +138,7 @@ export default {
       logo: [], // 店铺Logo
       signboard: [], // 店铺主页招牌图片
       shopObj: {}, // 店铺数据
-      radio: true,
+      shopValidity: true,
       type: null, // 查看1  审核2
       disabled: true,
       shopCategoryData: [] // 行业列表
@@ -182,7 +182,7 @@ export default {
           const data = res.data
           if (res.code == 200) {
             this.shopObj = data
-            this.radio = data.shop.shopValidity
+            this.shopValidity = data.shop.shopValidity
 
             // 图片解析
             this.logo = this.$getArrayByStr(data.shop.logo)
@@ -218,7 +218,6 @@ export default {
       })
     },
     approvePass() {
-      // if()
       this.$confirm('审核通过确认', '', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -229,7 +228,8 @@ export default {
           this.approvePassOrNoPass(
             {
               id: this.$route.query.id,
-              status: 'AUDIT_PASS'
+              status: 'AUDIT_PASS',
+              shopValidity: this.shopValidity
             },
             function(res) {
               if (res.code == 200) {
@@ -259,7 +259,8 @@ export default {
             {
               id: this.$route.query.id,
               status: 'AUDIT_FAIL',
-              remarks: value
+              remarks: value,
+              shopValidity: this.shopValidity
             },
             function(res) {
               if (res.code == 200) {

@@ -51,7 +51,7 @@
     >
       <el-form :model="labelForm" ref="labelRef" :rules="labelRules" label-width="100px">
         <el-form-item label="标签名称" prop="name">
-          <el-input v-model="labelForm.name" placeholder="必填项，十个字以内" maxlength="10"></el-input>
+          <el-input v-model="labelForm.name" placeholder="必填项，十五个字节以内"></el-input>
         </el-form-item>
         <el-form-item label="标签类型" prop="type">
           <el-select v-model="labelForm.type">
@@ -102,7 +102,8 @@ export default {
       },
       labelRules: {
         name: [
-          { required: true, message: '标签名称不能为空', trigger: 'blur' }
+          { required: true, message: '标签名称不能为空', trigger: 'blur' },
+          { pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\dA-Za-z_]{1,15}$/, message: '只能输入15个字节(数字,字母,下划线)' }
         ],
         type: [
           { required: true, message: '标签类型不能为空', trigger: 'blur' }

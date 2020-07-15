@@ -10,10 +10,10 @@
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value></el-option>
           <!-- [AUDIT_PROCESS,未审核, 1],[AUDIT_PASS,已激活, 2],[AUDIT_FAIL,审核不通过, 3],[AUDIT_STOP,已停用, 4]; -->
-          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
-          <el-option label="已激活" value="AUDIT_PASS"></el-option>
+          <el-option label="待审核" value="AUDIT_PROCESS"></el-option>
+          <el-option label="已审核" value="AUDIT_PASS"></el-option>
           <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
-          <el-option label="已停用" value="AUDIT_STOP"></el-option>
+          <!-- <el-option label="已停用" value="AUDIT_STOP"></el-option> -->
         </el-select>
       </el-form-item>
       <el-form-item label="注册时间：">
@@ -68,8 +68,10 @@
         </template>
       </el-table-column>
       <el-table-column label="状态" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.status.text }}</span>
+        <template slot-scope="scope" v-if="scope.row.status">
+          <span v-if="scope.row.status.index==1">待审核</span>
+          <span v-if="scope.row.status.index==2">已审核</span>
+          <span v-if="scope.row.status.index==3">审核不通过</span>
         </template>
       </el-table-column>
       <el-table-column prop="createDate" label="注册时间" sortable></el-table-column>

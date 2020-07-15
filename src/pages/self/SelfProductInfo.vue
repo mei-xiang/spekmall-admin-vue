@@ -113,8 +113,15 @@
                 class="price"
                 placeholder="输入金额"
                 :disabled="disabledPrice"
+                v-if="type==2||type==3"
               ></el-input>
-              <el-radio v-model="selfProductForm.bargain" :label="false" @change="bargainChange">金额</el-radio>
+              <el-input v-model="priceOrBargain" :readonly="readonly" v-if="type==1"></el-input>
+              <el-radio
+                v-model="selfProductForm.bargain"
+                :label="false"
+                @change="bargainChange"
+                v-if="type==2||type==3"
+              >金额</el-radio>
               <el-radio
                 v-model="selfProductForm.bargain"
                 :label="true"
@@ -140,7 +147,7 @@
             </el-form-item>
           </div>
           <div class="item">
-            <el-form-item label="产品标签" prop="tagsId" v-if="type==2||type==3">
+            <el-form-item label="产品标签" v-if="type==2||type==3">
               <el-select
                 v-model="selfProductForm.tagsId"
                 multiple
@@ -156,7 +163,7 @@
               </el-select>
             </el-form-item>
             <div v-if="type==1">
-              <el-form-item label="产品标签" prop="tagsId" v-if="type==1">
+              <el-form-item label="产品标签" v-if="type==1">
                 <el-tag
                   :key="index"
                   v-for="(tag,index) in tagList"
@@ -188,7 +195,7 @@
                 <!--   :before-upload="beforeAvatarUpload" -->
                 <i class="el-icon-plus"></i>
               </el-upload>
-              <span class="size_limit">尺寸350*350,格式jpg/png/gif,大小不超过500K</span>
+              <p class="size_limit" v-if="type == 2 || type == 3">尺寸350*350,格式jpg/png/gif,大小不超过500K</p>
               <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
                 <img width="100%" :src="imagesDialogImageUrl" alt />
               </el-dialog>
@@ -346,6 +353,7 @@ export default {
         images: [], // 产品图片多张，图片url
         specsList: [] // 规格名称,规格参数。上传需要解析
       },
+      priceOrBargain: '', // 查看是价格文本框展示
       // 校验规则
       selfProductRules: {
         title: [
@@ -426,7 +434,7 @@ export default {
       this.getProductList()
       this.readonly = false
       this.disabled = false
-      this.disabledPrice = true
+      // this.disabledPrice = true
     }
     if (this.type == 3) {
       this.readonly = false
@@ -436,7 +444,6 @@ export default {
     this.getCategoryList() // 获取产品类别列表
     this.getCountryList() // 获取国家列表
     this.getProvinces() // 获取省份列表
-    this.getTagList() // 获取标签列表
   },
   watch: {
     'selfProductForm.specsList': function(val, oldval) {
@@ -461,15 +468,22 @@ export default {
             for (let key in this.selfProductForm) {
               this.selfProductForm[key] = res.data[key]
             }
+            this.priceOrBargain =
+              res.data.bargain == false ? res.data.price : '议价'
             this.selfProductForm.introduction = res.data.introduction || ''
+
             // 解析显示产品标签
+            const tagsIdArr = []
             if (res.data.tags && res.data.tags.length > 0) {
-              const arr = []
               res.data.tags.forEach(item => {
-                arr.push(item.id)
+                // 2 为运营标签  1 自营标签 3 商家标签
+                if (item.type == 2) {
+                  tagsIdArr.push(item.id)
+                }
               })
-              this.selfProductForm.tagsId = arr
+              this.selfProductForm.tagsId = tagsIdArr
             }
+            this.getTagList() // 获取标签列表
 
             if (!this.selfProductForm.countryId) {
               this.selfProductForm.countryId = 1
@@ -634,24 +648,32 @@ export default {
     // 获取标签多选列表
     getTagList() {
       this.axios.get(`/api/tag/list`).then(res => {
+        console.log(res)
         if (res.code != 200) return false
         res.data.forEach(item => {
-          this.optionsTag.push({
-            label: item.name,
-            value: item.id
-          })
+          if (item.type == 2) {
+            this.optionsTag.push({
+              label: item.name,
+              value: item.id
+            })
+          }
         })
         // 标签展示
         if (this.type == 1) {
-          res.data.forEach(item1 => {
-            this.selfProductForm.tagsId.forEach(item2 => {
-              if (item1.id == item2) {
-                this.tagList.push({
-                  name: item1.name
-                })
-              }
+          if (
+            this.selfProductForm.tagsId &&
+            this.selfProductForm.tagsId.length > 0
+          ) {
+            res.data.forEach(item1 => {
+              this.selfProductForm.tagsId.forEach(item2 => {
+                if (item1.id == item2) {
+                  this.tagList.push({
+                    name: item1.name
+                  })
+                }
+              })
             })
-          })
+          }
         }
         // 新增产品type 3 默认选中自营和放心购标签
         // if (this.type == 3) {
