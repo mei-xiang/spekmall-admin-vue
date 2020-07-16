@@ -8,7 +8,11 @@
     </div>
     <el-table :data="selfData" border style="width: 1249px;" v-if="isOwnShop">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="name" label="店铺名称" width="190"></el-table-column>
+      <el-table-column label="店铺名称" width="190">
+        <template slot-scope="scope">
+          <span>{{ scope.row.supplierCompanyOutput.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="createDate" label="店铺成立时间" width="190" show-overflow-tooltip></el-table-column>
       <el-table-column label="供应商类型" width="190">
         <template slot-scope="scope">
@@ -22,6 +26,13 @@
           >{{scope.row.supplierShopOutput.shopStatus.text }}</span>
         </template>
       </el-table-column>
+      <!-- <el-table-column label="提交状态" width="190">
+        <template slot-scope="scope">
+          <span
+            v-if="scope.row.supplierShopOutput"
+          >{{scope.row.supplierShopOutput.shopStatus.text }}</span>
+        </template>
+      </el-table-column> -->
       <el-table-column prop="supplierShopOutput.remarks" label="信息" width="190"></el-table-column>
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">

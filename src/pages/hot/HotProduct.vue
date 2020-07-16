@@ -212,7 +212,12 @@ export default {
           console.log(res)
           if (res.code == 200) {
             this.productData = res.data
-            this.rowDrop()
+            // this.rowDrop()
+            this.$nextTick(() => {
+              setTimeout(() => {
+                this.rowDrop()
+              }, 100)
+            })
           }
         })
     },
@@ -375,6 +380,9 @@ export default {
         this.activeCategory - 0
       ].categoryId
       this.getProductById(this.firstCategoryId)
+      // this.$nextTick(() => {
+      //   this.rowDrop()
+      // })
     },
     // 删除产品数据
     delChildCategoryPro(index, row) {

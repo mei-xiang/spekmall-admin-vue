@@ -5,6 +5,8 @@
       <span v-if="type==1">店铺查看</span>
       <span v-if="type==2">店铺编辑</span>
       <span v-if="type==3">店铺发布</span>
+      <span class="infoType">提交状态：{{ shopAudit==0?'待审核':'已审核' }}</span>
+
       <!-- <span
         class="infoType"
         v-if="selfForm.shop.shopStatus.index !== 3"
@@ -28,12 +30,12 @@
         <div class="info">
           <div class="item">
             <el-form-item label="公司名称" prop="name">
-              <el-input v-model="selfForm.name" :readonly="readonly"></el-input>
+              <el-input v-model="selfForm.name" :readonly="readonly_no"></el-input>
             </el-form-item>
           </div>
           <div class="item">
             <el-form-item label="统一信用代码" prop="creditCode">
-              <el-input v-model="selfForm.creditCode" :readonly="readonly"></el-input>
+              <el-input v-model="selfForm.creditCode" :readonly="readonly_no"></el-input>
             </el-form-item>
           </div>
           <div class="item">
@@ -44,6 +46,7 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
+                  :disabled="disabled"
                 ></el-option>
               </el-select>
               <el-select v-model="cityVal" placeholder="请选择城市" @change="cityChange">
@@ -52,6 +55,7 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
+                  :disabled="disabled"
                 ></el-option>
               </el-select>
               <el-input
@@ -77,6 +81,7 @@
                 :readonly="readonly"
                 filterable
                 clearable
+                :disabled="disabled"
               ></el-cascader>
             </el-form-item>
           </div>
@@ -188,9 +193,9 @@
                 :on-success="handleBannerSuccess"
                 :on-remove="handleBannerRemove"
                 :on-preview="handleBannerPreview"
+                :before-upload="beforeBannerAvatarUpload"
                 :file-list="fileBannerList"
                 :on-exceed="handleBannerExceed"
-                :before-upload="beforeBannerAvatarUpload"
                 :limit="5"
                 v-if="type == 2 || type == 3"
               >
@@ -303,6 +308,7 @@ export default {
         banners: [], // banner列表
         images: [] // 店铺图片列表
       },
+      shopAudit: null,
       // 校验规则
       selfRules: {
         name: [
@@ -357,6 +363,8 @@ export default {
 
       type: null, // 查看1/编辑2/新增3
       readonly: false, // 只读
+      readonly_no: false, // 只读
+      disabled: false, // 禁用
       uploadUrl: `${
         baseUrl[process.env.NODE_ENV].apiUrl
       }/file/upload?token=${token}`, // 图片上传地址
@@ -383,6 +391,7 @@ export default {
       setTimeout(() => {
         this.getSelfShopList()
         this.readonly = true
+        this.disabled = true
       })
     }
     if (this.type == 2) {
@@ -390,6 +399,7 @@ export default {
       setTimeout(() => {
         this.getSelfShopList()
         this.readonly = false
+        this.readonly_no = true
       }, 0)
     }
     if (this.type == 3) {
@@ -411,9 +421,19 @@ export default {
         .then(res => {
           console.log(res)
           const data = res.data
+          let shopCompany = null
+          let shopObj = null
           if (res.code == 200) {
             // 解析数据
-            const shopCompany = data.shop.shopCompany
+            if (this.type == 1) {
+              shopCompany = data.shop.shopCompany // 基本数据
+              shopObj = data.shop // 图片，富文本编辑器
+            }
+            if (this.type == 2) {
+              shopCompany = data.shopAudit.shopCompanyAudit
+              shopObj = data.shopAudit
+              this.shopAudit = data.shopAudit.status
+            }
             this.selfForm.name = shopCompany.name
             this.selfForm.creditCode = shopCompany.creditCode
             this.selfForm.province = shopCompany.province
@@ -429,7 +449,7 @@ export default {
             this.selfForm.majorPorducts = data.majorPorducts
             this.selfForm.establishmentDate = shopCompany.establishmentDate
             this.selfForm.registeredCapital = shopCompany.registeredCapital
-            this.selfForm.introduction = data.shop.introduction || ''
+            this.selfForm.introduction = shopObj.introduction || ''
 
             // 显示省市
             this.provincesVal = shopCompany.province
@@ -441,22 +461,23 @@ export default {
             ]
 
             // 图片解析
-            this.selfForm.logo = this.$getArrayByStr(data.shop.logo)
-            this.selfForm.signboard = this.$getArrayByStr(data.shop.signboard)
-            this.selfForm.banners = data.shop.banners
-            this.selfForm.images = data.shop.images
+            this.selfForm.logo = this.$getArrayByStr(shopObj.logo)
+            this.selfForm.signboard = this.$getArrayByStr(shopObj.signboard)
+            this.selfForm.banners = shopObj.banners || []
+            this.selfForm.images = shopObj.images
 
             // 编辑时图片展示
-            this.fileLogoList.push({ url: this.imgBaseUrl + data.shop.logo })
+            this.fileLogoList.push({ url: this.imgBaseUrl + shopObj.logo })
             this.fileSignboardList.push({
-              url: this.imgBaseUrl + data.shop.signboard
+              url: this.imgBaseUrl + shopObj.signboard
             })
-            this.selfForm.banners.forEach(item => {
-              item.type = 1
-              this.fileBannerList.push({
-                url: this.imgBaseUrl + item.src
+            if (this.selfForm.banners && this.selfForm.banners.length > 0) {
+              this.selfForm.banners.forEach(item => {
+                this.fileBannerList.push({
+                  url: this.imgBaseUrl + item
+                })
               })
-            })
+            }
             this.selfForm.images.forEach(item => {
               this.fileImagesList.push({
                 url: this.imgBaseUrl + item
@@ -668,28 +689,31 @@ export default {
     },
     // 处理banner图片上传
     handleBannerSuccess(res, file, fileList) {
-      this.selfForm.banners.push({
-        src: res.data,
-        sort: this.selfForm.banners.length + 1,
-        type: 1
-      })
+      console.log(res)
+      this.selfForm.banners.push(res.data)
+      // this.selfForm.banners.push({
+      //   src: res.data,
+      //   sort: this.selfForm.banners.length + 1,
+      //   type: 1
+      // })
     },
     handleBannerPreview(file, fileList) {
       this.bannerDialogImageUrl = file.url
       this.bannerDialogVisible = true
     },
     handleBannerRemove(file, fileList) {
-      if (file.response) {
+      if (file && file.response) {
         const item = this.selfForm.banners.findIndex(i => {
           return i.src == file.response.data
         })
         this.selfForm.banners.splice(item, 1)
-      } else {
-        const item = this.selfForm.banners.findIndex(i => {
-          return i.src == file.url.match(/filePath=(\S*)/)[1]
-        })
-        this.selfForm.banners.splice(item, 1)
       }
+      // else {
+      //   const item = this.selfForm.banners.findIndex(i => {
+      //     return i.src == file.url.match(/filePath=(\S*)/)[1]
+      //   })
+      //   this.selfForm.banners.splice(item, 1)
+      // }
     },
     handleBannerExceed(files, fileList) {
       this.$message.warning(`最多添加5张`)
@@ -797,28 +821,31 @@ export default {
     saveOrApprove(obj, callback) {
       this.selfForm.logo = this.selfForm.logo.toString()
       this.selfForm.signboard = this.selfForm.signboard.toString()
-      const bannerList = []
-      this.selfForm.banners.forEach(item => {
-        bannerList.push({
-          src: item.src,
-          sort: item.sort,
-          type: item.type
-        })
-      })
-      this.selfForm.banners = bannerList
+      // 接口改变调整banners传数组字符串就行
+      // const bannerList = []
+      // this.selfForm.banners.forEach(item => {
+      //   bannerList.push({
+      //     src: item.src,
+      //     sort: item.sort,
+      //     type: item.type
+      //   })
+      // })
+      // this.selfForm.banners = bannerList
       this.$refs.selfRef.validate(valid => {
         if (!valid) return
         if (this.selfForm.city == '' || this.selfForm.city == null)
           return this.$message.warning('请选择省市')
-        const shopObj = {
-          banners: bannerList,
-          ...this.selfForm
-        }
-        this.$dataTransform(shopObj, 'banners')
-        console.log(shopObj)
-        this.axios.post(`/api/supplier/shop/self/info`, shopObj).then(res => {
-          callback && callback(res)
-        })
+        // const shopObj = {
+        //   banners: bannerList,
+        //   ...this.selfForm
+        // }
+        // this.$dataTransform(shopObj, 'banners')
+        // console.log(shopObj)
+        this.axios
+          .post(`/api/supplier/shop/self/info`, this.selfForm)
+          .then(res => {
+            callback && callback(res)
+          })
       })
     },
     save() {

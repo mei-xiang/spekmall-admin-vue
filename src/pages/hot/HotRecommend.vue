@@ -434,6 +434,9 @@ export default {
       if (new Date(this.homeShowForm.effectDate[1]).getTime() < +new Date()) {
         return this.$message.warning('结束时间不能小于当前时间')
       }
+      if (new Date(this.homeShowForm.effectDate[0]).getTime() > +new Date()) {
+        return this.$message.warning('起始时间不能大于当前时间')
+      }
       if (
         new Date(this.homeShowForm.effectDate[0]).getTime() >
         new Date(this.homeShowForm.effectDate[1]).getTime()

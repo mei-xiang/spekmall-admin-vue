@@ -48,12 +48,12 @@
       <el-table-column prop="mobile" label="手机" width="190"></el-table-column>
       <el-table-column prop label="地区" width="190">
         <template slot-scope="scope">
-          <!-- <span
-            v-if="scope.row.shop.shopCompany"
-          >{{ scope.row.shop.shopCompany.province }}{{ scope.row.shop.shopCompany.city }}</span> -->
           <span
+            v-if="scope.row.shop.shopCompany"
+          >{{ scope.row.shop.shopCompany.province }}{{ scope.row.shop.shopCompany.city }}</span>
+          <!-- <span
              v-if="scope.row.company&&scope.row.company.companyLinkMan"
-          >{{ scope.row.company.companyLinkMan.province }} {{ scope.row.company.companyLinkMan.city }}</span>
+          >{{ scope.row.company.companyLinkMan.province }} {{ scope.row.company.companyLinkMan.city }}</span>-->
           <!-- <span
             v-if="scope.row.shop.shopCompany"
           >{{ scope.row.shop.shopCompany.provinceId|formatProvince }} {{ scope.row.shop.shopCompany.cityId|formatCity(scope.row.shop.shopCompany.provinceId) }}</span>-->
@@ -68,6 +68,11 @@
       <el-table-column label="店铺状态" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.shop.shopStatus.text }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="提交状态" width="120">
+        <template slot-scope="scope" v-if="scope.row.shopAudit">
+          <span>{{ scope.row.shopAudit.status==0?'未审核':'已审核' }}</span>
         </template>
       </el-table-column>
 

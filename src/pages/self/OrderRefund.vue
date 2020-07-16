@@ -106,7 +106,25 @@
       <div class="info">
         <div class="item">
           <span>公司名称</span>
-          <span>{{orderInfo.supplierName}}</span>
+          <span>{{orderInfo.buyerName}}</span>
+        </div>
+        <div class="item">
+          <span>姓名</span>
+          <span>{{orderInfo.buyerPersionName}}</span>
+        </div>
+        <div class="item">
+          <span>联系方式</span>
+          <span>{{orderInfo.buyerMobile}}</span>
+        </div>
+      </div>
+    </div>
+    <!-- 电商订单详情展示卖家信息 -->
+    <div class="box" v-if="type==2">
+      <h2>商家信息</h2>
+      <div class="info">
+        <div class="item">
+          <span>商家</span>
+          <span>{{orderInfo.supplierNamebuyerName}}</span>
         </div>
         <div class="item">
           <span>姓名</span>

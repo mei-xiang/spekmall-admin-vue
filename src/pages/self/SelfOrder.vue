@@ -131,8 +131,8 @@
                   <span @click="handleEditPrice(item1.id)" v-if="item1.status.status==0">修改价格</span>
                   <span @click="handleClose(item1.id)" v-if="item1.status.status==0">取消订单</span>
                   <span @click="handlePost(item1.id)" v-if="item1.status.status==2">填写物流信息</span>
-                  <span @click="handleRefund(item1.id)" v-if="item1.status.status==6">
-                    <span style="display:block">退款确认</span>
+                  <span v-if="item1.status.status==6">
+                    <span style="display:block" @click="handleRefund(item1.id)">退款确认</span>
                     <span style="display:block;color:#999;transform:translateX(-13px)">请在48小时内处理</span>
                   </span>
                 </div>
@@ -443,10 +443,10 @@ export default {
     },
     // 退款确认
     handleRefund(id) {
-      this.$router.push({ path: '/orderRefund', query: { id: id } })
+      this.$router.push({ path: '/orderRefund', query: { id: id, type: 1 } })
       setStore({
         name: 'orderRefund',
-        content: { id: id }
+        content: { id: id, type: 1 }
       })
     }
   }

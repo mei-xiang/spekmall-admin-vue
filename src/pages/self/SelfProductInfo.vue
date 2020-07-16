@@ -24,7 +24,7 @@
         <div class="info">
           <div class="item">
             <el-form-item label="产品名称" prop="title">
-              <el-input v-model="selfProductForm.title" :readonly="readonly"></el-input>
+              <el-input v-model.trim="selfProductForm.title" :readonly="readonly"></el-input>
             </el-form-item>
           </div>
           <div class="item">
@@ -44,12 +44,12 @@
           </div>
           <div class="item">
             <el-form-item label="品牌名" prop="brand">
-              <el-input v-model="selfProductForm.brand" :readonly="readonly"></el-input>
+              <el-input v-model.trim="selfProductForm.brand" :readonly="readonly"></el-input>
             </el-form-item>
           </div>
           <div class="item">
             <el-form-item label="产品型号" prop="model">
-              <el-input v-model="selfProductForm.model" :readonly="readonly"></el-input>
+              <el-input v-model.trim="selfProductForm.model" :readonly="readonly"></el-input>
             </el-form-item>
           </div>
           <div class="item city">
@@ -102,20 +102,20 @@
           </div>
           <div class="item">
             <el-form-item label="最小起订量" prop="minimumOrderingQuantity">
-              <el-input v-model="selfProductForm.minimumOrderingQuantity" :readonly="readonly"></el-input>
+              <el-input v-model.trim="selfProductForm.minimumOrderingQuantity" :readonly="readonly"></el-input>
             </el-form-item>
           </div>
           <div class="item">
             <el-form-item label="价格" prop="bargain">
               <el-input
-                v-model="selfProductForm.price"
+                v-model.trim="selfProductForm.price"
                 :readonly="readonly"
                 class="price"
                 placeholder="输入金额"
                 :disabled="disabledPrice"
                 v-if="type==2||type==3"
               ></el-input>
-              <el-input v-model="priceOrBargain" :readonly="readonly" v-if="type==1"></el-input>
+              <el-input v-model.trim="priceOrBargain" :readonly="readonly" v-if="type==1"></el-input>
               <el-radio
                 v-model="selfProductForm.bargain"
                 :label="false"
@@ -135,7 +135,7 @@
           </div>
           <div class="item">
             <el-form-item label="单位" prop="unit">
-              <el-input v-model="selfProductForm.unit" :readonly="readonly"></el-input>
+              <el-input v-model.trim="selfProductForm.unit" :readonly="readonly"></el-input>
             </el-form-item>
           </div>
           <div class="item">
@@ -216,7 +216,7 @@
         <div class="info">
           <div class="item">
             <el-form-item label="商品库存" prop="storage">
-              <el-input v-model="selfProductForm.storage" :readonly="readonly" class="storage"></el-input>
+              <el-input v-model.trim="selfProductForm.storage" :readonly="readonly" class="storage"></el-input>
               <span>{{selfProductForm.unit}}</span>
             </el-form-item>
           </div>
@@ -260,7 +260,7 @@
                 <el-table-column align="center" prop="specsName" label="名称">
                   <template slot-scope="scope">
                     <el-input
-                      v-model="scope.row.specsName"
+                      v-model.trim="scope.row.specsName"
                       placeholder="请输入内容"
                       :readonly="readonly"
                     ></el-input>
@@ -269,7 +269,7 @@
                 <el-table-column align="center" prop="specsParam" label="参数">
                   <template slot-scope="scope">
                     <el-input
-                      v-model="scope.row.specsParam"
+                      v-model.trim="scope.row.specsParam"
                       placeholder="请输入内容"
                       :readonly="readonly"
                     ></el-input>
@@ -439,6 +439,7 @@ export default {
     if (this.type == 3) {
       this.readonly = false
       this.disabled = false
+      this.getTagList()
     }
     this.UEDITOR_CONFIG = getStore({ name: 'UEDITOR_CONFIG' })
     this.getCategoryList() // 获取产品类别列表
@@ -709,6 +710,7 @@ export default {
       let _this = this
       const isJPG =
         file.type === 'image/jpg' ||
+        file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
         file.type === 'image/GIF'
       const isLt2M = file.size / 1024 / 1024 < 0.48828125
