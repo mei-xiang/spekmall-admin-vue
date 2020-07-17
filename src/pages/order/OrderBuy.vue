@@ -117,12 +117,16 @@
               </el-col>
               <el-col :span="3">
                 <div class="grid-content bg-purple-light">
-                  <div class="grid-content bg-purple-light">{{item.fromUserName}}</div>
+                  <div
+                    class="grid-content bg-purple-light"
+                    style="display:block;word-break: break-all;word-wrap: break-word;"
+                  >{{item.fromUserName}}</div>
                 </div>
               </el-col>
               <el-col :span="3">
                 <div
                   class="grid-content bg-purple-light sure"
+                  style="display:block;word-break: break-all;word-wrap: break-word;"
                   v-if="item.quotoList.length>0"
                 >{{item.quotoList[0].supplierName}}</div>
               </el-col>

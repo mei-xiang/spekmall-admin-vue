@@ -191,9 +191,8 @@ export default {
       this.imageUrl = row.src
       this.form.url = row.url
       this.form.name = row.name
-      this.$nextTick(() => {
-        this.$refs.ruleForm.clearValidate()
-      })
+      this.form.src = row.src.split('filePath=')[1]
+      // this.form.src = '/home/file/upload/20200717/n7sc3px7tfxi7khpddjhaaa.jpg'
     },
     // 删除操作
     handleDel(row) {

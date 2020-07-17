@@ -140,11 +140,12 @@
     <el-dialog title="修改密码" :visible.sync="modifyModal" width="40%" @close="claoseModifyModal">
       <el-form :model="modifyPwd" ref="modifyPwd" label-width="100px" class="demo-ruleForm">
         <el-form-item label="用户名:">
-          <span>{{modifyPwd.username}}</span>
+          <!-- <span>{{modifyPwd.username}}</span> -->
+          <el-input type="text" v-model="modifyPwd.username" :readonly="true"></el-input>
         </el-form-item>
-        <!-- <el-form-item label="密码:" palceholder="请输入密码" prop="password">
-          <el-input type="password" v-model="modifyPwd.password"></el-input>
-        </el-form-item>-->
+        <el-form-item label="密码:" palceholder="请输入密码" prop="password">
+          <el-input type="text" v-model="modifyPwd.password"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="modifyModal = false">取消</el-button>
