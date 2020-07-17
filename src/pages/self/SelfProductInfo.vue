@@ -351,7 +351,8 @@ export default {
         introduction: '', // 产品详情
         status: '', // 产品状态 0.草稿 1.提交审核
         images: [], // 产品图片多张，图片url
-        specsList: [] // 规格名称,规格参数。上传需要解析
+        specsList: [], // 规格名称,规格参数。上传需要解析
+        picture: '' // 封面地址
       },
       priceOrBargain: '', // 查看是价格文本框展示
       // 校验规则
@@ -794,6 +795,8 @@ export default {
             specsList: item.specsList
           })
         })
+        // 封面picture图片赋值
+        this.selfProductForm.picture = this.selfProductForm.images[0]
         const productObj = {
           specsList: specsList,
           ...this.selfProductForm
