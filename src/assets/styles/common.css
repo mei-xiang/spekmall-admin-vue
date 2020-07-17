@@ -563,6 +563,9 @@ a:hover {
 .brand .el-image {
   overflow: visible;
 }
+.brand .imgDialog .el-dialog {
+  width: 450px !important;
+}
 .size_limit {
   font-size: 12px;
   color: #606266;

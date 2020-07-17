@@ -60,7 +60,8 @@
             <el-option label="商家添加标签" :value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="标签图标" prop="ico">
+        <!--  prop="ico" -->
+        <el-form-item label="标签图标">
           <el-upload
             :action="uploadUrl"
             list-type="picture-card"
@@ -103,7 +104,10 @@ export default {
       labelRules: {
         name: [
           { required: true, message: '标签名称不能为空', trigger: 'blur' },
-          { pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\dA-Za-z_]{1,15}$/, message: '只能输入15个字节(数字,字母,下划线)' }
+          {
+            pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\dA-Za-z_]{1,15}$/,
+            message: '只能输入15个字节(数字,字母,下划线)'
+          }
         ],
         type: [
           { required: true, message: '标签类型不能为空', trigger: 'blur' }

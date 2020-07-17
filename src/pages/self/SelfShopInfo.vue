@@ -5,17 +5,14 @@
       <span v-if="type==1">店铺查看</span>
       <span v-if="type==2">店铺编辑</span>
       <span v-if="type==3">店铺发布</span>
-      <span class="infoType">提交状态：{{ shopAudit==0?'待审核':'已审核' }}</span>
 
-      <!-- <span
-        class="infoType"
-        v-if="selfForm.shop.shopStatus.index !== 3"
-      >状态：{{ selfForm.shop.shopStatus.text }}</span>
-      <span class="infoType" v-if="selfForm.shop.shopStatus.index == 3">
-        状态：{{ selfForm.shop.shopStatus.text }} 原因：{{
-        selfForm.shop.remarks
-        }}
-      </span>-->
+      <span class="infoType" v-if="shopStatus !== 3">店铺状态：{{ shopStatusVal }}</span>
+      <span class="infoType" v-if="shopStatus == 3">店铺状态：{{ shopStatusVal }} 原因：{{shopRemark}}</span>
+
+      <span class="infoType" v-if="shopAudit == 0">提交状态：{{ '草稿' }}</span>
+      <span class="infoType" v-if="shopAudit == 1">提交状态：{{ '待审核' }}</span>
+      <span class="infoType" v-if="shopAudit == 2">提交状态：{{ '审核通过' }}</span>
+      <span class="infoType" v-if="shopAudit == 3">提交状态：{{ '审核不通过' }} 原因：{{shopRemark}}</span>
     </h1>
     <el-form
       :model="selfForm"
@@ -183,7 +180,7 @@
 
               <el-carousel style="flex:1;" v-if="type == 1">
                 <el-carousel-item v-for="item in selfForm.banners" :key="item.id">
-                  <img :src="imgBaseUrl + item.src" class="image" style="width:400px;height:400px" />
+                  <img :src="imgBaseUrl + item" class="image" style="width:400px;height:400px" />
                 </el-carousel-item>
               </el-carousel>
               <el-upload
@@ -308,7 +305,10 @@ export default {
         banners: [], // banner列表
         images: [] // 店铺图片列表
       },
-      shopAudit: null,
+      shopAudit: null, // 二次编辑审核状态
+      shopStatus: null, // 店铺状态
+      shopStatusVal: null, // 店铺状态值
+      shopRemark: null, // 店铺不通过值
       // 校验规则
       selfRules: {
         name: [
@@ -425,15 +425,20 @@ export default {
           let shopObj = null
           if (res.code == 200) {
             // 解析数据
+
             if (this.type == 1) {
-              shopCompany = data.shop.shopCompany // 基本数据
-              shopObj = data.shop // 图片，富文本编辑器
+              shopCompany = data.supplierShopOutput.shopCompany // 基本数据
+              shopObj = data.supplierShopOutput // 图片，富文本编辑器
             }
             if (this.type == 2) {
               shopCompany = data.shopAudit.shopCompanyAudit
               shopObj = data.shopAudit
-              this.shopAudit = data.shopAudit.status
+              this.shopAudit = data.shopAudit.status // 提交状态
             }
+            this.shopStatus = data.supplierShopOutput.shopStatus.index // 店铺状态相关
+            this.shopStatusVal = data.supplierShopOutput.shopStatus.text
+            this.shopRemark = data.supplierShopOutput.remarks
+
             this.selfForm.name = shopCompany.name
             this.selfForm.creditCode = shopCompany.creditCode
             this.selfForm.province = shopCompany.province
@@ -471,13 +476,18 @@ export default {
             this.fileSignboardList.push({
               url: this.imgBaseUrl + shopObj.signboard
             })
-            if (this.selfForm.banners && this.selfForm.banners.length > 0) {
-              this.selfForm.banners.forEach(item => {
-                this.fileBannerList.push({
-                  url: this.imgBaseUrl + item
-                })
+            // if (this.selfForm.banners && this.selfForm.banners.length > 0) {
+            //   this.selfForm.banners.forEach(item => {
+            //     this.fileBannerList.push({
+            //       url: this.imgBaseUrl + item
+            //     })
+            //   })
+            // }
+            this.selfForm.banners.forEach(item => {
+              this.fileBannerList.push({
+                url: this.imgBaseUrl + item
               })
-            }
+            })
             this.selfForm.images.forEach(item => {
               this.fileImagesList.push({
                 url: this.imgBaseUrl + item

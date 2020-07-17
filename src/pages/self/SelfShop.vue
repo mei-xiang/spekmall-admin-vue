@@ -26,13 +26,14 @@
           >{{scope.row.supplierShopOutput.shopStatus.text }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column label="提交状态" width="190">
-        <template slot-scope="scope">
-          <span
-            v-if="scope.row.supplierShopOutput"
-          >{{scope.row.supplierShopOutput.shopStatus.text }}</span>
+      <el-table-column label="提交状态" width="190">
+        <template slot-scope="scope" v-if="scope.row.shopAudit">
+          <span>{{scope.row.shopAudit.status==0?'草稿':'' }}</span>
+          <span>{{scope.row.shopAudit.status==1?'待审核':'' }}</span>
+          <span>{{scope.row.shopAudit.status==2?'审核通过':'' }}</span>
+          <span>{{scope.row.shopAudit.status==3?'审核不通过':'' }}</span>
         </template>
-      </el-table-column> -->
+      </el-table-column>
       <el-table-column prop="supplierShopOutput.remarks" label="信息" width="190"></el-table-column>
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">

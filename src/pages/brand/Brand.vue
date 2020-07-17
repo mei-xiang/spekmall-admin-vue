@@ -33,8 +33,9 @@
           <el-image
             style="width: 120px; height: 28px;margin-top:5px"
             :src="imgBaseUrl + scope.row.brandImg"
-            :preview-src-list="[imgBaseUrl + scope.row.brandImg]"
+            @click.native="showImg(imgBaseUrl + scope.row.brandImg)"
           ></el-image>
+          <!--  :preview-src-list="[imgBaseUrl + scope.row.brandImg]" -->
         </template>
       </el-table-column>
       <el-table-column label="是否热门品牌" width="150">
@@ -179,6 +180,20 @@
         <el-button @click="isShowHotBrandListDia = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 图片预览对话框 -->
+    <el-dialog
+      title
+      :visible.sync="imgDialogVisible"
+      width="100%"
+      @close="handleClose"
+      style="margin-top:200px"
+      class="imgDialog"
+    >
+      <div style="width:100%;text-align:center;">
+        <img :src="src" alt width="300px" height="300px" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -204,6 +219,8 @@ export default {
       id: '', // 当前数据id
       type: '', // 新增-修改标识
       isShowBrandDialog: false, // 控制对话框的显示与隐藏
+      imgDialogVisible: false,
+      src: '',
       // 对话框表单数据
       brandForm: {
         brandName: '',
@@ -464,6 +481,15 @@ export default {
       )
 
       return isJPG && isLt2M && isSize
+    },
+    // 图片预览
+    handleClose() {
+      this.src = ''
+      this.imgDialogVisible = false
+    },
+    showImg(src) {
+      this.imgDialogVisible = true
+      this.src = src
     },
 
     /**  首页品牌管理 */
