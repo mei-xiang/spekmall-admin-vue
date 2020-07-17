@@ -253,7 +253,7 @@
         <h2>产品详情</h2>
         <div class="info">
           <div class="item">
-            <span style="color:#F56C6C;position:absolute;left:180px;top:3px;">*</span>
+            <!-- <span style="color:#F56C6C;position:absolute;left:180px;top:3px;">*</span> -->
             <el-form-item label="产品规格" prop="specsList">
               <!-- 表格区域 -->
               <el-table :data="selfProductForm.specsList" border style="display:inline-block">
@@ -774,13 +774,14 @@ export default {
         ) {
           return this.$message.warning('价格不能为空')
         }
-        if (
-          this.selfProductForm.specsList.length == 0 ||
-          this.selfProductForm.specsList[0].specsName == '' ||
-          this.selfProductForm.specsList[0].specsParam == ''
-        ) {
-          return this.$message.warning('产品规格不能为空')
-        }
+        // 已经改为非必填
+        // if (
+        //   this.selfProductForm.specsList.length == 0 ||
+        //   this.selfProductForm.specsList[0].specsName == '' ||
+        //   this.selfProductForm.specsList[0].specsParam == ''
+        // ) {
+        //   return this.$message.warning('产品规格不能为空')
+        // }
 
         // 数据类型转换
         this.selfProductForm.categoryId = this.selfProductForm.categoryId[

@@ -136,6 +136,7 @@ export default {
             .then(res => {
               console.log(res)
               if (res.data.code == 406) return this.$message.warning(res.data.message)
+              if (res.data.code == 500) return this.$message.warning(res.data.message)
               if (res.data.code !== 200) return false
               // this.$router.push({path: '/page'})
               let useData = res.data.data
