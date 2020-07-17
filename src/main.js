@@ -39,7 +39,7 @@ import components from './components/components.js'; //全局组件注册
 Vue.prototype.axios = axios_; // 挂载到Vue实例上面
 Vue.prototype.store = store; // 挂载到Vue实例上面
 // Vue.prototype.BaseUrl = `${baseUrl.test.apiUrl}` // 登录测试----测试接口
-Vue.prototype.BaseUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}` // 登录接口
+Vue.prototype.BaseUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}`
 Vue.prototype.imgBaseUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}/file/white/download?filePath=` // 图片拼接部分
 // Vue.prototype.uploadImgUrl = `${baseUrl[process.env.NODE_ENV].apiUrl}/file/upload?token=${token}` // 图片上传地址
 Vue.config.productionTip = false;

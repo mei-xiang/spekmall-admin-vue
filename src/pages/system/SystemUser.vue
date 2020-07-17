@@ -87,7 +87,6 @@
               <el-upload
                 class="avatar-uploader"
                 :action="uploadAdd"
-                :headers="uploadHeader"
                 :show-file-list="false"
                 :before-upload="beforeAvatarUpload"
                 :on-success="uploadSuccess"
@@ -156,11 +155,12 @@
 </template>
 
 <script>
+import baseUrl from '../../api/env'
 import { setStore, getStore, removeStore } from 'js/store'
 export default {
   data() {
     const token = getStore({ name: 'access_token', type: 'string' })
-    let baseUrl = this.BaseUrl
+    // let baseUrl = this.BaseUrl
     return {
       // table
       tableData: [],
@@ -200,10 +200,10 @@ export default {
       //   password: [{ required: true, message: "请输入密码", trigger: "blur" }]
       // },
       // wenjian
-      uploadAdd: baseUrl + '/file/upload',
-      uploadHeader: {
-        Authorization: 'Bearer ' + token
-      },
+      // uploadAdd: baseUrl + '/file/upload',
+      uploadAdd: `${
+        baseUrl[process.env.NODE_ENV].apiUrl
+      }/file/upload?token=${token}`, // 图片上传地址
       imageUrl: '',
       isAddOrEdit: false // falase是新增， true 为edit
     }
@@ -300,7 +300,8 @@ export default {
       this.imageUrl = ''
       this.ruleForm = {
         email: '',
-        mobile: ''
+        mobile: '',
+        avatar: ''
       }
     },
     // 新增用户
@@ -313,17 +314,26 @@ export default {
         if (valid) {
           let params = this.ruleForm
           params.userType = 1
-          this.axios.post(url, params, { String: 'json' }).then(res => {
-            this.$message.success('增加成功')
-            this.getUerList()
-            this.$refs.ruleForm.resetFields()
-            this.imageUrl = ''
-            this.ruleForm = {
-              email: '',
-              mobile: ''
-            }
-            this.addUserModal = false
-          })
+          this.axios
+            .post(url, params, { String: 'json' })
+            .then(res => {
+              console.log(res)
+              if (res.code == 200) {
+                this.$message.success('增加成功')
+                this.getUerList()
+                this.$refs.ruleForm.resetFields()
+                this.imageUrl = ''
+                this.ruleForm = {
+                  email: '',
+                  mobile: ''
+                }
+                this.addUserModal = false
+              }
+              if (res.code == 404) {
+                this.$message.warning(res.message)
+              }
+            })
+            .catch(() => {})
         } else {
           return false
         }
@@ -397,6 +407,7 @@ export default {
     },
     uploadSuccess(res, file, fileList) {
       this.ruleForm.avatar = res.data
+      console.log(this.ruleForm.avatar)
       this.imageUrl = this.imgBaseUrl + res.data
     },
     handlePageChange(val) {

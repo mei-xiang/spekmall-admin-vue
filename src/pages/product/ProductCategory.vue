@@ -120,7 +120,8 @@ export default {
       },
       addCatRules: {
         code: [
-          { required: true, message: '类别编码不能为空', trigger: 'blur' }
+          { required: true, message: '类别编码不能为空', trigger: 'blur' },
+          { pattern: /^[0-9]+$/, message: '只能输入整数' }
         ],
         name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
         level: [

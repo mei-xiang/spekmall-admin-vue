@@ -177,13 +177,23 @@ export default {
     uploadSuccess(res, file, fileList) {
       this.form.src = res.data
       this.imageUrl = this.imgBaseUrl + res.data
+      this.$refs.ruleForm.validate(valid => {
+        if (!valid) return
+      })
     },
     // 编辑操作
     handleModify(row) {
+      console.log(row)
       this.isEditSubmit = true
       this.dialogFormVisible = true
-      this.form = row
+      // this.form = row
+      this.form.id = row.id
       this.imageUrl = row.src
+      this.form.url = row.url
+      this.form.name = row.name
+      this.$nextTick(() => {
+        this.$refs.ruleForm.clearValidate()
+      })
     },
     // 删除操作
     handleDel(row) {
@@ -235,10 +245,10 @@ export default {
     handleSubmit(val) {
       this.$refs.ruleForm.validate(async valid => {
         if (valid) {
-          if (this.list.length >= 5) {
-            this.$message.warning('图片轮播只允许5章')
-            return
-          }
+          // if (this.list.length >= 5) {
+          //   this.$message.warning('图片轮播只允许5章')
+          //   return
+          // }
 
           if (!this.isEditSubmit) {
             let params = this.form
@@ -247,8 +257,13 @@ export default {
             this.axios
               .post('/api/banner/home', this.form, { String: 'json' })
               .then(res => {
-                this.$message.success('添加成功')
-                this.getBannerList()
+                if (res.code == 200) {
+                  this.$message.success('添加成功')
+                  this.getBannerList()
+                }
+                if (res.code == 500) {
+                  this.$message.warning(res.message)
+                }
               })
 
             // 新建提交
