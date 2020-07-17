@@ -202,8 +202,8 @@ export default {
       // 搜索表单
       searchForm: {
         keyword: '',
-        isHot: true,
-        showIndex: false,
+        // isHot: true,
+        // showIndex: false,
         page: 0,
         size: 20
       },
@@ -253,7 +253,7 @@ export default {
   },
   methods: {
     getRecommentList() {
-      this.axios.get(`/hot/product`, this.searchForm).then(res => {
+      this.axios.get(`/hot/product/hot`, this.searchForm).then(res => {
         if (res.code == 200) {
           console.log(res)
           this.recommendData = res.data.content

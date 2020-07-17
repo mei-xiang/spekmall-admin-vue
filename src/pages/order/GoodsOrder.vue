@@ -77,13 +77,13 @@
             <el-col :span="5">
               <div class="grid-content bg-purple-light time">下单时间：{{item1.createDate}}</div>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <div class="grid-content bg-purple user">买家用户：{{item1.buyerName}}</div>
             </el-col>
             <el-col :span="5">
               <div class="grid-content bg-purple user">商家：{{item1.supplierName}}</div>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <div class="grid-content bg-purple-light detail">
                 <el-link type="primary" @click="orderDetail(item1.id,item1.status.status)">订单详情</el-link>
               </div>

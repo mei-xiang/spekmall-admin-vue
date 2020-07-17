@@ -33,7 +33,8 @@
         </div>
         <div class="item">
           <span>退款原因：</span>
-          <span v-if="orderInfo.orView">{{orderInfo.orView.refundReason}}</span>
+          <!-- <span v-if="orderInfo.orView">{{orderInfo.orView.refundReason}}</span> -->
+          <span v-if="orderInfo.orView">{{refundReason[orderInfo.orView.refundReason-1]}}</span>
         </div>
         <div class="item">
           <span>退款金额：</span>
@@ -69,7 +70,7 @@
         <!-- 自营订单/电商订单 退款成功和失败的说明 -->
         <div class="item" v-if="orderInfo.orView&&orderInfo.orView.status.status!=1">
           <span>说明：</span>
-          <span v-if="orderInfo.orView.refundRemark">{{orderInfo.orView.refundRemark}}</span>
+          <span v-if="orderInfo.orView.refuseReason">{{orderInfo.orView.refuseReason}}</span>
         </div>
         <!-- 自营订单可以操作，并且是退款中状态 -->
         <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
@@ -124,7 +125,7 @@
       <div class="info">
         <div class="item">
           <span>商家</span>
-          <span>{{orderInfo.supplierNamebuyerName}}</span>
+          <span>{{orderInfo.supplierName}}</span>
         </div>
         <div class="item">
           <span>姓名</span>
@@ -196,13 +197,15 @@ export default {
       hours: '', // 时
       minutes: '', //分
       seconds: '', // 秒
-      _interval: null
+      _interval: null,
+      refundReason: []
     }
   },
   created() {
     this.id = this.$route.query.id
     this.type = this.$route.query.type
     this.getOrderList()
+    this.getRefundReason()
   },
   mounted() {
     // this.$nextTick(() => {
@@ -224,6 +227,16 @@ export default {
             this.countdown()
           }
         })
+    },
+    getRefundReason() {
+      this.axios.get(`/dictionary/detail/child/refundReason`).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          res.data.forEach(item => {
+            this.refundReason.push(item.text)
+          })
+        }
+      })
     },
     changeOrviewSta(val) {
       console.log(val)
