@@ -457,13 +457,21 @@ export default {
             this.$message.success('添加成功!')
             this.isShowHomeDialog = false
             this.isShowHotProductDialog = false
-            this.getHomeList()
+            this.$nextTick(() => {
+              this.getHomeList()
+              this.handleCloseHome()
+              this.handleClose()
+            })
           }
           if (res.data.code == 500) {
             this.$message.warning(res.data.message)
             this.isShowHomeDialog = false
             this.isShowHotProductDialog = false
-            this.getHomeList()
+            this.$nextTick(() => {
+              this.getHomeList()
+              this.handleCloseHome()
+              this.handleClose()
+            })
           }
         })
     },

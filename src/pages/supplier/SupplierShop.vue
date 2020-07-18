@@ -9,10 +9,10 @@
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value></el-option>
-          <el-option label="未审核" value="AUDIT_PROCESS"></el-option>
-          <el-option label="已激活" value="AUDIT_PASS"></el-option>
+          <el-option label="待审核" value="AUDIT_PROCESS"></el-option>
+          <el-option label="已审核" value="AUDIT_PASS"></el-option>
           <el-option label="审核不通过" value="AUDIT_FAIL"></el-option>
-          <el-option label="已停用" value="AUDIT_STOP"></el-option>
+          <!-- <el-option label="已停用" value="AUDIT_STOP"></el-option> -->
         </el-select>
       </el-form-item>
       <el-form-item label="提交审核时间：">
@@ -37,18 +37,18 @@
     </el-form>
 
     <!-- 表格区域 -->
-    <el-table :data="shopData" border style="width: 90%;">
+    <el-table :data="shopData" border>
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="code" label="供应商编号" width="190"></el-table-column>
-      <el-table-column label="供应商名称" width="190" show-overflow-tooltip>
+      <el-table-column prop="code" label="供应商编号" width="170"></el-table-column>
+      <el-table-column label="供应商名称" show-overflow-tooltip>
         <template slot-scope="scope">
           <span
             v-if="scope.row.supplierShopOutput&&scope.row.supplierShopOutput.shopCompany"
           >{{ scope.row.supplierShopOutput.shopCompany.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="mobile" label="手机" width="190"></el-table-column>
-      <el-table-column prop label="地区" width="190">
+      <el-table-column prop="mobile" label="手机" width="220"></el-table-column>
+      <el-table-column prop label="地区" width="220">
         <template slot-scope="scope">
           <span
             v-if="scope.row.supplierShopOutput&&scope.row.supplierShopOutput.shopCompany"
@@ -61,15 +61,20 @@
           >{{ scope.row.shop.shopCompany.provinceId|formatProvince }} {{ scope.row.shop.shopCompany.cityId|formatCity(scope.row.shop.shopCompany.provinceId) }}</span>-->
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="是否金牌供应商">
+      <el-table-column prop="name" label="是否金牌供应商" width="150">
         <template slot-scope="scope">
           <span v-if="scope.row.vip == 0">否</span>
           <span v-if="scope.row.vip == 1">是</span>
         </template>
       </el-table-column>
-      <el-table-column label="店铺状态" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.supplierShopOutput.shopStatus.text }}</span>
+      <el-table-column label="店铺状态" width="150">
+        <template
+          slot-scope="scope"
+          v-if="scope.row.supplierShopOutput&&scope.row.supplierShopOutput.shopStatus"
+        >
+          <span v-if="scope.row.supplierShopOutput.shopStatus.index==1">待审核</span>
+          <span v-if="scope.row.supplierShopOutput.shopStatus.index==2">已审核</span>
+          <span v-if="scope.row.supplierShopOutput.shopStatus.index==3">审核不通过</span>
         </template>
       </el-table-column>
       <el-table-column label="提交状态" width="120">
@@ -81,7 +86,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="店铺提交审核时间" width="190">
+      <el-table-column label="店铺提交审核时间">
         <template
           slot-scope="scope"
           v-if="scope.row.shopAudit&&scope.row.shopAudit.submitAuditDate"
@@ -89,7 +94,7 @@
           <span>{{ scope.row.shopAudit.submitAuditDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="250">
+      <el-table-column label="操作" width="240">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
           <template v-if="scope.row.shopAudit">

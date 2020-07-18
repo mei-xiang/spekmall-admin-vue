@@ -137,7 +137,7 @@ export default {
 					width: '120px',
 					hasSort: false,
 					isShow: true,
-					prop: 'englishText',
+					prop: 'textEn',
 					label: '英文名称'
 				},
 				{
@@ -170,7 +170,7 @@ export default {
 					width: 'none',
 					hasSort: false,
 					isShow: true,
-					prop: 'remark',
+					prop: 'description',
 					label: '描述'
 				},
 				{
@@ -186,7 +186,7 @@ export default {
 					width: '180px',
 					hasSort: false,
 					isShow: true,
-					prop: 'lastModifyTime',
+					prop: 'updateDate',
 					label: '最后修改时间'
 				}
 			],
@@ -204,8 +204,8 @@ export default {
 				pName: "根节点",
 				text: "",
 				value: "",
-				englishText: "",
-				remark: "",
+				textEn: "",
+				description: "",
 				orderNo: "",
 				isDefault: true,
 				isEnable: true
@@ -228,7 +228,7 @@ export default {
 						{
 							type: "text",
 							label: "英文名称：",
-							prop: "englishText"
+							prop: "textEn"
 						},
 						{
 							type: "text",
@@ -243,8 +243,8 @@ export default {
 						{
 							type: "textarea",
 							label: "描述：",
-              prop: "remark",
-              hidden: true
+              prop: "description",
+              // hidden: true
 						},
 						{
 							type: "switch",
@@ -320,8 +320,8 @@ export default {
 					pName: name,
 					text: res.data.text,
 					value: res.data.value,
-					englishText: res.data.englishText,
-					remark: res.data.remark,
+					textEn: res.data.textEn,
+					description: res.data.description,
 					orderNo: res.data.orderNo,
 					isDefault: res.data.isDefault,
 					isEnable: res.data.isEnable

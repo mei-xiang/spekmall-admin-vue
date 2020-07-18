@@ -17,7 +17,7 @@
       :rules="selfProductRules"
       label-width="150px"
       label-position="right"
-      style="width:700px;margin-left:100px"
+      style="width:800px;margin-left:100px"
     >
       <div class="box">
         <h2>公司基本信息</h2>
@@ -177,8 +177,22 @@
       <div class="box">
         <h2>产品图片上传</h2>
         <div class="info">
-          <div class="item">
+          <div class="item" style="min-width:1000px">
             <el-form-item label="产品图片" prop="images">
+              <!-- <div ref="serPictureRef">
+                <span class="serPicture serPicture1">设为封面</span>
+                <span class="serPicture serPicture2">设为封面</span>
+                <span class="serPicture serPicture3">设为封面</span>
+                <span class="serPicture serPicture4">设为封面</span>
+                <span class="serPicture serPicture5">设为封面</span>
+              </div>
+              <div ref="pictureRef">
+                <span class="picture picture1">封面</span>
+                <span class="picture picture2">封面</span>
+                <span class="picture picture3">封面</span>
+                <span class="picture picture4">封面</span>
+                <span class="picture picture5">封面</span>
+              </div>-->
               <el-upload
                 :action="uploadUrl"
                 list-type="picture-card"
@@ -189,14 +203,20 @@
                 :file-list="fileImagesList"
                 :before-upload="beforeAvatarUpload"
                 v-if="type == 2 || type == 3"
-                style="width:850px;"
+                style="min-width:1000px;width:1000px"
                 :limit="5"
               >
-                <!--   :before-upload="beforeAvatarUpload" -->
                 <i class="el-icon-plus"></i>
               </el-upload>
-              <p class="size_limit" v-if="type == 2 || type == 3">尺寸350*350,格式jpg/png/gif,大小不超过500K</p>
-              <el-dialog :visible.sync="imagesDialogVisible" v-if="type == 2 || type == 3">
+              <p
+                class="size_limit"
+                v-if="type == 2 || type == 3"
+              >尺寸350*350,格式jpg/png/gif,大小不超过500K(最多上传5张图片)</p>
+              <el-dialog
+                :visible.sync="imagesDialogVisible"
+                v-if="type == 2 || type == 3"
+                style="z-index:999990"
+              >
                 <img width="100%" :src="imagesDialogImageUrl" alt />
               </el-dialog>
               <el-image
@@ -458,6 +478,9 @@ export default {
   components: {
     VueUeditorWrap
   },
+  mounted() {
+    // console.log(this.$refs.pictureRef.querySelectorAll('span')[0].style.color='red')
+  },
   methods: {
     getProductList() {
       this.axios
@@ -686,12 +709,24 @@ export default {
     // 处理产品图片上传
     handleImagesSuccess(res, file, fileList) {
       this.selfProductForm.images.push(res.data)
+      console.log(res.data)
+      console.log(this.selfProductForm.images)
+      const index = this.selfProductForm.images.findIndex(
+        item => item == res.data
+      )
+      // this.$refs.serPictureRef.querySelectorAll('span')[index].style.color =
+      //   'red'
+      // this.$refs.serPictureRef.querySelectorAll('span')[index].style.display =
+      //   'block'
+      // this.$refs.pictureRef.querySelectorAll('span')[index].style.display =
+      //   'block'
     },
     handleImagesPreview(file, fileList) {
       this.imagesDialogImageUrl = file.url
       this.imagesDialogVisible = true
     },
     handleImagesRemove(file, fileList) {
+      console.log(file)
       if (file.response) {
         const item = this.selfProductForm.images.findIndex(i => {
           return i.src == file.response.data

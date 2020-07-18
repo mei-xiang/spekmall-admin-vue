@@ -52,8 +52,8 @@
     <!-- 表格区域 -->
     <el-table :data="productData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="code" label="产品编号" width="120"></el-table-column>
-      <el-table-column prop="categoryName" label="产品类别（末级）" width="300">
+      <el-table-column prop="code" label="产品编号" width="150"></el-table-column>
+      <el-table-column prop="categoryName" label="产品类别（末级）" width="320">
         <template slot-scope="scope">
           <!-- <span>{{ scope.row.categoryName|formatCategory }}</span> -->
           <span>{{ scope.row.categoryName }}</span>
