@@ -254,8 +254,17 @@ export default {
     handleAvatarSuccess() {},
     // 修改密码
     handleResetPwd(row) {
-      this.modifyModal = true
-      this.modifyPwd.username = row.account.username
+      // this.modifyModal = true
+      // this.modifyPwd.username = row.account.username
+      this.axios
+        .post(
+          `/api/manager/back/password/reset?username=${row.account.username}`
+        )
+        .then(res => {
+          if (res.code == 200) {
+            this.$message.success('密码重置成功')
+          }
+        })
     },
     submitPwd() {
       this.axios
@@ -288,6 +297,7 @@ export default {
     // 启用
     startAccount(row) {
       this.axios.post(`/api/manager/enable/?id=${row.id}`).then(res => {
+        if (res.code == 404) return this.$message.warning(res.message)
         this.$message.success('启用成功')
         this.getUerList()
       })

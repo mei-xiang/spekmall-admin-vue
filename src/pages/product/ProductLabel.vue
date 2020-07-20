@@ -105,7 +105,7 @@ export default {
         name: [
           { required: true, message: '标签名称不能为空', trigger: 'blur' },
           {
-            pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\dA-Za-z_]{1,15}$/,
+            pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\u4e00-\u9fa5]{7}[\dA-Za-z_]{1}$|^[\dA-Za-z_]{1,15}$/,
             message: '只能输入15个字节(数字,字母,下划线)'
           }
         ],
@@ -217,7 +217,7 @@ export default {
         file.type === 'image/jpeg' ||
         file.type === 'image/jpg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 1
 
       if (!isJPG) {

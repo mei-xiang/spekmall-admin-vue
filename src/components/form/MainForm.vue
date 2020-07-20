@@ -1,17 +1,16 @@
 <!--
- * @Description: 主表单组件
- * @Author: jiaxin
- * @Date: 2019-01-08 14:58:31
- * @LastEditors: Please set LastEditors
- * @LastEditTime: 2020-06-10 16:36:55
+ * @Description: 主表组件
  -->
 <template>
   <el-form :model="data"
            :ref="refName"
-           :custom-class="className"
+           :class="className"
+           :label-position="labelPositon"
+           label-width="100%"
            :rules="rules">
     <template v-for="(rowItem, rowIndex) in form">
-      <el-row :key="rowIndex">
+      <el-row :key="rowIndex"
+              :gutter="22">
         <template v-for="(colItem, colIndex) in rowItem">
           <el-col v-if="!colItem.hidden"
                   :key="colIndex"
@@ -23,9 +22,11 @@
                             :label="item.label"
                             :prop="item.prop"
                             :size="size"
-                            :label-width="colItem.labelWidth">
+                            :label-width="colItem.labelWidth"
+                            :class="item.class">
                 <span v-if="item.beforeTxt">{{item.beforeTxt}}</span>
-                <span class="text-wrap">{{data[item.prop] | stringFilter(item.optionCode?options[item.optionCode]:item.format)}}</span>
+                <span v-if="item.replaceTxt">{{item.replaceTxt}}</span>
+                <span v-if="!item.replaceTxt">{{data[item.prop] | stringFilter(item.optionCode?options[item.optionCode]:item.format)}}</span>
                 <span v-if="item.afterTxt">{{item.afterTxt}}</span>
               </el-form-item>
               <!-- 文本类型 -->
@@ -35,15 +36,16 @@
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly && !$dataIsNull(data[item.prop])">
+                <span v-if="item.readOnly && !$dataIsNull(data[item.prop])"
+                      :class="item.class">
                   <span v-if="item.beforeTxt">{{item.beforeTxt}}</span>
-                  <span class="text-wrap">{{data[item.prop]}}</span>
+                  {{data[item.prop]}}
                   <span v-if="item.afterTxt">{{item.afterTxt}}</span>
                 </span>
                 <el-input v-if="!item.readOnly"
+                          :placeholder="item.placeholder"
                           v-model.trim="data[item.prop]"
                           :maxlength="item.maxLength?item.maxLength:20"
-                          :placeholder="item.placeholder"
                           @change="item.change?textChange($event, item.change,item.changeFn): null"
                           :disabled="item.disabled">
                   <template v-if="item.beforeTxt"
@@ -52,18 +54,6 @@
                             slot="append">{{item.afterTxt}}</template>
                 </el-input>
               </el-form-item>
-              <!-- 可搜索文本类型 -->
-              <el-form-item :key="index"
-                            v-if="item.type === 'autocomplete'  && !item.hidden"
-                            :label="item.label"
-                            :prop="item.prop"
-                            :size="size"
-                            :label-width="colItem.labelWidth">
-                <el-autocomplete v-model="data.unCreditCode"
-                                 :fetch-suggestions="querySearchAsync"
-                                 :trigger-on-focus="false"
-                                 @select="handleSelect"></el-autocomplete>
-              </el-form-item>
               <!-- 滑块开关类型 -->
               <el-form-item :key="index"
                             v-if="item.type === 'switch'  && !item.hidden"
@@ -71,8 +61,11 @@
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly">
+                <span v-if="item.readOnly&& !item.text1">
                   {{item.on?data[item.prop] === item.on? "是":"否":data[item.prop]?"是":"否" }}
+                </span>
+                <span v-if="item.readOnly&& item.text1">
+                  {{item.on?data[item.prop] === item.on? item.text1:item.text2:data[item.prop]?item.text1:item.text2 }}
                 </span>
                 <el-switch v-if="!item.readOnly"
                            v-model="data[item.prop]"
@@ -88,16 +81,16 @@
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly"
-                      class="text-wrap">
+                <span v-if="item.readOnly">
                   {{data[item.prop]}}
                 </span>
                 <!-- 文本域类型 -->
                 <el-input v-if="!item.readOnly"
                           type="textarea"
+                          :placeholder="item.placeholder"
                           :rows="item.rows"
                           maxlength="200"
-                          v-model="data[item.prop]"
+                          v-model.trim="data[item.prop]"
                           :disabled="item.disabled"></el-input>
               </el-form-item>
               <!-- 密码类型 -->
@@ -112,12 +105,12 @@
                 </span>
                 <!-- 密码类型 -->
                 <el-input v-if="!item.readOnly"
+                          :placeholder="item.placeholder"
                           type="password"
                           :rows="item.rows"
-                          maxlength="16"
+                          maxlength="20"
                           v-model.trim="data[item.prop]"
-                          :disabled="item.disabled"
-                          :show-password="item.showPassword"></el-input>
+                          :disabled="item.disabled"></el-input>
               </el-form-item>
               <!-- 数字类型 -->
               <el-form-item :key="index"
@@ -127,8 +120,10 @@
                             :size="size"
                             :label-width="colItem.labelWidth">
                 <span v-if="item.readOnly"
-                      class="text-wrap">
+                      :class="item.class">
+                  <span v-if="item.beforeTxt && data[item.prop]">{{item.beforeTxt}}</span>
                   {{data[item.prop] | numberFilter(item.format)}}
+                  <span v-if="item.afterTxt && data[item.prop]">{{item.afterTxt}}</span>
                 </span>
                 <!-- 数字类型 -->
                 <el-input v-if="!item.readOnly"
@@ -136,21 +131,12 @@
                           maxlength="16"
                           @change="item.change?textChange($event, item.change,item.changeFn): null"
                           v-model.trim="data[item.prop]"
-                          :disabled="item.disabled"></el-input>
-              </el-form-item>
-              <!-- 三级地理 -->
-              <el-form-item :key="index"
-                            v-if="item.type === 'areas'  && !item.hidden"
-                            :label="item.label"
-                            :prop="item.prop"
-                            :size="size"
-                            :label-width="colItem.labelWidth">
-                <choice-areas v-if="!item.readOnly"
-                              :data="data[item.value]"
-                              :prop="item.propArray"
-                              @returnData="changeArea($event, item.propLabel)"
-                              :disabled="item.disabled"></choice-areas>
-                <span v-if="item.readOnly">{{$filters.area(data[item.value][0])}}{{$filters.area(data[item.value][1])}}{{$filters.area(data[item.value][2])}}</span>
+                          :disabled="item.disabled">
+                  <template v-if="item.beforeTxt"
+                            slot="prepend">{{item.beforeTxt}}</template>
+                  <template v-if="item.afterTxt"
+                            slot="append">{{item.afterTxt}}</template>
+                </el-input>
               </el-form-item>
               <!-- 日期类型 -->
               <el-form-item :key="index"
@@ -159,8 +145,7 @@
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly"
-                      class="text-wrap">
+                <span v-if="item.readOnly">
                   {{data[item.prop] | dateFilter("yyyy-MM-dd")}}
                 </span>
                 <el-date-picker v-if="!item.readOnly"
@@ -179,8 +164,7 @@
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly"
-                      class="text-wrap">
+                <span v-if="item.readOnly">
                   {{data[item.prop] | dateFilter("yyyy-MM-dd hh:mm:ss")}}
                 </span>
                 <el-date-picker v-if="!item.readOnly"
@@ -199,12 +183,10 @@
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly"
-                      class="text-wrap">
+                <span v-if="item.readOnly">
                   {{data[item.prop] | stringFilter(item.optionCode?options[item.optionCode]:item.format) }}
                 </span>
                 <el-select v-if="!item.readOnly"
-                           :multiple="item.multiple"
                            :popper-class="item.selectConfig?'titel-select':null"
                            v-model="data[item.prop]"
                            placeholder="请选择"
@@ -237,78 +219,200 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <!-- 分页下拉框类型 -->
+              <!--单选框类型 -->
               <el-form-item :key="index"
-                            v-if="item.type === 'paginationSelect'  && !item.hidden"
+                            v-if="item.type === 'radios'  && !item.hidden "
                             :label="item.label"
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <span v-if="item.readOnly"
-                      class="text-wrap">
-                  {{data[item.showProp]}}
+                <span v-if="item.readOnly">
+                  {{data[item.prop] | stringFilter(item.radioOptList)}}
                 </span>
-                <pagination-select v-if="!item.readOnly"
-                                   :ref="item.ref"
-                                   :initData="data[item.prop]"
-                                   :config="item.selectConfig"
-                                   :options="item.option"
-                                   :disabled="item.disabled"
-                                   @change="paginationSelectChange($event, item.changeFn)"></pagination-select>
+                <el-radio-group v-model="data[item.prop]"
+                                v-if="!item.readOnly">
+                  <el-radio v-for="i in item.radioOptList"
+                            :label="i.value"
+                            :key="i.value"
+                            @change="item.changeFn?radioChange($event,data[item.prop], item.changeFn): null"
+                            :value="i.value">{{i.text}}</el-radio>
+                </el-radio-group>
+                <!-- sp -->
               </el-form-item>
-              <!-- 级联选择器 动态加载次级选项-->
+              <!--复选框类型 -->
+              <el-form-item :key="index"
+                            v-if="item.type === 'checkbox'  && !item.hidden"
+                            :label="item.label"
+                            :prop="item.prop"
+                            :size="size"
+                            :label-width="colItem.labelWidth">
+                <el-checkbox-group v-model="data[item.prop]"
+                                   v-if="!item.readOnly">
+                  <el-checkbox @change="item.changeFn?checkboxChange($event,data[item.prop], item.changeFn): null"
+                               v-for="i in item.checkOptList"
+                               :label="i.value"
+                               :key="i.value"
+                               :value="i.value">{{i.label}}</el-checkbox>
+                </el-checkbox-group>
+                <span v-if="item.readOnly">{{ item.checkOptList | selectorFilter(data[item.prop]) }}</span>
+
+              </el-form-item>
+              <!-- 简版下拉框 -->
+              <el-form-item :key="index"
+                            v-if="item.type === 'selector'  && !item.hidden"
+                            :label="item.label"
+                            :prop="item.prop"
+                            :size="size"
+                            :label-width="colItem.labelWidth">
+                <el-select v-model="data[item.prop]"
+                           @change="item.changeFn?selectorChange($event,data[item.prop], item.changeFn): null"
+                           :multiple="item.multiple"
+                           v-if="!item.readOnly"
+                           style="width:100%">
+                  <el-option v-for="i in item.optList"
+                             :label="i.text"
+                             :key="i.value"
+                             :value="i.value"></el-option>
+                </el-select>
+
+                <span v-if="item.readOnly">{{ data[item.prop] | filterOfSelector(item.optList,data)}}</span>
+              </el-form-item>
+              <!-- 三级地理 -->
+              <!-- {
+                type: "areas",    类型
+                label: "归属地：", 标签显示
+                prop: "province", 用来控制校验必填等
+                value: "areas1",  初始显示值
+                readOnly: true,   是否只读
+                propArray: ["province", "city"],    id赋值字段数组
+                propLabel: ["provinceLabel", "cityLabel"], label赋值字段数组
+              }, -->
+              <el-form-item :key="index"
+                            v-if="item.type === 'areas'  && !item.hidden"
+                            :label="item.label"
+                            :prop="item.prop"
+                            :size="size"
+                            :label-width="colItem.labelWidth">
+                <choice-areas v-if="!item.readOnly"
+                              :showArea="item.showArea"
+                              :data="data[item.value]"
+                              :prop="item.propArray"
+                              :placeholder="item.placeholder"
+                              @returnData="changeArea($event, item.propLabel, item.value)"
+                              :disabled="item.disabled"></choice-areas>
+                <span v-if="item.readOnly">{{data[item.value][0] | areaFilter}}{{data[item.value][1] | areaFilter}}{{data[item.value][3] | areaFilter}}</span>
+              </el-form-item>
+              <!-- 图片上传 -->
+              <el-form-item :key="index"
+                            v-if="item.type === 'uploadImage'  && !item.hidden"
+                            :label="item.label"
+                            :prop="item.prop"
+                            :size="size"
+                            :label-width="colItem.labelWidth">
+                <el-upload class="upload-demo"
+                           :class="{disabled:item.isMax}"
+                           v-if="!item.readOnly"
+                           action="customer"
+                           :limit="item.limit"
+                           :accept="item.accept"
+                           :on-change="imgChange"
+                           :on-exceed="exceed"
+                           :http-request="item.submitFiles"
+                           :before-upload="item.beforeUpload"
+                           :file-list="data[item.prop]"
+                           list-type="picture-card">
+                  <i class="el-icon-plus"></i>
+                  <!-- 自定义图片显示 -->
+                  <div slot="file"
+                       slot-scope="{file}">
+                    <img class="el-upload-list__item-thumbnail"
+                         v-lazy="$parseUrl(file.url)"
+                         alt="">
+                    <span class="el-upload-list__item-actions">
+                      <span class="el-upload-list__item-preview"
+                            @click="pictureCardPreview(file)">
+                        <i class="el-icon-zoom-in"></i>
+                      </span>
+                    </span>
+                    <span class="delete"
+                          @click="item.remove(file)">
+                      <i class="el-icon-error"></i>
+                    </span>
+                    <span class="cover top"
+                          v-if="item.cover"
+                          v-show="file.index === 0">封面</span>
+                    <span class="cover btm"
+                          v-if="item.cover"
+                          v-show="file.index !== 0"
+                          @click="item.setCover(file)">设为封面</span>
+                  </div>
+                  <!-- 下部tip -->
+                  <div slot="tip">
+                    <p class="img-tip"
+                       v-if="Array.isArray(item.tipList)"
+                       v-for="(subItem, index) in item.tipList"
+                       :key="index">{{subItem}}</p>
+                    <template v-if="typeof item.tipList === 'function'">
+                      <p class="img-tip"
+                         v-for="(subItem, index) in item.tipList(data[item.prop])"
+                         :key="index">{{subItem}}</p>
+                    </template>
+
+                  </div>
+                </el-upload>
+                <el-image class="img-upload"
+                          v-if="item.readOnly"
+                          v-for="(it, index) in data[item.prop]"
+                          :key="index"
+                          :src="$parseUrl(it.url)"
+                          :preview-src-list="data[item.prop].map((subItem) => {return $parseUrl(subItem.url)})">
+                </el-image>
+                <!-- <span v-if="item.readOnly">{{data[item.prop]}}</span> -->
+              </el-form-item>
+              <!-- 分类 选择 -->
+              <el-form-item :key="index"
+                            v-if="item.type === 'category'  && !item.hidden"
+                            :label="item.label"
+                            :prop="item.prop"
+                            :size="size"
+                            :label-width="colItem.labelWidth">
+                <el-cascader ref="category"
+                             v-if="!item.readOnly"
+                             :options="categoryData"
+                             v-model="data[item.prop]"
+                             :show-all-levels="item.showAllLevels ? true : false"
+                             @change="categoryChange($event,item)"
+                             :props="setCategory(item.checkStrictly)"
+                             :disabled="item.disabled"></el-cascader>
+
+                <span v-if="item.readOnly">{{data[item.showValue] | categoryFilter}}</span>
+              </el-form-item>
+
+              <!-- 次级联选 -->
               <el-form-item :key="index"
                             v-if="item.type === 'cascader'  && !item.hidden"
                             :label="item.label"
                             :prop="item.prop"
                             :size="size"
                             :label-width="colItem.labelWidth">
-                <el-cascader :ref="item.changeFn"
-                             :options="options[item.optionCode]"
-                             :value="data[item.value]"
+                <el-cascader ref="cascader"
+                             v-if="!item.readOnly"
+                             :options="item.optList"
+                             :placeholder="item.placeholder"
+                             :props="item.props"
+                             v-model="data[item.prop]"
                              :show-all-levels="item.showAllLevels ? true : false"
-                             @change="cascaderChange($event,item)"
-                             :props="item.defaultProps"
                              :disabled="item.disabled"></el-cascader>
+
+                <span v-if="item.readOnly">{{data[item.prop] | filterOfCascader(item.optList,data)}}</span>
               </el-form-item>
-              <!-- 组织机构选择 -->
-              <el-form-item :key="index"
-                            v-if="item.type === 'org'  && !item.hidden"
-                            :label="item.label"
-                            :prop="item.prop"
-                            :size="size"
-                            :label-width="colItem.labelWidth">
-                <Cascader :choiceId.sync="data[item.prop]"
-                          :props="orgProps"
-                          :bodyData="orgTree"></Cascader>
-              </el-form-item>
-              <!-- 分类选择 -->
-              <el-form-item :key="index"
-                            v-if="item.type === 'class'  && !item.hidden"
-                            :label="item.label"
-                            :prop="item.prop"
-                            :size="size"
-                            :label-width="colItem.labelWidth">
-                <class-choice :classType="item.classType"
-                              :isShowRoot="item.isShowRoot"
-                              :disabledId="item.disabledId"
-                              :choiceId.sync="data[item.prop]"
-                              @change="classChange"></class-choice>
-              </el-form-item>
-              <!-- 系统表格列选择 -->
-              <el-form-item :key="index"
-                            v-if="item.type === 'table'  && !item.hidden"
-                            :label="item.label"
-                            :prop="item.prop"
-                            :size="size"
-                            :label-width="colItem.labelWidth">
-                <table-choice :choiceId.sync="data[item.prop]"></table-choice>
-              </el-form-item>
+
             </template>
 
           </el-col>
         </template>
       </el-row>
+
     </template>
     <div v-if="button.isShow"
          class="footer"
@@ -326,40 +430,43 @@
                    :size="item.size">{{item.text}}</el-button>
       </template>
     </div>
+    <!-- 查看大图 -->
+    <el-image ref="preview"
+              class="hide-Img"
+              :src="dialogImageUrl"
+              :preview-src-list="[dialogImageUrl]"
+              :z-index="100"></el-image>
   </el-form>
 </template>
 
 <script>
 import ChoiceAreas from "@/components/form/ChoiceAreas";
-import ClassChoice from '@/components/form/ClassChoice';
-import TableChoice from '@/components/form/TableChoice';
-import Cascader from "@/components/tree/cascader";
-import PaginationSelect from "@/components/select/PaginationSelect";
 import { mapGetters } from 'vuex';
 let _this
 export default {
   data() {
     _this = this
     return {
-      // 自动补全获取结果数组
-      restaurants: [
-        // { "value": "1111111" }
-      ],
       // 暂存子列表数据
       childrenArr: [],
       // 下拉框 option对象
       option: {},
       loading: false,
       areas: [],
-      orgProps: {
-        value: "id",
-        children: 'children',
-        label: 'orgName',
-        checkStrictly: true
-      }
+      dialogImageUrl: '',
+
     }
   },
+  components: {
+    ChoiceAreas
+  },
   props: {
+    labelPositon: {
+      type: String,
+      default: () => {
+        return "left"
+      }
+    },
     size: {
       type: String,
       default: () => {
@@ -381,7 +488,7 @@ export default {
     className: {
       type: String,
       default: () => {
-        return null
+        return ''
       }
     },
     // 双向绑定的数据
@@ -495,16 +602,10 @@ export default {
       }
     }
   },
-  components: {
-    ChoiceAreas,
-    ClassChoice,
-    TableChoice,
-    Cascader,
-    PaginationSelect
-  },
   methods: {
     // 修改三级地理数据
-    changeArea(data, propLabelArray) {
+    changeArea(data, propLabelArray, value) {
+      this.data[value] = data.value;
       data.prop.map((item, index) => {
         this.data[item] = data.value[index] ? data.value[index] : null;
         if (Array.isArray(propLabelArray) && propLabelArray.length !== 0) {
@@ -512,25 +613,7 @@ export default {
         }
       })
     },
-    // 自动补全统一信用代码 -----------------------------------
-    querySearchAsync(queryString, cb) {
-      if (queryString.length < 4) return;
-      let restaurants = this.restaurants;
-      let results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
 
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        cb(results);
-      }, 3000 * Math.random());
-    },
-    createStateFilter(queryString) {
-      return (state) => {
-        return (state.value.indexOf(queryString) === 0);
-      };
-    },
-    handleSelect(item) {
-      console.log(item);
-    },
     // 遍历获取其中selectCode 并 请求获取
     getSelect(arr) {
       let codeList = new Set();
@@ -567,10 +650,6 @@ export default {
         });
       })
     },
-    // 父组件获取验证情况/验证后的数据
-    returnData() {
-
-    },
 		/**
 		 * @description: 内部提交表单
 		 * @param ajaxType {string}
@@ -582,8 +661,6 @@ export default {
     submit(ajaxType, url, resolve, reject) {
       this.$refs[this.refName].validate((valid) => {
         if (valid) {
-          // 过滤文件前后空格
-          this.trim();
           this.axios[ajaxType](url, this.data).then((res) => {
             // eslint-disable-next-line eqeqeq
             if (res.statusCode == 200) {
@@ -612,40 +689,35 @@ export default {
     cancel(resolve) {
       this.$emit("callback", resolve)
     },
-    trim() {
-      // 过滤文件前后空格
-      for (const item in this.data) {
-        let val = this.data[item];
-        this.data[item] = this.$text.trim(val);
-      }
-    },
-    // 外部提交验证
+    // 外部提交验证 (回调方式)
     validate(callback) {
       this.$refs[this.refName].validate((valid) => {
         if (valid) {
-          if (callback) {
-            this.trim();
-            callback(this.data)
-          }
+          if (callback) callback(this.data);
         } else {
-          return false;
+          if (callback) callback();
         }
       });
     },
-    // 校验字段
-    validateField(field) {
-      this.$refs[this.refName].validateField(field);
+    // 外部提交验证 (Promise方式)
+    validatePromise() {
+      return new Promise((resolve, reject) => {
+        this.$refs[this.refName].validate((valid) => {
+          if (valid) {
+            resolve(this.data);
+          } else {
+            reject(valid);
+          }
+        });
+      })
+
+    },
+    validateField(val) {
+      this.$refs[this.refName].validateField(val)
     },
     // 清除校验结果
     clearValidate() {
       this.$refs[this.refName].clearValidate();
-    },
-    cascaderChange(arr, config) {
-      const node = this.$refs[config.changeFn][0].getCheckedNodes();
-      this.$emit(config.changeFn, arr, node);
-    },
-    classChange(node) {
-      this.$emit("classChange", node);
     },
     // 普通下拉框相关方法部分 -------------------------------
     selectChange(val, option, functionName) {
@@ -655,12 +727,6 @@ export default {
           if (item.id != null && item.id == val) return item
         });
         this.$emit(functionName, [val, data]);
-      }
-    },
-    // 分页下拉框相关方法部分 -------------------------------
-    paginationSelectChange([val, data], functionName) {
-      if (functionName) {
-        this.$emit(functionName, [val, data])
       }
     },
 		/**
@@ -681,8 +747,7 @@ export default {
     textChange(val, changeObj, functionName) {
       if (changeObj.type === "price") {
         this.priceChange(val, changeObj);
-      }
-      if (changeObj.type === "changeFns") {
+      } else {
         this.$emit(functionName, val)
       }
     },
@@ -749,25 +814,148 @@ export default {
         default:
           break;
       }
+    },
+    radioChange(val, option, functionName) {
+      this.$emit(functionName, val, option);
+    },
+    checkboxChange(val, option, functionName) {
+      this.$emit(functionName, option);
+    },
+    selectorChange(val, option, functionName) {
+      this.$emit(functionName, option);
+    },
+    // 超出限制个数
+    exceed(file, fileList) {
+      this.$message.warning('上传文件超出限制个数')
+    },
+    closeViewer() {
+      this.dialogImageUrl = false;
+    },
+    pictureCardPreview(file) {
+      this.dialogImageUrl = this.$parseUrl(file.url);
+      this.$nextTick(() => {
+        this.$refs.preview.clickHandler();
+      })
+    },
+    // 将准备状态的图片清空，取消默认上传的图片显示，由自定义上传成功来回显图片
+    imgChange: (file, fileList) => {
+      if (file.status === 'ready') {
+        fileList.splice(fileList.length - 1, 1);
+      }
+    },
+    // 分类 -------------------------------------------------------------------------
+    categoryChange(arr, config) {
+      const node = this.$refs.category[0].getCheckedNodes();
+      this.$emit('categoryChange', arr, node);
+    },
+    setCategory(checkStrictly) {
+      return {
+        value: "id",
+        children: 'childrens',
+        label: 'name',
+        checkStrictly: checkStrictly
+      }
+    },
+    // 计算分类所有的父级id
+    parseCategoryId(id) {
+      return this.$treeFn.findAllPId(_this.categoryData, id, {
+        children: "childrens",
+        label: "name",
+        pId: "fid"
+      })
     }
-
-  },
-  computed: {
-    ...mapGetters(["orgTree"])
   },
   filters: {
     dateFilter: function (val, formatTxt) {
       return _this.$filters.date(val, formatTxt)
     },
     numberFilter: function (val, formatTxt) {
-      return _this.$filters.number(val, formatTxt)
+      if (formatTxt === '2,ture' && _this.$dataIsNull(val)) {
+        return '议价'
+      } else {
+        return _this.$filters.number(val, formatTxt)
+      }
+
     },
     stringFilter: function (val, formatArr) {
       return _this.$filters.string(val, formatArr)
     },
     areaFilter: function (val) {
-      return _this.$filters.area(val)
-    }
+
+      let result = null;
+      const parseId = (arr, id) => {
+        arr.map((item) => {
+          if (item.id === id) {
+            result = item.name;
+            return item.name;
+          }
+          if (item.lower && item.lower.length !== 0) {
+            parseId(item.lower, id)
+          }
+        })
+      }
+      if (val && _this.allAreaData) {
+        parseId(_this.allAreaData, val);
+        return result === null ? val : result;
+      } else {
+        return val
+      }
+    },
+    selectorFilter: function (val, arr) {
+      let newArr = []
+      let newArrStr = null
+      val.forEach(item => {
+        if (arr.includes(item.value)) {
+          newArr.push(item.label);
+        };
+      })
+      newArrStr = newArr.toString()
+      return newArrStr
+    },
+    categoryFilter: function (val) {
+      const { label } = _this.parseCategoryId(val)
+      return Array.isArray(label) ? label.join(' / ') : ''
+    },
+    // 因为单选的select 后台返回的是字符串，而多选的selctor返回的是数组，所以再写一个过滤器
+    filterOfSelector: function (val, optionList, data) {
+      if (!val) return; // 避免初始化时 还没有请求到数据带来的报错
+      // 接口返回有的是直接是 不需要查找的值，有的是需要进行查找的值。根据是否中文进行判断
+      let reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
+      let res = typeof val === "string" ? true : false;
+
+      let newArr = [];
+      if (res) {
+        if (reg.test(val)) {
+          return val
+        } else {
+          let res = optionList.filter(it => it.value === val)[0]
+          return res && res.text
+        }
+
+      } else {
+        optionList.forEach(item => {
+          if (val.includes(item.value)) {
+            newArr.push(item.text)
+          }
+        })
+      }
+      return newArr.toString()
+    },
+    filterOfCascader: function (val, optionList, data) {
+      if (!val) return; // 避免初始化时 还没有请求到数据带来的报错
+      // 接口返回有的是直接是 不需要查找的值，有的是需要进行查找的值。根据是否中文进行判断
+      let reg = new RegExp("[\\u4E00-\\u9FFF]+", "g");
+      let res = typeof val === "string" ? true : false;
+      let newArr = [];
+      let val1 = optionList.filter(it => it.value === val[0])
+      if (val1.length > 0) {
+        newArr.push(val1[0].label)
+        let val2 = val1[0].children.filter(it => it.value === val[1])
+        newArr.push(val2[0].label)
+      }
+      return newArr.toString()
+    },
+
   },
   watch: {
     form: {
@@ -776,6 +964,9 @@ export default {
         if (Array.isArray(val)) this.getSelect(val);
       }
     }
+  },
+  computed: {
+    ...mapGetters(['allAreaData', 'categoryData'])
   }
 }
 </script>
@@ -783,6 +974,111 @@ export default {
 .el-autocomplete, .el-date-editor.el-input
   width 100%
 
-.text-wrap
-  word-break break-all
+// 显示列表下的样式 --------------------------------------------------
+.show-List
+  .el-form-item
+    margin-bottom 12px
+
+  >>>.el-form-item__label
+    box-sizing content-box
+    padding-right 0
+    line-height 20px
+
+  >>>.el-form-item__content
+    line-height 20px
+
+// 买家中心，账户管理，企业信息 字体为16px，margin-bottom要求25px
+.buyer-company-info
+  .el-form-item
+    margin-bottom 15px
+
+  >>>.el-form-item__label
+    font-size 16px
+
+  >>>.el-form-item__content
+    font-size 16px
+    width 407px
+    color #141415
+
+.font-orange
+  color #FF8300
+  font-weight bold
+
+// 图片上传相关样式  ------------------------------------------------
+>>>.el-upload-list__item, >>>.el-upload--picture-card
+  width 104px
+  height 104px
+  border-radius 0
+
+>>>.el-upload--picture-card
+  margin-bottom 10px
+  line-height 104px
+
+>>>.el-upload-list__item
+  overflow visible
+  margin-right 20px
+  border 0
+
+  &>div
+    width 100%
+    height 100%
+    line-height 104px
+
+    img
+      height auto
+      max-height 100%
+
+.img-tip
+  line-height 24px
+  color #969592
+
+.img-upload
+  width 104px
+  margin 0 8px 8px 0
+  height 104px
+
+>>>.disabled .el-upload--picture-card
+  display none
+
+>>>.el-upload-list--picture-card
+  .el-upload-list__item-preview
+    font-size 20px
+
+  .delete
+    position absolute
+    top -7px
+    right -7px
+    z-index 100
+    display block
+    width 14px
+    height 14px
+    font-size 16px
+    color $font-color-gray
+    cursor pointer
+
+    i
+      display block
+
+  .cover
+    position absolute
+    display block
+    padding 0 4px
+    height 17px
+    line-height 18px
+    font-size 12px
+    color $font-color
+    $linear-gradient()
+
+  .top
+    top 1px
+    left 0
+
+  .btm
+    bottom -1px
+    right 0
+    cursor pointer
+
+.hide-Img
+  >>>.el-image__inner, >>>.el-image__error
+    display none
 </style>

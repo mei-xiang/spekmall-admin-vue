@@ -179,35 +179,83 @@
         <div class="info">
           <div class="item" style="min-width:1000px">
             <el-form-item label="产品图片" prop="images">
-              <!-- <div ref="serPictureRef">
-                <span class="serPicture serPicture1">设为封面</span>
-                <span class="serPicture serPicture2">设为封面</span>
-                <span class="serPicture serPicture3">设为封面</span>
-                <span class="serPicture serPicture4">设为封面</span>
-                <span class="serPicture serPicture5">设为封面</span>
+              <div style="min-width:1000px;width:1000px" v-if="type == 2 || type == 3">
+                <el-upload
+                  class="avatar-uploader"
+                  :action="uploadUrl"
+                  :show-file-list="false"
+                  :on-success="handleImagesSuccess1"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <img v-if="src[0]" :src="src[0]" class="avatar" />
+                  <div ref="cover1">
+                    <span class="cover" @click.prevent.stop="cover($event)">封面</span>
+                    <span class="set_cover" @click.prevent.stop="set_cover($event,1)">设为封面</span>
+                    <span class="del" @click.prevent.stop="del($event,1)">删除</span>
+                  </div>
+                  <i v-if="!src[0]" class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+                <el-upload
+                  class="avatar-uploader"
+                  :action="uploadUrl"
+                  :show-file-list="false"
+                  :on-success="handleImagesSuccess2"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <img v-if="src[1]" :src="src[1]" class="avatar" />
+                  <div ref="cover2">
+                    <span class="cover" @click.prevent.stop="cover($event)">封面</span>
+                    <span class="set_cover" @click.prevent.stop="set_cover($event,2)">设为封面</span>
+                    <span class="del" @click.prevent.stop="del($event,2)">删除</span>
+                  </div>
+                  <i class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+                <el-upload
+                  class="avatar-uploader"
+                  :action="uploadUrl"
+                  :show-file-list="false"
+                  :on-success="handleImagesSuccess3"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <img v-if="src[2]" :src="src[2]" class="avatar" />
+                  <div ref="cover3">
+                    <span class="cover" @click.prevent.stop="cover($event)">封面</span>
+                    <span class="set_cover" @click.prevent.stop="set_cover($event,3)">设为封面</span>
+                    <span class="del" @click.prevent.stop="del($event,3)">删除</span>
+                  </div>
+                  <i class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+                <el-upload
+                  class="avatar-uploader"
+                  :action="uploadUrl"
+                  :show-file-list="false"
+                  :on-success="handleImagesSuccess4"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <img v-if="src[3]" :src="src[3]" class="avatar" />
+                  <div ref="cover4">
+                    <span class="cover" @click.prevent.stop="cover($event)">封面</span>
+                    <span class="set_cover" @click.prevent.stop="set_cover($event,4)">设为封面</span>
+                    <span class="del" @click.prevent.stop="del($event,4)">删除</span>
+                  </div>
+                  <i class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+                <el-upload
+                  class="avatar-uploader"
+                  :action="uploadUrl"
+                  :show-file-list="false"
+                  :on-success="handleImagesSuccess5"
+                  :before-upload="beforeAvatarUpload"
+                >
+                  <img v-if="src[4]" :src="src[4]" class="avatar" />
+                  <div ref="cover5">
+                    <span class="cover" @click.prevent.stop="cover($event)">封面</span>
+                    <span class="set_cover" @click.prevent.stop="set_cover($event,5)">设为封面</span>
+                    <span class="del" @click.prevent.stop="del($event,5)">删除</span>
+                  </div>
+                  <i class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
               </div>
-              <div ref="pictureRef">
-                <span class="picture picture1">封面</span>
-                <span class="picture picture2">封面</span>
-                <span class="picture picture3">封面</span>
-                <span class="picture picture4">封面</span>
-                <span class="picture picture5">封面</span>
-              </div>-->
-              <el-upload
-                :action="uploadUrl"
-                list-type="picture-card"
-                :on-success="handleImagesSuccess"
-                :on-preview="handleImagesPreview"
-                :on-remove="handleImagesRemove"
-                :on-exceed="handleImagesExceed"
-                :file-list="fileImagesList"
-                :before-upload="beforeAvatarUpload"
-                v-if="type == 2 || type == 3"
-                style="min-width:1000px;width:1000px"
-                :limit="5"
-              >
-                <i class="el-icon-plus"></i>
-              </el-upload>
               <p
                 class="size_limit"
                 v-if="type == 2 || type == 3"
@@ -440,7 +488,8 @@ export default {
       }/file/upload?token=${token}`, // 图片上传地址
       fileImagesList: [], // images图片
       imagesDialogImageUrl: '', // images图片预览
-      imagesDialogVisible: false
+      imagesDialogVisible: false,
+      src: []
     }
   },
   created() {
@@ -472,6 +521,18 @@ export default {
       if (val && val.length > 20) {
         val.splice(20, 1)
         this.$message.warning('产品规格限20个')
+      }
+    },
+    src: function(val, oldval) {
+      if (val.length > 0) {
+        console.log(val)
+        if (val[0]) {
+          // console.log(this.$refs.cover1.querySelectorAll('span')[0].parentElement.parentElement.querySelector('input'))
+          //  this.$refs.cover1.querySelectorAll('span')[0].parentElement.parentElement.querySelector('input').onchange(function(e){
+          //     // e.preventDefault()
+          //     console.log('aa')
+          //  })
+        }
       }
     }
   },
@@ -546,6 +607,68 @@ export default {
                 url: this.imgBaseUrl + item
               })
             })
+            if (this.type == 2) {
+              this.selfProductForm.images.forEach(item => {
+                this.src.push(this.imgBaseUrl + item)
+              })
+              const coverArr1 = this.$refs.cover1.querySelectorAll('span')
+              const coverArr2 = this.$refs.cover2.querySelectorAll('span')
+              const coverArr3 = this.$refs.cover3.querySelectorAll('span')
+              const coverArr4 = this.$refs.cover4.querySelectorAll('span')
+              const coverArr5 = this.$refs.cover5.querySelectorAll('span')
+              const i = this.src.findIndex(item => {
+                return (
+                  item.split('filePath=')[1] == this.selfProductForm.picture
+                )
+              })
+              if (this.src[0]) {
+                coverArr1[1].style.display = 'block'
+                coverArr1[2].style.display = 'block'
+              }
+              if (this.src[1]) {
+                coverArr2[1].style.display = 'block'
+                coverArr2[2].style.display = 'block'
+              }
+              if (this.src[2]) {
+                coverArr3[1].style.display = 'block'
+                coverArr3[2].style.display = 'block'
+              }
+              if (this.src[3]) {
+                coverArr4[1].style.display = 'block'
+                coverArr4[2].style.display = 'block'
+              }
+              if (this.src[4]) {
+                coverArr5[1].style.display = 'block'
+                coverArr5[2].style.display = 'block'
+              }
+              switch (i) {
+                case 0:
+                  coverArr1[0].style.display = 'block'
+                  coverArr1[1].style.display = 'none'
+                  coverArr1[2].style.display = 'block'
+                  break
+                case 1:
+                  coverArr2[0].style.display = 'block'
+                  coverArr2[1].style.display = 'none'
+                  coverArr2[2].style.display = 'block'
+                  break
+                case 2:
+                  coverArr3[0].style.display = 'block'
+                  coverArr3[1].style.display = 'none'
+                  coverArr3[2].style.display = 'block'
+                  break
+                case 3:
+                  coverArr4[0].style.display = 'block'
+                  coverArr4[1].style.display = 'none'
+                  coverArr4[2].style.display = 'block'
+                  break
+                case 4:
+                  coverArr5[0].style.display = 'block'
+                  coverArr5[1].style.display = 'none'
+                  coverArr5[2].style.display = 'block'
+                  break
+              }
+            }
           }
         })
     },
@@ -707,48 +830,258 @@ export default {
       })
     },
     // 处理产品图片上传
-    handleImagesSuccess(res, file, fileList) {
-      this.selfProductForm.images.push(res.data)
-      console.log(res.data)
-      console.log(this.selfProductForm.images)
-      const index = this.selfProductForm.images.findIndex(
-        item => item == res.data
-      )
-      // this.$refs.serPictureRef.querySelectorAll('span')[index].style.color =
-      //   'red'
-      // this.$refs.serPictureRef.querySelectorAll('span')[index].style.display =
-      //   'block'
-      // this.$refs.pictureRef.querySelectorAll('span')[index].style.display =
-      //   'block'
-    },
-    handleImagesPreview(file, fileList) {
-      this.imagesDialogImageUrl = file.url
-      this.imagesDialogVisible = true
-    },
-    handleImagesRemove(file, fileList) {
-      console.log(file)
-      if (file.response) {
-        const item = this.selfProductForm.images.findIndex(i => {
-          return i.src == file.response.data
-        })
-        this.selfProductForm.images.splice(item, 1)
+    handleImagesSuccess1(res, file, fileList) {
+      // this.selfProductForm.images.splice(0, 1, res.data)
+      const index = this.selfProductForm.images.findIndex(item => {
+        item == this.src[0]
+      })
+      this.src[0] = this.imgBaseUrl + res.data
+      if (index >= 0) {
+        this.selfProductForm.images.splice(index, 1, res.data)
       } else {
-        const item = this.selfProductForm.images.findIndex(i => {
-          return i.src == file.url.match(/filePath=(\S*)/)[1]
-        })
-        this.selfProductForm.images.splice(item, 1)
+        this.selfProductForm.images.push(res.data)
+      }
+      const coverArr = this.$refs.cover1.querySelectorAll('span')
+      if (!this.selfProductForm.picture) {
+        coverArr[0].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        this.selfProductForm.picture = res.data
+      } else {
+        coverArr[1].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        if (
+          !this.selfProductForm.images.includes(this.selfProductForm.picture)
+        ) {
+          // this.selfProductForm.picture = res.data
+        }
       }
     },
-    handleImagesExceed(files, fileList) {
-      this.$message.warning(`最多添加5张`)
+    handleImagesSuccess2(res, file, fileList) {
+      const index = this.selfProductForm.images.findIndex(item => {
+        item == this.src[1]
+      })
+      this.src[1] = this.imgBaseUrl + res.data
+      if (index >= 0) {
+        this.selfProductForm.images.splice(index, 1, res.data)
+      } else {
+        this.selfProductForm.images.push(res.data)
+      }
+      const coverArr = this.$refs.cover2.querySelectorAll('span')
+      if (!this.selfProductForm.picture) {
+        coverArr[0].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        this.selfProductForm.picture = res.data
+      } else {
+        coverArr[1].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        if (
+          !this.selfProductForm.images.includes(this.selfProductForm.picture)
+        ) {
+          // this.selfProductForm.picture = res.data
+        }
+      }
+    },
+    handleImagesSuccess3(res, file, fileList) {
+      const index = this.selfProductForm.images.findIndex(item => {
+        item == this.src[2]
+      })
+      this.src[2] = this.imgBaseUrl + res.data
+      this.selfProductForm.images.push(res.data)
+      if (index) this.selfProductForm.images.splice(index, 1, res.data)
+      const coverArr = this.$refs.cover3.querySelectorAll('span')
+      if (!this.selfProductForm.picture) {
+        coverArr[0].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        this.selfProductForm.picture = res.data
+      } else {
+        coverArr[1].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        if (
+          !this.selfProductForm.images.includes(this.selfProductForm.picture)
+        ) {
+          // this.selfProductForm.picture = res.data
+        }
+      }
+    },
+    handleImagesSuccess4(res, file, fileList) {
+      const index = this.selfProductForm.images.findIndex(item => {
+        item == this.src[3]
+      })
+      this.src[3] = this.imgBaseUrl + res.data
+      this.selfProductForm.images.push(res.data)
+      if (index) this.selfProductForm.images.splice(index, 1, res.data)
+      const coverArr = this.$refs.cover4.querySelectorAll('span')
+      if (!this.selfProductForm.picture) {
+        coverArr[0].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        this.selfProductForm.picture = res.data
+      } else {
+        coverArr[1].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        if (
+          !this.selfProductForm.images.includes(this.selfProductForm.picture)
+        ) {
+          // this.selfProductForm.picture = res.data
+        }
+      }
+    },
+    handleImagesSuccess5(res, file, fileList) {
+      const index = this.selfProductForm.images.findIndex(item => {
+        item == this.src[4]
+      })
+      this.src[4] = this.imgBaseUrl + res.data
+      this.selfProductForm.images.push(res.data)
+      if (index) this.selfProductForm.images.splice(index, 1, res.data)
+      const coverArr = this.$refs.cover5.querySelectorAll('span')
+      if (!this.selfProductForm.picture) {
+        coverArr[0].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        this.selfProductForm.picture = res.data
+      } else {
+        coverArr[1].style.display = 'block'
+        coverArr[2].style.display = 'block'
+        if (
+          !this.selfProductForm.images.includes(this.selfProductForm.picture)
+        ) {
+          // this.selfProductForm.picture = res.data
+        }
+      }
+    },
+    cover() {},
+    set_cover(e, index) {
+      console.log('设为封面', index)
+      const coverArr1 = this.$refs.cover1.querySelectorAll('span')
+      const coverArr2 = this.$refs.cover2.querySelectorAll('span')
+      const coverArr3 = this.$refs.cover3.querySelectorAll('span')
+      const coverArr4 = this.$refs.cover4.querySelectorAll('span')
+      const coverArr5 = this.$refs.cover5.querySelectorAll('span')
+      coverArr1[0].style.display = 'none'
+      coverArr2[0].style.display = 'none'
+      coverArr3[0].style.display = 'none'
+      coverArr4[0].style.display = 'none'
+      coverArr5[0].style.display = 'none'
+      const i = this.selfProductForm.images.findIndex(
+        item => item == this.src[index - 1].split('filePath=')[1]
+      )
+      this.selfProductForm.picture = this.selfProductForm.images[i]
+      console.log(this.selfProductForm.picture)
+      if (this.src[0]) {
+        coverArr1[1].style.display = 'block'
+        coverArr1[2].style.display = 'block'
+      }
+      if (this.src[1]) {
+        coverArr2[1].style.display = 'block'
+        coverArr2[2].style.display = 'block'
+      }
+      if (this.src[2]) {
+        coverArr3[1].style.display = 'block'
+        coverArr3[2].style.display = 'block'
+      }
+      if (this.src[3]) {
+        coverArr4[1].style.display = 'block'
+        coverArr4[2].style.display = 'block'
+      }
+      if (this.src[4]) {
+        coverArr5[1].style.display = 'block'
+        coverArr5[2].style.display = 'block'
+      }
+      switch (index) {
+        case 1:
+          coverArr1[0].style.display = 'block'
+          coverArr1[1].style.display = 'none'
+          coverArr1[2].style.display = 'block'
+          break
+        case 2:
+          coverArr2[0].style.display = 'block'
+          coverArr2[1].style.display = 'none'
+          coverArr2[2].style.display = 'block'
+          break
+        case 3:
+          coverArr3[0].style.display = 'block'
+          coverArr3[1].style.display = 'none'
+          coverArr3[2].style.display = 'block'
+          break
+        case 4:
+          coverArr4[0].style.display = 'block'
+          coverArr4[1].style.display = 'none'
+          coverArr4[2].style.display = 'block'
+          break
+        case 5:
+          coverArr5[0].style.display = 'block'
+          coverArr5[1].style.display = 'none'
+          coverArr5[2].style.display = 'block'
+          break
+      }
+    },
+    del(e, index) {
+      console.log('删除', index)
+
+      const coverArr1 = this.$refs.cover1.querySelectorAll('span')
+      const coverArr2 = this.$refs.cover2.querySelectorAll('span')
+      const coverArr3 = this.$refs.cover3.querySelectorAll('span')
+      const coverArr4 = this.$refs.cover4.querySelectorAll('span')
+      const coverArr5 = this.$refs.cover5.querySelectorAll('span')
+      const i = this.selfProductForm.images.findIndex(
+        item => item == this.src[index - 1].split('filePath=')[1]
+      )
+      if (index - 1 == i) {
+        if (this.src[0]) {
+          coverArr1[0].style.display = 'block'
+          coverArr1[2].style.display = 'block'
+        } else if (this.src[1]) {
+          coverArr2[0].style.display = 'block'
+          coverArr2[2].style.display = 'block'
+        } else if (this.src[2]) {
+          coverArr3[0].style.display = 'block'
+          coverArr3[2].style.display = 'block'
+        } else if (this.src[3]) {
+          coverArr4[0].style.display = 'block'
+          coverArr4[2].style.display = 'block'
+        } else if (this.src[4]) {
+          coverArr5[0].style.display = 'block'
+          coverArr5[2].style.display = 'block'
+        }
+      }
+      switch (index) {
+        case 1:
+          coverArr1[0].style.display = 'none'
+          coverArr1[1].style.display = 'none'
+          coverArr1[2].style.display = 'none'
+          break
+        case 2:
+          coverArr2[0].style.display = 'none'
+          coverArr2[1].style.display = 'none'
+          coverArr2[2].style.display = 'none'
+          break
+        case 3:
+          coverArr3[0].style.display = 'none'
+          coverArr3[1].style.display = 'none'
+          coverArr3[2].style.display = 'none'
+          break
+        case 4:
+          coverArr4[0].style.display = 'none'
+          coverArr4[1].style.display = 'none'
+          coverArr4[2].style.display = 'none'
+          break
+        case 5:
+          coverArr5[0].style.display = 'none'
+          coverArr5[1].style.display = 'none'
+          coverArr5[2].style.display = 'none'
+          break
+      }
+      this.selfProductForm.images.splice(i, 1)
+      this.src[index - 1] = null
+      // this.selfProductForm.picture = ''
+      this.selfProductForm.picture = this.selfProductForm.images[0]
     },
     beforeAvatarUpload(file) {
       let _this = this
+      console.log(file.type)
       const isJPG =
         file.type === 'image/jpg' ||
         file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 0.48828125
 
       if (!isJPG) {
@@ -769,17 +1102,15 @@ export default {
           valid ? resolve() : reject()
         }
         img.src = _URL.createObjectURL(file)
-      })
-        .then(
-          () => {
-            return file
-          },
-          () => {
-            _this.$message.error('图片尺寸限制为350 x 350')
-            return Promise.reject()
-          }
-        )
-        .catch(error => {})
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为350 x 350')
+          return Promise.reject()
+        }
+      )
 
       return isJPG && isLt2M && isSize
     },
@@ -809,14 +1140,6 @@ export default {
         ) {
           return this.$message.warning('价格不能为空')
         }
-        // 已经改为非必填
-        // if (
-        //   this.selfProductForm.specsList.length == 0 ||
-        //   this.selfProductForm.specsList[0].specsName == '' ||
-        //   this.selfProductForm.specsList[0].specsParam == ''
-        // ) {
-        //   return this.$message.warning('产品规格不能为空')
-        // }
 
         // 数据类型转换
         this.selfProductForm.categoryId = this.selfProductForm.categoryId[
@@ -831,8 +1154,8 @@ export default {
             specsList: item.specsList
           })
         })
-        // 封面picture图片赋值
-        this.selfProductForm.picture = this.selfProductForm.images[0]
+        // // 封面picture图片赋值
+        // this.selfProductForm.picture = this.selfProductForm.images[0]
         const productObj = {
           specsList: specsList,
           ...this.selfProductForm
@@ -846,6 +1169,8 @@ export default {
       })
     },
     save() {
+      console.log(this.selfProductForm.picture)
+      console.log(this.selfProductForm.images)
       this.selfProductForm.status = 0 // 草稿
       if (this.type == 2) this.selfProductForm.id = this.$route.query.id
       this.saveOrApprove(this.selfProductForm, function(res) {
@@ -876,5 +1201,63 @@ export default {
 <style scoped>
 .btn_approve {
   margin-left: 550px !important;
+}
+.avatar-uploader {
+  position: relative;
+  width: 178px;
+  height: 178px;
+  float: left;
+  margin-right: 10px;
+  z-index: 1;
+}
+.avatar-uploader span {
+  position: absolute;
+  cursor: pointer;
+  font-size: 12px;
+  z-index: 999999999 !important;
+  display: none;
+}
+.cover {
+  color: yellow;
+  top: -10px;
+  left: 0;
+}
+.set_cover {
+  bottom: -10px;
+  color: #606266;
+  left: 0;
+}
+.del {
+  bottom: -10px;
+  right: 0;
+  color: #606266;
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+  position: relative;
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

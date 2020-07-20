@@ -121,7 +121,7 @@ export default {
         this.id = this.userInfo.userId
         console.log(this.id, this.postData.oldPwd, this.postData.newPwd)
         this.axios
-          .put('/api/manager/password/change', {
+          .put('/public/password/change', {
             id: this.id,
             oldPwd: this.postData.oldPwd,
             newPwd: this.postData.newPwd

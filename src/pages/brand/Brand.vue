@@ -90,7 +90,7 @@
     >
       <el-form :model="brandForm" ref="brandRef" :rules="brandRules" label-width="100px">
         <el-form-item label="品牌名称" prop="brandName">
-          <el-input v-model="brandForm.brandName" placeholder="必填项，十个字以内" maxlength="10"></el-input>
+          <el-input v-model="brandForm.brandName" placeholder="必填项，十五个字节以内"></el-input>
         </el-form-item>
         <el-form-item label="品牌图片" prop="brandImg">
           <el-upload
@@ -229,7 +229,11 @@ export default {
       },
       brandRules: {
         brandName: [
-          { required: true, message: '品牌名称不能为空', trigger: 'blur' }
+          { required: true, message: '品牌名称不能为空', trigger: 'blur' },
+          {
+            pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\u4e00-\u9fa5]{7}[\dA-Za-z_]{1}$|^[\dA-Za-z_]{1,15}$/,
+            message: '只能输入15个字节(数字,字母,下划线)'
+          }
         ],
         brandImg: [
           { required: true, message: '品牌图片不能为空', trigger: 'blur' }
@@ -447,7 +451,7 @@ export default {
         file.type === 'image/jpeg' ||
         file.type === 'image/jpg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 1
 
       if (!isJPG) {

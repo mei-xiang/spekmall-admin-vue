@@ -612,7 +612,7 @@ export default {
       const isJPG =
         file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 1
 
       if (!isJPG) {
@@ -664,7 +664,7 @@ export default {
       const isJPG =
         file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 5
 
       if (!isJPG) {
@@ -733,7 +733,7 @@ export default {
       const isJPG =
         file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 5
 
       if (!isJPG) {
@@ -795,7 +795,7 @@ export default {
       const isJPG =
         file.type === 'image/jpeg' ||
         file.type === 'image/png' ||
-        file.type === 'image/GIF'
+        file.type === 'image/gif'
       const isLt2M = file.size / 1024 / 1024 < 0.48828125
 
       if (!isJPG) {

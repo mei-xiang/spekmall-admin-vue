@@ -115,7 +115,7 @@
       <h2>公司介绍</h2>
       <div class="info">
         <div class="item">
-          <span>公司详情介绍</span>
+          <span style="min-width:150px">公司详情介绍</span>
           <span v-html="majorObj.introduction"></span>
         </div>
       </div>
@@ -370,6 +370,7 @@ h2 {
   line-height: 35px;
   display: flex;
   margin-bottom: 10px;
+  max-width: 1300px;
 }
 .info .item span:first-of-type {
   display: inline-block;

@@ -33,9 +33,9 @@
         </template>
       </el-table-column>
       <el-table-column label="内容详情" prop="content" show-overflow-tooltip>
-        <!-- <template slot-scope="scope">
-          <span v-html="scope.row.content"></span>
-        </template>-->
+        <template slot-scope="scope">
+          <span :class="{font_weight: scope.row.isRead==0?true:false}">{{scope.row.content}}</span>
+        </template>
       </el-table-column>
       <el-table-column prop="createDate" label="时间" width="220"></el-table-column>
       <el-table-column label="操作" width="220">
@@ -87,7 +87,8 @@ export default {
       isShowDialog: false,
       content: '',
       id: null,
-      noReadTotal: 0 // 未读总数
+      noReadTotal: 0, // 未读总数
+      isRead: null
     }
   },
   created() {
@@ -147,5 +148,8 @@ export default {
   width: 900px !important;
 }
 .contentDia {
+}
+.font_weight {
+  font-weight: 900;
 }
 </style>
