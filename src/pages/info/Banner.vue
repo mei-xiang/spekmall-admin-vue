@@ -69,7 +69,7 @@
           >
             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            <div slot="tip" class="el-upload__tip">（尺寸：230×180、格式jpg\png、大小10M内)</div>
+            <div slot="tip" class="el-upload__tip">（尺寸：1920×440、格式jpg\png、大小10M内)</div>
           </el-upload>
         </el-form-item>
         <!--  prop="url" -->
@@ -228,17 +228,42 @@ export default {
 
     // 文件上传前的钩子函数，用于对文件类型进行校验
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
+      let _this = this
+      const isJPG =
+        file.type === 'image/jpg' ||
+        file.type === 'image/jpeg' ||
+        file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 10
 
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 或者 PNG 格式!')
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 10MB!')
-      }
-      console.log(isJPG && isLt2M)
-      return isJPG && isLt2M
+      setTimeout(() => {
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 10MB!')
+        }
+      }, 0)
+      const isSize = new Promise(function(resolve, reject) {
+        let width = 1920 // 限制图片尺寸为1920*440
+        let height = 440
+        let _URL = window.URL || window.webkitURL
+        let img = new Image()
+        img.onload = function() {
+          let valid = img.width === width && img.height === height
+          valid ? resolve() : reject()
+        }
+        img.src = _URL.createObjectURL(file)
+      }).then(
+        () => {
+          return file
+        },
+        () => {
+          _this.$message.error('图片尺寸限制为1920 x 440')
+          return Promise.reject()
+        }
+      )
+
+      return isJPG && isLt2M && isSize
     },
     // 提交表单
     handleSubmit(val) {

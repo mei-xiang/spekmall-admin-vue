@@ -261,7 +261,7 @@ export default {
 				],
 				value: [
 					this.$rules.setRequired("请输入值"),
-					this.$rules.setCode(1, 20)
+					// this.$rules.setCode(1, 20)
 				]
 			},
 			// 分页相关
