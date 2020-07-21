@@ -131,6 +131,9 @@ export default {
     this.getSelfProductList()
     this.getCategoryList()
   },
+  mounted () {
+    console.log(this.$isPermission(this.$route.path))
+  },
   filters: {
     formatCategory(val) {
       if (val && val.indexOf('>') != -1) {
