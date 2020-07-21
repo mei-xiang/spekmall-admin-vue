@@ -527,11 +527,34 @@ export default {
       if (val.length > 0) {
         console.log(val)
         if (val[0]) {
+          this.$refs.cover1
+            .querySelectorAll('span')[0]
+            .parentElement.parentElement.querySelector('input').disabled = true
           // console.log(this.$refs.cover1.querySelectorAll('span')[0].parentElement.parentElement.querySelector('input'))
           //  this.$refs.cover1.querySelectorAll('span')[0].parentElement.parentElement.querySelector('input').onchange(function(e){
           //     // e.preventDefault()
           //     console.log('aa')
           //  })
+        }
+        if (val[1]) {
+          this.$refs.cover2
+            .querySelectorAll('span')[0]
+            .parentElement.parentElement.querySelector('input').disabled = true
+        }
+        if (val[2]) {
+          this.$refs.cover3
+            .querySelectorAll('span')[0]
+            .parentElement.parentElement.querySelector('input').disabled = true
+        }
+        if (val[3]) {
+          this.$refs.cover4
+            .querySelectorAll('span')[0]
+            .parentElement.parentElement.querySelector('input').disabled = true
+        }
+        if (val[4]) {
+          this.$refs.cover5
+            .querySelectorAll('span')[0]
+            .parentElement.parentElement.querySelector('input').disabled = true
         }
       }
     }
@@ -831,6 +854,9 @@ export default {
     },
     // 处理产品图片上传
     handleImagesSuccess1(res, file, fileList) {
+      this.$refs.cover1
+        .querySelectorAll('span')[0]
+        .parentElement.parentElement.querySelector('input').disabled = true
       // this.selfProductForm.images.splice(0, 1, res.data)
       const index = this.selfProductForm.images.findIndex(item => {
         item == this.src[0]
@@ -857,6 +883,9 @@ export default {
       }
     },
     handleImagesSuccess2(res, file, fileList) {
+      this.$refs.cover2
+        .querySelectorAll('span')[0]
+        .parentElement.parentElement.querySelector('input').disabled = true
       const index = this.selfProductForm.images.findIndex(item => {
         item == this.src[1]
       })
@@ -882,6 +911,9 @@ export default {
       }
     },
     handleImagesSuccess3(res, file, fileList) {
+      this.$refs.cover3
+        .querySelectorAll('span')[0]
+        .parentElement.parentElement.querySelector('input').disabled = true
       const index = this.selfProductForm.images.findIndex(item => {
         item == this.src[2]
       })
@@ -904,6 +936,9 @@ export default {
       }
     },
     handleImagesSuccess4(res, file, fileList) {
+      this.$refs.cover4
+        .querySelectorAll('span')[0]
+        .parentElement.parentElement.querySelector('input').disabled = true
       const index = this.selfProductForm.images.findIndex(item => {
         item == this.src[3]
       })
@@ -926,6 +961,9 @@ export default {
       }
     },
     handleImagesSuccess5(res, file, fileList) {
+      this.$refs.cover5
+        .querySelectorAll('span')[0]
+        .parentElement.parentElement.querySelector('input').disabled = true
       const index = this.selfProductForm.images.findIndex(item => {
         item == this.src[4]
       })
@@ -1076,7 +1114,6 @@ export default {
     },
     beforeAvatarUpload(file) {
       let _this = this
-      console.log(file.type)
       const isJPG =
         file.type === 'image/jpg' ||
         file.type === 'image/jpeg' ||
