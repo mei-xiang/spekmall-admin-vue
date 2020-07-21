@@ -102,7 +102,7 @@
               size="mini"
               type="text"
               @click="handleApproval(scope.$index, scope.row)"
-              v-if="scope.row.shopAudit.status==0||scope.row.shopAudit.status==1"
+              v-if="scope.row.shopAudit.status==1"
             >审核</el-button>
           </template>
         </template>
