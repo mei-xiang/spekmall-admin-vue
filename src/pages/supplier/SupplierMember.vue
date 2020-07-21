@@ -9,7 +9,7 @@
       <el-form-item label="状态：">
         <el-select v-model="searchForm.status" placeholder="状态">
           <el-option label="全部" value></el-option>
-          <el-option label="已激活" value="ENABLED"></el-option>
+          <el-option label="已启用" value="ENABLED"></el-option>
           <el-option label="已停用" value="DISABLED"></el-option>
         </el-select>
       </el-form-item>
@@ -52,9 +52,10 @@
       </el-table-column>
       <el-table-column label="手机" width="140">
         <template slot-scope="scope">
-          <span
+          <span>{{scope.row.username}}</span>
+          <!-- <span
             v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyLinkMan"
-          >{{ scope.row.supplierCompanyOutput.companyLinkMan.mobile }}</span>
+          >{{ scope.row.supplierCompanyOutput.companyLinkMan.mobile }}</span> -->
         </template>
       </el-table-column>
       <el-table-column prop label="地区" width="140">

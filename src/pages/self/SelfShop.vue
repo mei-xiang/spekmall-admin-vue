@@ -6,27 +6,27 @@
       <span>您的店铺暂未开通</span>
       <el-button class="query" @click="publish" size="mini">店铺发布</el-button>
     </div>
-    <el-table :data="selfData" border style="width: 1249px;" v-if="isOwnShop">
+    <el-table :data="selfData" border v-if="isOwnShop">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column label="店铺名称" width="190">
+      <el-table-column label="店铺名称">
         <template slot-scope="scope">
           <span>{{ scope.row.supplierCompanyOutput.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="createDate" label="店铺成立时间" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column label="供应商类型" width="190">
+      <el-table-column prop="createDate" label="店铺成立时间" show-overflow-tooltip></el-table-column>
+      <el-table-column label="供应商类型">
         <template slot-scope="scope">
           <span>{{ scope.row.selfSupport?'自营':'非自营' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="店铺状态" width="190">
+      <el-table-column label="店铺状态">
         <template slot-scope="scope">
           <span
             v-if="scope.row.supplierShopOutput"
           >{{scope.row.supplierShopOutput.shopStatus.text }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="提交状态" width="190">
+      <el-table-column label="提交状态">
         <template slot-scope="scope" v-if="scope.row.shopAudit">
           <span>{{scope.row.shopAudit.status==0?'草稿':'' }}</span>
           <span>{{scope.row.shopAudit.status==1?'待审核':'' }}</span>
@@ -34,7 +34,7 @@
           <span>{{scope.row.shopAudit.status==3?'审核不通过':'' }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="supplierShopOutput.remarks" label="信息" width="190"></el-table-column>
+      <el-table-column prop="supplierShopOutput.remarks" label="信息"></el-table-column>
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
