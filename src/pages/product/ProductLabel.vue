@@ -8,24 +8,25 @@
       icon="el-icon-circle-plus-outline"
       style="margin-bottom:20px"
       @click="addSupplier"
+      v-if="$isPermission($route.path)"
     >新增</el-button>
     <el-table :data="labelData" border style="width: 720px">
       <el-table-column type="index" label="序号"></el-table-column>
-      <el-table-column prop="type" label="标签类型" width="150">
+      <el-table-column prop="type" label="标签类型">
         <template slot-scope="scope">
           <span v-if="scope.row.type == 1">自营渠道</span>
           <span v-if="scope.row.type == 2">运营产品标签</span>
           <span v-if="scope.row.type == 3">商家添加标签</span>
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="产品标签名称" width="150"></el-table-column>
-      <el-table-column label="图标" width="150">
+      <el-table-column prop="name" label="产品标签名称"></el-table-column>
+      <el-table-column label="图标">
         <template slot-scope="scope">
           <el-image style="margin-top:5px" :src="imgBaseUrl + scope.row.ico"></el-image>
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" width="220">
+      <el-table-column label="操作" v-if="$isPermission($route.path)">
         <template slot-scope="scope">
           <el-button
             size="mini"

@@ -12,7 +12,12 @@
             <h6>密码强度</h6>
             <div>
               <span>当前密码强度：{{userInfo.passwordStrength | filter }}</span>
-              <el-button type="text" class="fr" @click="changePassword">修改</el-button>
+              <el-button
+                type="text"
+                class="fr"
+                @click="changePassword"
+                v-if="$isPermission($route.path)"
+              >修改</el-button>
             </div>
           </li>
           <li>

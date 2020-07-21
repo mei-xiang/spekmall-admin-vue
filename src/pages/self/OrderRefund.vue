@@ -55,28 +55,29 @@
           <span>退款进度：</span>
           <span style="color:#FF4400" v-if="orderInfo.orView">{{orderInfo.orView.status.text}}</span>
         </div>
-        <!-- 自营订单可以操作，并且是退款中状态 -->
-        <!-- &&orderInfo.orView&&orderInfo.orView.status.status==1 -->
-        <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
-          <span>退款操作：</span>
-          <el-radio v-model="status" label="STATUS7" @change="changeOrviewSta">同意退款</el-radio>
-          <el-radio v-model="status" label="STATUS8" @change="changeOrviewSta">拒绝退款</el-radio>
-          <span style="color:#FF4400">请在{{hours}}:{{minutes}}:{{seconds}}内完成操作</span>
-        </div>
-        <div class="item" v-if="isShowInput">
-          <span>说明：</span>
-          <el-input v-model="refuseReason" placeholder="请输入内容" class="explain"></el-input>
-        </div>
-        <!-- 自营订单/电商订单 退款成功和失败的说明 -->
-        <div class="item" v-if="orderInfo.orView&&orderInfo.orView.status.status!=1">
-          <span>说明：</span>
-          <span v-if="orderInfo.orView.refuseReason">{{orderInfo.orView.refuseReason}}</span>
-        </div>
-        <!-- 自营订单可以操作，并且是退款中状态 -->
-        <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
-          <span>操作：</span>
-          <el-button type="primary" @click="refund">确认提交</el-button>
-        </div>
+        <template v-if="$isPermission('selfOrder')||$isPermission('goodsOrder')">
+          <!-- 自营订单可以操作，并且是退款中状态 -->
+          <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
+            <span>退款操作：</span>
+            <el-radio v-model="status" label="STATUS7" @change="changeOrviewSta">同意退款</el-radio>
+            <el-radio v-model="status" label="STATUS8" @change="changeOrviewSta">拒绝退款</el-radio>
+            <span style="color:#FF4400">请在{{hours}}:{{minutes}}:{{seconds}}内完成操作</span>
+          </div>
+          <div class="item" v-if="isShowInput">
+            <span>说明：</span>
+            <el-input v-model="refuseReason" placeholder="请输入内容" class="explain"></el-input>
+          </div>
+          <!-- 自营订单/电商订单 退款成功和失败的说明 -->
+          <div class="item" v-if="orderInfo.orView&&orderInfo.orView.status.status!=1">
+            <span>说明：</span>
+            <span v-if="orderInfo.orView.refuseReason">{{orderInfo.orView.refuseReason}}</span>
+          </div>
+          <!-- 自营订单可以操作，并且是退款中状态 -->
+          <div class="item" v-if="type==1&&orderInfo.orView&&orderInfo.orView.status.status==1">
+            <span>操作：</span>
+            <el-button type="primary" @click="refund">确认提交</el-button>
+          </div>
+        </template>
       </div>
     </div>
     <div class="box">

@@ -35,6 +35,7 @@
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="addProduct"
+          v-if="$isPermission($route.path)"
         >发布新产品</el-button>
       </el-form-item>
     </el-form>
@@ -67,25 +68,25 @@
       <el-table-column label="管理产品" width="200">
         <template slot-scope="scope">
           <div v-if="scope.row.status.status==0">
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-            <el-button size="mini" type="text" @click="handleApproval(scope.$index, scope.row)">提交审核</el-button>
+            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)" v-if="$isPermission($route.path)">编辑</el-button>
+            <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)" v-if="$isPermission($route.path)">删除</el-button>
+            <el-button size="mini" type="text" @click="handleApproval(scope.$index, scope.row)" v-if="$isPermission($route.path)">提交审核</el-button>
           </div>
           <div v-if="scope.row.status.status==1">
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)" v-if="$isPermission($route.path)">编辑</el-button>
           </div>
           <div v-if="scope.row.status.status==2">
             <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-            <el-button size="mini" type="text" @click="handleLower(scope.$index, scope.row)">下架</el-button>
+            <el-button size="mini" type="text" @click="handleLower(scope.$index, scope.row)" v-if="$isPermission($route.path)">下架</el-button>
           </div>
           <div v-if="scope.row.status.status==3">
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)" v-if="$isPermission($route.path)">编辑</el-button>
+            <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)" v-if="$isPermission($route.path)">删除</el-button>
           </div>
           <div v-if="scope.row.status.status==4">
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
-            <el-button size="mini" type="text" @click="handleApproval(scope.$index, scope.row)">提交审核</el-button>
+            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)" v-if="$isPermission($route.path)">编辑</el-button>
+            <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)" v-if="$isPermission($route.path)">删除</el-button>
+            <el-button size="mini" type="text" @click="handleApproval(scope.$index, scope.row)" v-if="$isPermission($route.path)">提交审核</el-button>
           </div>
         </template>
       </el-table-column>
@@ -102,9 +103,6 @@
       :total="total"
     ></el-pagination>
 
-    <!-- type:1 查看 type:2 编辑 type:3 新增-->
-    <el-button @click="save" type="primary" v-if="type == 2||type == 3">保存为草稿</el-button>
-    <el-button @click="approve" type="primary" v-if="type == 2||type == 3">添加审核</el-button>
   </div>
 </template>
 

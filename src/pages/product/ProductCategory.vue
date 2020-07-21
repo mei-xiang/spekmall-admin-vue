@@ -6,6 +6,7 @@
       class="el-button el-button--default el-button--mini addCategory"
       icon="el-icon-circle-plus-outline"
       @click="showAddCategory"
+      v-if="$isPermission($route.path)"
     >添加类别</el-button>
     <div class="box">
       <div class="left">
@@ -40,7 +41,7 @@
               <el-radio :label="4" :disabled="disabled">四级</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item>
+          <el-form-item v-if="$isPermission($route.path)">
             <el-button type="primary" @click="updataCategory('categoryRef')">更新名称</el-button>
             <el-button @click="delCategory('categoryRef')">隐藏</el-button>
           </el-form-item>

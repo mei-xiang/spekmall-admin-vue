@@ -8,6 +8,7 @@
           size="small"
           style="margin-left: 20px;"
           @click="handleAddUser"
+          v-if="$isPermission($route.path)"
         >添加用户</el-button>
       </el-col>
     </el-row>
@@ -37,7 +38,7 @@
       <el-table-column prop="lastLoginTime" label="最后登录时间" min-width="120">
         <template slot-scope="{row}">{{row.account.loginDate}}</template>
       </el-table-column>
-      <el-table-column label="操作" width="300">
+      <el-table-column label="操作" width="300" v-if="$isPermission($route.path)">
         <template slot-scope="scope">
           <el-button @click="handleEdit(scope.row)" type="text" size="small">编辑</el-button>
           <el-button @click="handleResetPwd(scope.row)" type="text" size="small">重置密码</el-button>

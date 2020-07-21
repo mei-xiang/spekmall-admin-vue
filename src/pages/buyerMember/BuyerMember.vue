@@ -65,7 +65,7 @@
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <template v-if="scope.row.account">
+          <template v-if="scope.row.account&& $isPermission($route.path)">
             <el-button
               size="mini"
               type="text"

@@ -55,7 +55,7 @@
           <span>{{scope.row.username}}</span>
           <!-- <span
             v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyLinkMan"
-          >{{ scope.row.supplierCompanyOutput.companyLinkMan.mobile }}</span> -->
+          >{{ scope.row.supplierCompanyOutput.companyLinkMan.mobile }}</span>-->
         </template>
       </el-table-column>
       <el-table-column prop label="地区" width="140">
@@ -103,7 +103,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <template v-if="scope.row.account">
+          <template v-if="scope.row.account && $isPermission($route.path)">
             <el-button
               size="mini"
               type="text"
@@ -132,7 +132,7 @@
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyValidity==1"
+            v-if="scope.row.supplierCompanyOutput&&scope.row.supplierCompanyOutput.companyValidity==1 && $isPermission($route.path)"
             @click="handleValidity(scope.$index, scope.row)"
           >企业认证</el-button>
         </template>

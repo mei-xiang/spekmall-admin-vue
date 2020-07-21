@@ -86,7 +86,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="店铺提交审核时间">
+      <el-table-column label="店铺提交审核时间" width="150">
         <template
           slot-scope="scope"
           v-if="scope.row.shopAudit&&scope.row.shopAudit.submitAuditDate"
@@ -97,7 +97,7 @@
       <el-table-column label="操作" width="240">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <template v-if="scope.row.shopAudit">
+          <template v-if="scope.row.shopAudit && $isPermission($route.path)">
             <el-button
               size="mini"
               type="text"

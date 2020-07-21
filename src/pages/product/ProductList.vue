@@ -94,36 +94,38 @@
       <el-table-column label="管理产品">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleApproval(scope.$index, scope.row)"
-            v-if="scope.row.status && scope.row.status.status == 1"
-          >审核</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleLookApproval(scope.$index, scope.row)"
-            v-if="scope.row.status && scope.row.status.status == 1"
-          >查看审核</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleSetLike(scope.$index, scope.row)"
-            v-if="
+          <template v-if="$isPermission($route.path)">
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleApproval(scope.$index, scope.row)"
+              v-if="scope.row.status && scope.row.status.status == 1"
+            >审核</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleLookApproval(scope.$index, scope.row)"
+              v-if="scope.row.status && scope.row.status.status == 1"
+            >查看审核</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleSetLike(scope.$index, scope.row)"
+              v-if="
               scope.row.status &&
                 scope.row.status.status == 2 &&
                 !scope.row.like
             "
-          >设置猜你喜欢</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            @click="handleCloseLike(scope.$index, scope.row)"
-            v-if="
+            >设置猜你喜欢</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="handleCloseLike(scope.$index, scope.row)"
+              v-if="
               scope.row.status && scope.row.status.status == 2 && scope.row.like
             "
-          >取消猜你喜欢</el-button>
+            >取消猜你喜欢</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>

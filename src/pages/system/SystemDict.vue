@@ -29,7 +29,8 @@
 							<el-button type="common"
 									   icon="el-icon-search"
 									   @click="search">查询</el-button>
-							<el-button icon="el-icon-refresh"
+							<el-button icon="el-icon-refresh"  
+                     v-if="$isPermission($route.path)"
 									   @click="resetSearch">重置</el-button>
 						</el-form-item>
 					</el-form>

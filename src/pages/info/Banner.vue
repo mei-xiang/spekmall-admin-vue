@@ -1,7 +1,7 @@
 <template>
   <div class="banner-wrap content">
     <div class="addBtn">
-      <el-button type="primary" @click="addBanner">新增Banner</el-button>
+      <el-button type="primary" @click="addBanner" v-if="$isPermission($route.path)">新增Banner</el-button>
     </div>
 
     <el-table
@@ -32,13 +32,13 @@
         <template slot-scope="{row}">{{row.url }}</template>
       </el-table-column>
 
-      <el-table-column min-width="100px" align="center" label="操作">
+      <el-table-column min-width="100px" align="center" label="操作" v-if="$isPermission($route.path)">
         <template slot-scope="{row}">
           <el-button @click="handleModify(row)" type="text" size="small">修改</el-button>
           <el-button @click="handleDel(row)" type="text" size="small">删除</el-button>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Drag" width="80">
+      <el-table-column align="center" label="Drag" width="80" v-if="$isPermission($route.path)">
         <template>
           <i class="el-icon-rank"></i>
         </template>

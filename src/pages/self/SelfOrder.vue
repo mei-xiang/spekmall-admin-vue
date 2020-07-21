@@ -125,7 +125,7 @@
                   v-if="index2==0"
                 >{{item1.status.text}}</div>
               </el-col>
-              <el-col :span="3">
+              <el-col :span="3" v-if="$isPermission($route.path)">
                 <!-- index2==0 表示只显示第一个列表数据 -->
                 <div class="grid-content bg-purple-light handle" v-if="index2==0">
                   <span @click="handleEditPrice(item1.id)" v-if="item1.status.status==0">修改价格</span>

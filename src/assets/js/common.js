@@ -825,15 +825,7 @@ export default {
       this.getList();
     }
 
-		/**
-		 * @description: 是否有权限权限
-		 * @param {String} code [权限码]
-		 * @return:
-		 */
-    Vue.prototype.$isPermission = function (code) {
-      const permissions = getStore({ name: "userInfo" }).permissions;
-      return permissions.indexOf(code) !== -1
-    }
+
 		/**
 		 * @description:  通过 prop 在 MainForm 组件配置数据中 找到相应的对象
 		 * @param {String} prop [属性]
@@ -945,10 +937,10 @@ export default {
       return data.childrens
     }
     // /**
-		//  * @description:  校验上传文件大小，格式，类型
-		//  * @param {file,obj} Object [文件对象,大小格式类型对象]
-		//  * @return: bollean
-		//  */
+    //  * @description:  校验上传文件大小，格式，类型
+    //  * @param {file,obj} Object [文件对象,大小格式类型对象]
+    //  * @return: bollean
+    //  */
     // Vue.prototype.$beforeAvatarUpload = function (file, obj) {
     //   let _this = this
     //   // const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
@@ -989,5 +981,16 @@ export default {
 
     //   return isJPG && isLt2M && isSize
     // }
+
+		/**
+		 * @description: 是否有权限权限
+		 * @param {String} code [权限码]
+		 * @return:
+		 */
+    Vue.prototype.$isPermission = function (code) {
+      const permissions = getStore({ name: "userInfo" }).permissions;
+      // return permissions.indexOf(code) !== -1
+      return permissions
+    }
   }
 }

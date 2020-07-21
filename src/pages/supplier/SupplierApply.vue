@@ -48,6 +48,7 @@
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="addSupplier"
+          v-if="$isPermission($route.path)"
         >新增</el-button>
       </el-form-item>
     </el-form>
@@ -89,7 +90,7 @@
           <el-button
             size="mini"
             type="text"
-            v-if="scope.row.status&&scope.row.status.index == 1"
+            v-if="scope.row.status&&scope.row.status.index == 1 && $isPermission($route.path)"
             @click="handleApproval(scope.$index, scope.row)"
           >审核</el-button>
         </template>

@@ -13,12 +13,14 @@
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="showHotProduct"
+          v-if="$isPermission($route.path)"
         >添加热门商品</el-button>
         <el-button
           type="button"
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="showHomeBrand"
+          v-if="$isPermission($route.path)"
         >首页热门管理</el-button>
       </el-form-item>
     </el-form>
@@ -50,7 +52,7 @@
       </el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="150"></el-table-column>
 
-      <el-table-column label="管理">
+      <el-table-column label="管理"  v-if="$isPermission($route.path)">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>

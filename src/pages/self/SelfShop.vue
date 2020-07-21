@@ -38,7 +38,12 @@
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDetail(scope.$index, scope.row)">查看</el-button>
-          <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button
+            size="mini"
+            type="text"
+            @click="handleEdit(scope.$index, scope.row)"
+            v-if="$isPermission($route.path)"
+          >编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -57,6 +62,7 @@ export default {
   created() {
     this.getShopList()
   },
+  mounted() {},
   methods: {
     getShopList() {
       this.axios.post(`/api/supplier/self/search`).then(res => {

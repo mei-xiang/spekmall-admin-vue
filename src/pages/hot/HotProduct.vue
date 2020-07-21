@@ -1,49 +1,51 @@
 <template>
   <!-- 首页热门品类管理 -->
   <div class="content productBox">
-    <div v-if="!isShowCategory">暂未添加热门分类</div>
-    <el-select v-model="categoryVal" placeholder="请选择分类">
-      <el-option
-        v-for="item in categoryList"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      ></el-option>
-    </el-select>
-    <el-button
-      type="button"
-      class="el-button el-button--default el-button--mini"
-      icon="el-icon-circle-plus-outline"
-      @click="addHotCategory"
-    >新增分类</el-button>
-    <el-button
-      type="button"
-      class="el-button el-button--default el-button--mini"
-      icon="el-icon-circle-plus-outline"
-      @click="delHotCategory"
-      v-if="isShowCategory"
-    >删除分类</el-button>
-    <el-button
-      type="button"
-      class="el-button el-button--default el-button--mini"
-      icon="el-icon-circle-plus-outline"
-      @click="moveUpCategory"
-      v-if="isShowCategory"
-    >上移</el-button>
-    <el-button
-      type="button"
-      class="el-button el-button--default el-button--mini"
-      icon="el-icon-circle-plus-outline"
-      @click="moveDownCategory"
-      v-if="isShowCategory"
-    >下移</el-button>
-    <el-button
-      type="button"
-      class="el-button el-button--default el-button--mini"
-      icon="el-icon-circle-plus-outline"
-      @click="showAddHotProduct"
-      v-if="isShowCategory"
-    >添加商品</el-button>
+    <template v-if="$isPermission($route.path)">
+      <div v-if="!isShowCategory">暂未添加热门分类</div>
+      <el-select v-model="categoryVal" placeholder="请选择分类">
+        <el-option
+          v-for="item in categoryList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+      <el-button
+        type="button"
+        class="el-button el-button--default el-button--mini"
+        icon="el-icon-circle-plus-outline"
+        @click="addHotCategory"
+      >新增分类</el-button>
+      <el-button
+        type="button"
+        class="el-button el-button--default el-button--mini"
+        icon="el-icon-circle-plus-outline"
+        @click="delHotCategory"
+        v-if="isShowCategory"
+      >删除分类</el-button>
+      <el-button
+        type="button"
+        class="el-button el-button--default el-button--mini"
+        icon="el-icon-circle-plus-outline"
+        @click="moveUpCategory"
+        v-if="isShowCategory"
+      >上移</el-button>
+      <el-button
+        type="button"
+        class="el-button el-button--default el-button--mini"
+        icon="el-icon-circle-plus-outline"
+        @click="moveDownCategory"
+        v-if="isShowCategory"
+      >下移</el-button>
+      <el-button
+        type="button"
+        class="el-button el-button--default el-button--mini"
+        icon="el-icon-circle-plus-outline"
+        @click="showAddHotProduct"
+        v-if="isShowCategory"
+      >添加商品</el-button>
+    </template>
     <div v-if="isShowCategory">
       <el-tabs v-model="activeCategory" @tab-click="handleClick">
         <el-tab-pane
@@ -69,7 +71,7 @@
             </el-table-column>
             <el-table-column prop="productName" label="产品中文名称"></el-table-column>
             <el-table-column prop="companyName" label="供应商名称"></el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="操作" v-if="$isPermission($route.path)">
               <template slot-scope="scope">
                 <el-button
                   size="mini"
@@ -256,16 +258,25 @@ export default {
     // 删除分类
     delHotCategory() {
       console.log(this.categoryId)
-      this.axios
-        .del(`/api/hotCategory/delete`, {
-          id: this.categoryId
+      this.$confirm('是否删除此分类?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.axios
+            .del(`/api/hotCategory/delete`, {
+              id: this.categoryId
+            })
+            .then(res => {
+              console.log(res)
+              if (res.code == 200) {
+                this.$message.success('删除成功!')
+                this.getHasCategoryList()
+              }
+            })
         })
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.getHasCategoryList()
-          }
-        })
+        .catch(() => {})
     },
     // 上移
     moveUpCategory() {
@@ -399,17 +410,25 @@ export default {
     // 删除产品数据
     delChildCategoryPro(index, row) {
       console.log(index, row)
-      this.axios
-        .del(`/api/hotCategoryProduct/delete`, {
-          id: row.id
+      this.$confirm('是否删除此商品?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.axios
+            .del(`/api/hotCategoryProduct/delete`, {
+              id: row.id
+            })
+            .then(res => {
+              console.log(res)
+              if (res.code == 200) {
+                this.$message.success(res.message)
+                this.getProductById(this.firstCategoryId)
+              }
+            })
         })
-        .then(res => {
-          console.log(res)
-          if (res.code == 200) {
-            this.$message.success(res.message)
-            this.getProductById(this.firstCategoryId)
-          }
-        })
+        .catch(() => {})
     },
     //行拖拽
     rowDrop() {

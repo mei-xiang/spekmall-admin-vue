@@ -34,7 +34,7 @@
           <span>最后确认金额：</span>
           <span v-if="orderInfo.totalPriceComfirm">¥{{orderInfo.totalPriceComfirm}}</span>
         </div>
-        <div class="item" v-if="type==1">
+        <div class="item" v-if="type==1&&$isPermission('selfOrder')">
           <template v-if="orderInfo.status">
             <span v-if="orderInfo.status.status==0">操作：</span>
             <el-button

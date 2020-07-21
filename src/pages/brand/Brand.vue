@@ -13,12 +13,14 @@
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="showAddBrand"
+          v-if="$isPermission($route.path)"
         >添加品牌</el-button>
         <el-button
           type="button"
           class="el-button el-button--default el-button--mini"
           icon="el-icon-circle-plus-outline"
           @click="showHomeBrand"
+          v-if="$isPermission($route.path)"
         >首页品牌管理</el-button>
       </el-form-item>
     </el-form>
@@ -26,9 +28,9 @@
     <!-- 表格区域 -->
     <el-table :data="brandData" border style="width: 100%;">
       <el-table-column type="index" label="序号" fixed></el-table-column>
-      <el-table-column prop="brandCode" label="品牌编号" width="190" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="brandName" label="品牌名称" width="150"></el-table-column>
-      <el-table-column label="图片" width="190">
+      <el-table-column prop="brandCode" label="品牌编号" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="brandName" label="品牌名称"></el-table-column>
+      <el-table-column label="图片">
         <template slot-scope="scope">
           <el-image
             style="width: 120px; height: 28px;margin-top:5px"
@@ -38,19 +40,19 @@
           <!--  :preview-src-list="[imgBaseUrl + scope.row.brandImg]" -->
         </template>
       </el-table-column>
-      <el-table-column label="是否热门品牌" width="150">
+      <el-table-column label="是否热门品牌">
         <template slot-scope="scope">
           <span>{{ scope.row.hot == true ? "是" : "否" }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否首页品牌" width="150">
+      <el-table-column label="是否首页品牌">
         <template slot-scope="scope">
           <span>{{ scope.row.showHome == true ? "是" : "否" }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="createDate" label="创建时间" width="150"></el-table-column>
+      <el-table-column prop="createDate" label="创建时间"></el-table-column>
 
-      <el-table-column label="操作" width="220">
+      <el-table-column label="操作" width="220" v-if="$isPermission($route.path)">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
           <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
