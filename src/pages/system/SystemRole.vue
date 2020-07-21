@@ -174,7 +174,13 @@ export default {
       await this.getMenu()
       this.isShowAddOrEdit = true
       this.isAddType = true
-      this.parseTree('set', [])
+      // this.parseTree('set', [])
+      this.$nextTick(() => {
+        this.$refs.tree.setCheckedKeys([1])
+        this.$nextTick(() => {
+          this.parseTree('set', [])
+        })
+      })
     },
     parseTree(type, idsArr) {
       const treeData = this.treeData

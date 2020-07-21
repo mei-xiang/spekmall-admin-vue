@@ -989,7 +989,10 @@ export default {
 		 */
     Vue.prototype.$isPermission = function (code) {
       const permissions = getStore({ name: "userInfo" }).permissions;
-      return permissions.indexOf(code) !== -1
+      // return permissions.indexOf(code) !== -1
+      const arr = []
+      permissions.forEach(item=>arr.push('/'+item))
+      return arr.indexOf(code) !== -1
     }
   }
 }
