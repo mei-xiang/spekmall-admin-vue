@@ -349,6 +349,7 @@ export default {
       this.type = ''
       this.searchHotForm.keyword = ''
       this.searchHomeForm.keyword = ''
+      this.isShowHotProductDialog = false
     },
     handleHotSizeChange(val) {
       this.searchHotForm.size = val
@@ -367,22 +368,27 @@ export default {
         this.multipleSelection.forEach(item => {
           ids.push(item.id)
         })
-        axios.post(`/hot/product/isHot?ids=${ids}&isHot=true`).then(res => {
-          console.log(res)
-          if (res.status == 200) {
-            this.$message({
-              type: 'success',
-              message: '添加成功!'
-            })
-            this.isShowHotProductDialog = false
-            this.getRecommentList()
-          }
-          if (res.code == 500) {
-            this.$message.success(res.message)
-          }
-        })
+        console.log('hot')
+        if (ids.length > 0) {
+          axios.post(`/hot/product/isHot?ids=${ids}&isHot=true`).then(res => {
+            console.log(res)
+            if (res.data.code == 200) {
+              this.$message({
+                type: 'success',
+                message: '添加成功!'
+              })
+              this.isShowHotProductDialog = false
+
+              this.getRecommentList()
+            }
+            if (res.code == 500) {
+              this.$message.success(res.message)
+            }
+          })
+        }
       }
       if (this.type == 'home') {
+        console.log('home')
         this.isShowHomeDialog = true
       }
     },
@@ -458,9 +464,9 @@ export default {
             this.isShowHomeDialog = false
             this.isShowHotProductDialog = false
             this.$nextTick(() => {
-              this.getHomeList()
               this.handleCloseHome()
               this.handleClose()
+              this.getHomeList()
             })
           }
           if (res.data.code == 500) {
@@ -468,15 +474,16 @@ export default {
             this.isShowHomeDialog = false
             this.isShowHotProductDialog = false
             this.$nextTick(() => {
-              this.getHomeList()
               this.handleCloseHome()
               this.handleClose()
+              this.getHomeList()
             })
           }
         })
     },
     // 首页展示对话框关闭数据清除
     handleCloseHome() {
+      this.isShowHomeDialog = false
       this.homeShowForm.effectDate = []
       this.id = null
     },

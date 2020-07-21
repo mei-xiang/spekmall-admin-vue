@@ -63,8 +63,9 @@
           <el-image
             style="width: 170px; height: 28px;margin-top:5px"
             :src="scope.row.businessLicense | imgFormat"
-            :preview-src-list="scope.row.businessLicense | imgFormatList"
+            @click.native="showImg(scope.row.businessLicense)"
           ></el-image>
+          <!-- :preview-src-list="scope.row.businessLicense | imgFormatList" -->
         </template>
       </el-table-column>
       <el-table-column label="状态" width="120">
@@ -137,6 +138,20 @@
         <el-button @click="isShowDialog = false">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 图片预览对话框 -->
+    <el-dialog
+      title
+      :visible.sync="imgDialogVisible"
+      width="100%"
+      @close="handleImgClose"
+      style="margin-top:200px"
+      class="imgDialog"
+    >
+      <div style="width:100%;text-align:center;">
+        <img :src="src" alt width="300px" height="300px" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -166,7 +181,9 @@ export default {
       lookBuyerForm: {},
       // 列表图片展示
       url: '',
-      srcList: []
+      srcList: [],
+      imgDialogVisible: false,
+      src: ''
     }
   },
   created() {
@@ -251,6 +268,16 @@ export default {
         path: '/supperApplyInfo',
         query: { id: row.id, type: 2 }
       })
+    },
+    // 图片预览
+    handleImgClose() {
+      this.src = ''
+      this.imgDialogVisible = false
+    },
+    showImg(src) {
+      const srcList = src.split(',')
+      this.imgDialogVisible = true
+      this.src = this.imgBaseUrl + srcList[0]
     }
   }
 }

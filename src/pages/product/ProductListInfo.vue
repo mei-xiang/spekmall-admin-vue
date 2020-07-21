@@ -93,8 +93,9 @@
             :key="index"
             style="width: 100px; height: 100px;margin-right:10px"
             :src="imgBaseUrl + item"
-            :preview-src-list="[imgBaseUrl + item]"
+            @click.native="showImg(imgBaseUrl + item)"
           ></el-image>
+          <!-- :preview-src-list="[imgBaseUrl + item]" -->
         </div>
       </div>
     </div>
@@ -159,6 +160,20 @@
     <!-- type:1 查看 type:2 审核-->
     <el-button @click="approveNoPass" type="danger" v-if="type == 2" class="btn_approve">审核不通过</el-button>
     <el-button @click="approvePass" type="primary" v-if="type == 2">审核通过</el-button>
+
+    <!-- 图片预览对话框 -->
+    <el-dialog
+      title
+      :visible.sync="imgDialogVisible"
+      width="100%"
+      @close="handleImgClose"
+      style="margin-top:200px"
+      class="imgDialog"
+    >
+      <div style="width:100%;text-align:center;">
+        <img :src="src" alt width="300px" height="300px" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -172,7 +187,9 @@ export default {
       type: null, // 查看1  审核2
       productObj: {},
       payType: ['支付宝', '微信支付', '银联支付'], // 支付方式
-      shipType: ['空运', '海运', '快递', '公路运输', '铁路运输'] // 运输方式
+      shipType: ['空运', '海运', '快递', '公路运输', '铁路运输'], // 运输方式
+      imgDialogVisible: false,
+      src: ''
     }
   },
   created() {
@@ -196,6 +213,15 @@ export default {
     // 返回
     close() {
       this.$router.push('/productList')
+    },
+    // 图片预览
+    handleImgClose() {
+      this.src = ''
+      this.imgDialogVisible = false
+    },
+    showImg(src) {
+      this.imgDialogVisible = true
+      this.src = src
     },
     approvePassOrNoPass(obj, callback) {
       this.axios.put(`/api/product/audit`, obj).then(res => {

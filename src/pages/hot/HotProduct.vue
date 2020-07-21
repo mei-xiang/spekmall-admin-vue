@@ -52,7 +52,13 @@
           v-for="(item,index) in hasCategory"
           :key="index"
         >
-          <el-table :data="productData" row-key="id" border style="width: 100%;">
+          <el-table
+            :data="productData"
+            row-key="id"
+            border
+            style="width: 100%;"
+            v-if="isResetTable"
+          >
             <el-table-column type="index" label="序号" fixed></el-table-column>
             <el-table-column prop="productCode" label="产品编号" width="120"></el-table-column>
             <el-table-column prop="categoryName" label="产品类别" width="300">
@@ -141,7 +147,8 @@ export default {
       hotTotal: null, // 热门商品总数
       hotData: [], // 热门商品列表数据
       isShowHotProductDialog: false, // 控制对话框的显示与隐藏
-      multipleSelection: [] // 热门多选数据
+      multipleSelection: [], // 热门多选数据
+      isResetTable: false
     }
   },
   created() {
@@ -156,6 +163,9 @@ export default {
   },
   mounted() {
     // this.rowDrop()
+    this.$nextTick(() => {
+      this.isResetTable = true
+    })
   },
   filters: {
     formatCategory(val) {
@@ -214,9 +224,10 @@ export default {
             this.productData = res.data
             // this.rowDrop()
             this.$nextTick(() => {
+              this.isResetTable = true
               setTimeout(() => {
                 this.rowDrop()
-              }, 100)
+              }, 200)
             })
           }
         })
@@ -374,6 +385,7 @@ export default {
     },
     // 标签页切换
     handleClick(tab, event) {
+      this.isResetTable = false
       // 一级分类id
       this.categoryId = this.hasCategory[this.activeCategory - 0].id
       this.firstCategoryId = this.hasCategory[

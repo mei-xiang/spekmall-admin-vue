@@ -186,7 +186,7 @@
       title
       :visible.sync="imgDialogVisible"
       width="100%"
-      @close="handleClose"
+      @close="handleImgClose"
       style="margin-top:200px"
       class="imgDialog"
     >
@@ -487,7 +487,7 @@ export default {
       return isJPG && isLt2M && isSize
     },
     // 图片预览
-    handleClose() {
+    handleImgClose() {
       this.src = ''
       this.imgDialogVisible = false
     },
