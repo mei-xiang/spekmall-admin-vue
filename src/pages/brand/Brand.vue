@@ -231,8 +231,8 @@ export default {
         brandName: [
           { required: true, message: '品牌名称不能为空', trigger: 'blur' },
           {
-            pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\u4e00-\u9fa5]{7}[\dA-Za-z_]{1}$|^[\dA-Za-z_]{1,15}$/,
-            message: '只能输入15个字节(数字,字母,下划线)'
+            pattern: /^[\u4e00-\u9fa5]{1,7}$|^[\u4e00-\u9fa5]{7}[\dA-Za-z_-]{1}$|^[\dA-Za-z_-]{1,15}$/,
+            message: '只能输入15个字节(数字,字母,划线)'
           }
         ],
         brandImg: [
