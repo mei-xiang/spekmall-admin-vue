@@ -993,6 +993,7 @@ export default {
       const arr = []
       permissions.forEach(item=>arr.push('/'+item))
       return arr.indexOf(code) !== -1
+      // return arr
     }
   }
 }

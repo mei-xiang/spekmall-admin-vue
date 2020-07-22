@@ -292,6 +292,9 @@ export default {
             this.$message.success(res.message)
             this.getCategoryList()
           }
+          if (res.code == 500) {
+            this.$message.success(res.message)
+          }
         })
     }
   }

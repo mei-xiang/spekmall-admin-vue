@@ -132,7 +132,7 @@ export default {
             newPwd: this.postData.newPwd
           })
           .then(res => {
-            if (res.code == 404) return this.$message.success(res.message)
+            if (res.code == 404) return this.$message.error(res.message)
             if (res.code != 200) return
             this.$message.success(res.message)
             this.closeAddOrEdit()

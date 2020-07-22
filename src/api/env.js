@@ -15,7 +15,7 @@ module.exports = {
     socketUrl: "http://192.168.212.63:9099"
   },
   production: {
-    apiUrl: "",
-    socketUrl: ""
+    apiUrl: "http://183.240.131.12:8010",
+    socketUrl: "http://183.240.131.12:9099"
   }
 };

@@ -403,9 +403,6 @@ export default {
         this.activeCategory - 0
       ].categoryId
       this.getProductById(this.firstCategoryId)
-      // this.$nextTick(() => {
-      //   this.rowDrop()
-      // })
     },
     // 删除产品数据
     delChildCategoryPro(index, row) {
@@ -432,6 +429,7 @@ export default {
     },
     //行拖拽
     rowDrop() {
+      console.log('行拖拽')
       const tbody = document.querySelector('.el-table__body-wrapper tbody')
       console.log(tbody)
       const _this = this

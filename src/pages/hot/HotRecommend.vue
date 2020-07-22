@@ -52,7 +52,7 @@
       </el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="150"></el-table-column>
 
-      <el-table-column label="管理"  v-if="$isPermission($route.path)">
+      <el-table-column label="管理" v-if="$isPermission($route.path)">
         <template slot-scope="scope">
           <el-button size="mini" type="text" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
@@ -105,7 +105,7 @@
         ></el-pagination>
       </div>
       <div slot="footer">
-        <el-button type="primary" @click="addHotProduct">确 定</el-button>
+        <el-button type="primary" @click.native="addHotProduct">确 定</el-button>
         <el-button @click="isShowHotProductDialog = false">取 消</el-button>
       </div>
     </el-dialog>
@@ -422,6 +422,7 @@ export default {
       this.isShowHotProductDialog = true
       this.searchHotForm.isHot = true
       this.searchHotForm.showIndex = false
+      this.type = 'home'
       this.getHotList()
     },
     // 首页展示起始时间
