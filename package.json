@@ -16,7 +16,7 @@
 		"babel-polyfill": "^6.26.0",
 		"bankcardinfo": "^2.0.5",
 		"element-ui": "^2.11.1",
-		"highlight.js": "^9.15.8",
+		"highlight.js": "^10.1.2",
 		"jquery": "^3.4.1",
 		"print-js": "^1.0.55",
 		"qs": "^6.5.2",
